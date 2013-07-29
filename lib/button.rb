@@ -1,10 +1,13 @@
-module WS
+require 'dxruby'
+require_relative './module.rb'
 
+module WS
   class WSButton < WSControl
     attr_accessor :caption, :fore_color
+    include ButtonClickable
+
     def initialize(tx, ty, sx, sy, caption = "Button")
       super(tx, ty)
-      @flag = false
       @image = {}
       @image[false] = Image.new(sx, sy, [160,160,160])
                      .line(0,0,sx-1,0,[240,240,240])
@@ -24,28 +27,24 @@ module WS
                      .line(0,sy-1,sx-1,sy-1,[200,200,200])
                      .line(sx-2,1,sx-2,sy-2,[240,240,240])
                      .line(1,sy-2,sx-2,sy-2,[240,240,240])
-      self.image = @image[false]
       @image_flag = false
       @caption = caption
     end
 
     def mouse_down(tx, ty, button)
-      @flag = true
-      WS.capture(self)
       @image_flag = true
+      super
     end
 
     def mouse_up(tx, ty, button)
-      @flag = false
-      WS.capture(nil)
       @image_flag = false
-      @cursor.x, @cursor.y = tx + self.x, ty + self.y
-      signal(:click) if @cursor === self
+      super
     end
 
     def mouse_move(tx, ty)
       @cursor.x, @cursor.y = tx + self.x, ty + self.y
-      @image_flag = (@flag and @cursor === self)
+      @image_flag = (@button_flag and @cursor === self)
+      super
     end
 
     def draw
