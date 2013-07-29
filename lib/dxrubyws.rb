@@ -27,16 +27,16 @@ module WS
       # キャプチャされていたら@@captureのメソッドを呼ぶ
       if @@capture
         tx, ty = @@capture.get_global_vertex
-        @@capture.mouse_move(@@cursor.x - tx, @@cursor.y - ty)
+        @@capture.on_mouse_move(@@cursor.x - tx, @@cursor.y - ty)
       else
-        @@desktop.mouse_move(@@cursor.x, @@cursor.y)
+        @@desktop.on_mouse_move(@@cursor.x, @@cursor.y)
       end
     end
 
     # ボタン押した
     if Input.mouse_down?(M_LBUTTON) and @@mouse_flag == false
       @@mouse_flag = true
-      @@desktop.mouse_down(@@cursor.x, @@cursor.y, M_LBUTTON)
+      @@desktop.on_mouse_down(@@cursor.x, @@cursor.y, M_LBUTTON)
     end
 
     # ボタン離した。キャプチャされてたら@@captureのメソッドを呼ぶ
@@ -44,9 +44,9 @@ module WS
       @@mouse_flag = false
       if @@capture
         tx, ty = @@capture.get_global_vertex
-        @@capture.mouse_up(@@cursor.x - tx, @@cursor.y - ty, M_LBUTTON)
+        @@capture.on_mouse_up(@@cursor.x - tx, @@cursor.y - ty, M_LBUTTON)
       else
-        @@desktop.mouse_up(@@cursor.x, @@cursor.y, M_LBUTTON)
+        @@desktop.on_mouse_up(@@cursor.x, @@cursor.y, M_LBUTTON)
       end
     end
 

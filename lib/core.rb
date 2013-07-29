@@ -12,13 +12,25 @@ module WS
       @font = @@default_font
     end
 
-    def mouse_down(x, y, button)
+    def mouse_down(tx, ty, button)
     end
 
-    def mouse_up(x, y, button)
+    def mouse_up(tx, ty, button)
     end
 
-    def mouse_move(x, y)
+    def mouse_move(tx, ty)
+    end
+
+    def on_mouse_down(tx, ty, button)
+      self.mouse_down(tx, ty, button)
+    end
+
+    def on_mouse_up(tx, ty, button)
+      self.mouse_up(tx, ty, button)
+    end
+
+    def on_mouse_move(tx, ty)
+      self.mouse_move(tx, ty)
     end
 
     def add_handler(signal, obj=nil, handler=nil, &block)
@@ -78,19 +90,31 @@ module WS
       @cursor.check(@childlen)[0]
     end
 
-    def mouse_down(tx, ty, button)
+    def on_mouse_down(tx, ty, button)
       ctl = find_hit_object(tx, ty)
-      ctl.mouse_down(tx - ctl.x, ty - ctl.y, button) if ctl
+      if ctl
+        ctl.on_mouse_down(tx - ctl.x, ty - ctl.y, button)
+      else
+        self.mouse_down(tx, ty, button) if self.respond_to?(:mouse_down)
+      end
     end
 
-    def mouse_up(tx, ty, button)
+    def on_mouse_up(tx, ty, button)
       ctl = find_hit_object(tx, ty)
-      ctl.mouse_up(tx - ctl.x, ty - ctl.y, button) if ctl
+      if ctl
+        ctl.on_mouse_up(tx - ctl.x, ty - ctl.y, button)
+      else
+        self.mouse_up(tx, ty, button) if self.respond_to?(:mouse_up)
+      end
     end
 
-    def mouse_move(tx, ty)
+    def on_mouse_move(tx, ty)
       ctl = find_hit_object(tx, ty)
-      ctl.mouse_move(tx - ctl.x, ty - ctl.y) if ctl
+      if ctl
+        ctl.on_mouse_move(tx - ctl.x, ty - ctl.y)
+      else
+        self.mouse_move(tx, ty) if self.respond_to?(:move)
+      end
     end
   end
 end
