@@ -113,7 +113,7 @@ module WS
       if ctl
         ctl.on_mouse_move(tx - ctl.x, ty - ctl.y)
       else
-        self.mouse_move(tx, ty) if self.respond_to?(:move)
+        self.mouse_move(tx, ty) if self.respond_to?(:mouse_move)
       end
     end
   end

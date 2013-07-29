@@ -1,5 +1,6 @@
-module WS
+require_relative './module.rb'
 
+module WS
   class WSWindow < WSContainer
     def initialize(tx, ty, sx, sy)
       super(tx, ty, sx, sy)
@@ -7,9 +8,10 @@ module WS
       @window_title = WSWindowTitle.new(2,2,sx-4,16)
       add_control(@window_title)
       @window_title.add_handler(:close, self, :close)
+      @window_title.add_handler(:drag_move, self, :move)
     end
 
-    # RenderTarget#draw_lineは現在バグっているので綺麗に見えない。
+    # RenderTarget#draw_lineは現在バグってて右/下が1ピクセル短くなる。
     def draw
       sx = self.image.width
       sy = self.image.height
@@ -27,23 +29,31 @@ module WS
     def close
       self.parent.remove_control(self)
     end
+
+    def move(dx, dy)
+      self.x += dx
+      self.y += dy
+    end
+
   end
 
   class WSWindowTitle < WSContainer
+    include Draggable
+
     def initialize(tx, ty, sx, sy, title="Title")
       super(tx, ty, sx, sy)
       self.image.bgcolor = C_BLUE
 
-      @button = WSButton.new(sx-16, 1, sy-2, sy-2, "X")
-      @button.fore_color = C_BLACK
-      add_control(@button)
-      @button.add_handler(:click, self, :click)
+      @close_button = WSButton.new(sx-16, 1, sy-2, sy-2, "X")
+      @close_button.fore_color = C_BLACK
+      add_control(@close_button)
+      @close_button.add_handler(:click, self, :close)
 
       @label = WSLabel.new(2, 2, sx, sy, title)
       add_control(@label)
     end
 
-    def click
+    def close
       signal(:close)
     end
   end
