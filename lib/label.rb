@@ -6,7 +6,7 @@ module WS
     def initialize(tx, ty, sx, sy, caption = "Label")
       super(tx, ty)
       @sx, @sy = sx, sy
-      self.collision = [0,0,@sx-1,@sy-1]
+      self.collision_enable = false
       @caption = caption
     end
 
