@@ -23,14 +23,17 @@ module WS
 
     def on_mouse_down(tx, ty, button)
       self.mouse_down(tx, ty, button)
+      return self
     end
 
     def on_mouse_up(tx, ty, button)
       self.mouse_up(tx, ty, button)
+      return self
     end
 
     def on_mouse_move(tx, ty)
       self.mouse_move(tx, ty)
+      return self
     end
 
     def add_handler(signal, obj=nil, handler=nil, &block)
@@ -100,7 +103,8 @@ module WS
       if ctl
         ctl.on_mouse_down(tx - ctl.x, ty - ctl.y, button)
       else
-        self.mouse_down(tx, ty, button) if self.respond_to?(:mouse_down)
+        self.mouse_down(tx, ty, button)
+        return self
       end
     end
 
@@ -109,7 +113,8 @@ module WS
       if ctl
         ctl.on_mouse_up(tx - ctl.x, ty - ctl.y, button)
       else
-        self.mouse_up(tx, ty, button) if self.respond_to?(:mouse_up)
+        self.mouse_up(tx, ty, button)
+        return self
       end
     end
 
@@ -118,7 +123,8 @@ module WS
       if ctl
         ctl.on_mouse_move(tx - ctl.x, ty - ctl.y)
       else
-        self.mouse_move(tx, ty) if self.respond_to?(:mouse_move)
+        self.mouse_move(tx, ty)
+        return self
       end
     end
   end
