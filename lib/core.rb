@@ -80,6 +80,11 @@ module WS
       @childlen.delete(obj)
     end
 
+    def update
+      Sprite.update(@childlen)
+      super
+    end
+
     def draw
       Sprite.draw(@childlen)
       super
