@@ -3,6 +3,7 @@ require_relative './core'
 require_relative './window'
 require_relative './button.rb'
 require_relative './label'
+require_relative './image'
 
 # ウィンドウシステム
 module WS
@@ -16,6 +17,7 @@ module WS
   @@cursor = Sprite.new
   @@mouse_flag = false
   @@capture = nil
+  @@over_object = nil
 
   # ウィンドウシステムのメイン処理
   def self.update
@@ -23,13 +25,13 @@ module WS
     @@cursor.x, @@cursor.y = Input.mouse_pos_x, Input.mouse_pos_y
 
     # マウスカーソルの移動処理
-    if (oldx != @@cursor.x or oldy != @@cursor.y)
+    if oldx != @@cursor.x or oldy != @@cursor.y
       # キャプチャされていたら@@captureのメソッドを呼ぶ
       if @@capture
         tx, ty = @@capture.get_global_vertex
-        @@capture.on_mouse_move(@@cursor.x - tx, @@cursor.y - ty)
+        @@over_object = @@capture.on_mouse_move(@@cursor.x - tx, @@cursor.y - ty)
       else
-        @@desktop.on_mouse_move(@@cursor.x, @@cursor.y)
+        @@over_object = @@desktop.on_mouse_move(@@cursor.x, @@cursor.y)
       end
     end
 
@@ -60,6 +62,10 @@ module WS
 
   def self.desktop
     @@desktop
+  end
+
+  def self.over_object
+    @@over_object
   end
 end
 

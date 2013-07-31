@@ -1,4 +1,11 @@
 module WS
+  module Clickable
+    def mouse_down(tx, ty, button)
+      signal(:click)
+      super
+    end
+  end
+
   module ButtonClickable
     def initialize(tx=0, ty=0, image=nil)
       super
@@ -44,6 +51,16 @@ module WS
 
     def mouse_move(tx, ty)
       signal(:drag_move, tx - @drag_old_x, ty - @drag_old_y) if @dragging_flag
+    end
+  end
+
+  module MouseOver
+    def mouse_over
+      signal(:mouse_over)
+    end
+
+    def mouse_out
+      signal(:mouse_out)
     end
   end
 end

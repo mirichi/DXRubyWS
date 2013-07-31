@@ -26,11 +26,11 @@ module WS
       super
     end
 
-    def close
+    def close(obj)
       self.parent.remove_control(self)
     end
 
-    def move(dx, dy)
+    def move(obj, dx, dy)
       self.x += dx
       self.y += dy
     end
@@ -53,7 +53,7 @@ module WS
       add_control(@label)
     end
 
-    def close
+    def close(obj)
       signal(:close)
     end
   end

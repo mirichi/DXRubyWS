@@ -21,6 +21,12 @@ module WS
     def mouse_move(tx, ty)
     end
 
+    def mouse_over
+    end
+
+    def mouse_out
+    end
+
     def on_mouse_down(tx, ty, button)
       self.mouse_down(tx, ty, button)
       return self
@@ -32,6 +38,10 @@ module WS
     end
 
     def on_mouse_move(tx, ty)
+      if WS.over_object != self
+        WS.over_object.mouse_out if WS.over_object
+        self.mouse_over
+      end
       self.mouse_move(tx, ty)
       return self
     end
@@ -53,7 +63,7 @@ module WS
     def signal(s, *args)
       if @signal.has_key?(s)
         @signal[s].each do |tmp|
-          tmp[0].__send__(tmp[1], *args)
+          tmp[0].__send__(tmp[1], self, *args)
         end
       end
     end
@@ -103,8 +113,7 @@ module WS
       if ctl
         ctl.on_mouse_down(tx - ctl.x, ty - ctl.y, button)
       else
-        self.mouse_down(tx, ty, button)
-        return self
+        super
       end
     end
 
@@ -113,8 +122,7 @@ module WS
       if ctl
         ctl.on_mouse_up(tx - ctl.x, ty - ctl.y, button)
       else
-        self.mouse_up(tx, ty, button)
-        return self
+        super
       end
     end
 
@@ -123,8 +131,7 @@ module WS
       if ctl
         ctl.on_mouse_move(tx - ctl.x, ty - ctl.y)
       else
-        self.mouse_move(tx, ty)
-        return self
+        super
       end
     end
   end
