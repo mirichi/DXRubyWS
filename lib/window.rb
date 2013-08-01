@@ -2,6 +2,9 @@ require_relative './module.rb'
 
 module WS
   class WSWindow < WSContainer
+    attr_accessor :border_width
+#    include Resizable
+
     def initialize(tx, ty, sx, sy)
       super(tx, ty, sx, sy)
       self.image.bgcolor = [160,160,160]
@@ -9,6 +12,7 @@ module WS
       add_control(@window_title)
       @window_title.add_handler(:close, self, :close)
       @window_title.add_handler(:drag_move, self, :move)
+      @border_width = 2
     end
 
     # RenderTarget#draw_lineは現在バグってて右/下が1ピクセル短くなる。
@@ -34,7 +38,6 @@ module WS
       self.x += dx
       self.y += dy
     end
-
   end
 
   class WSWindowTitle < WSContainer
@@ -47,14 +50,10 @@ module WS
       @close_button = WSButton.new(sx-16, 1, sy-2, sy-2, "X")
       @close_button.fore_color = C_BLACK
       add_control(@close_button)
-      @close_button.add_handler(:click, self, :close)
+      @close_button.add_handler(:click) {signal(:close)}
 
       @label = WSLabel.new(2, 2, sx, sy, title)
       add_control(@label)
-    end
-
-    def close(obj)
-      signal(:close)
     end
   end
 end

@@ -7,10 +7,6 @@ module WS
   end
 
   module ButtonClickable
-    def initialize(tx=0, ty=0, image=nil)
-      super
-    end
-
     def mouse_down(tx, ty, button)
       WS.capture(self)
       super
