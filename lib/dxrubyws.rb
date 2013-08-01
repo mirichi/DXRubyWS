@@ -68,5 +68,10 @@ module WS
   def self.desktop
     @@desktop
   end
+
+  def self.captured?(obj)
+    @@capture == obj
+  end
+
 end
 

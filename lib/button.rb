@@ -43,7 +43,7 @@ module WS
 
     def mouse_move(tx, ty)
       @cursor.x, @cursor.y = tx + self.x, ty + self.y
-      @image_flag = (@button_flag and @cursor === self)
+      @image_flag = (WS.captured?(self) and @cursor === self)
       super
     end
 
