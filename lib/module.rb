@@ -57,10 +57,12 @@ module WS
   module MouseOver
     def mouse_over
       signal(:mouse_over)
+      super
     end
 
     def mouse_out
       signal(:mouse_out)
+      super
     end
   end
 end
