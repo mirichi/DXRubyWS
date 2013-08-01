@@ -38,10 +38,6 @@ module WS
     end
 
     def on_mouse_move(tx, ty)
-      if WS.over_object != self
-        WS.over_object.mouse_out if WS.over_object
-        self.mouse_over
-      end
       self.mouse_move(tx, ty)
       return self
     end

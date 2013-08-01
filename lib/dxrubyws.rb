@@ -27,11 +27,16 @@ module WS
     # マウスカーソルの移動処理
     if oldx != @@cursor.x or oldy != @@cursor.y
       # キャプチャされていたら@@captureのメソッドを呼ぶ
+      old_over_object = @@over_object
       if @@capture
         tx, ty = @@capture.get_global_vertex
         @@over_object = @@capture.on_mouse_move(@@cursor.x - tx, @@cursor.y - ty)
       else
         @@over_object = @@desktop.on_mouse_move(@@cursor.x, @@cursor.y)
+      end
+      if old_over_object != @@over_object
+        old_over_object.mouse_out if old_over_object
+        @@over_object.mouse_over
       end
     end
 
@@ -62,10 +67,6 @@ module WS
 
   def self.desktop
     @@desktop
-  end
-
-  def self.over_object
-    @@over_object
   end
 end
 
