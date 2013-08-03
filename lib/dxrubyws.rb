@@ -30,7 +30,7 @@ module WS
       old_over_object = @@over_object
       if @@capture
         tx, ty = @@capture.get_global_vertex
-        @@over_object = @@capture.on_mouse_move(@@cursor.x - tx, @@cursor.y - ty)
+        @@over_object = @@capture.mouse_move(@@cursor.x - tx, @@cursor.y - ty)
       else
         @@over_object = @@desktop.on_mouse_move(@@cursor.x, @@cursor.y)
       end

@@ -19,6 +19,7 @@ module WS
     end
 
     def mouse_move(tx, ty)
+      return self
     end
 
     def mouse_over
