@@ -100,11 +100,19 @@ module WS
           height += ty - @drag_old_y
         end
 
-        if width > 16 and height > 16
+        if width > 16
           @drag_old_x = tx
-          @drag_old_y = ty
-          signal(:resize_move, x1, y1, width, height)
+        else
+          width = 16
+          x1 = self.x
         end
+        if height > 16
+          @drag_old_y = ty
+        else
+          height = 16
+          y1 = self.y
+        end
+        signal(:resize_move, x1, y1, width, height)
       else
         border_width = @border_width ? @border_width : 2
         @resize_top = ty < border_width
