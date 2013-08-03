@@ -62,10 +62,12 @@ module WS
 
   module Resizable
     def mouse_down(tx, ty, button)
-      WS.capture(self)
-      @drag_old_x = tx
-      @drag_old_y = ty
-      signal(:resize_start)
+      if @resize_top or @resize_left or @resize_right or @resize_bottom
+        WS.capture(self)
+        @drag_old_x = tx
+        @drag_old_y = ty
+        signal(:resize_start)
+      end
       super
     end
 
