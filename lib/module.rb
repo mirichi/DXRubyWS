@@ -79,45 +79,25 @@ module WS
     def mouse_move(tx, ty)
       if WS.captured?(self)
         x1, y1, width, height = self.x, self.y, self.image.width, self.image.height
-        case true
-        when @resize_top
-          case true
-          when @resize_left
-            width += @drag_old_x - tx
-            x1 += tx - @drag_old_x
-            tx -= tx - @drag_old_x
-            height += @drag_old_y - ty
-            y1 += ty - @drag_old_y
-            ty -= ty - @drag_old_y
-          when @resize_right
-            width += tx - @drag_old_x
-            height += @drag_old_y - ty
-            y1 += ty - @drag_old_y
-            ty -= ty - @drag_old_y
-          else
-            height += @drag_old_y - ty
-            y1 += ty - @drag_old_y
-            ty -= ty - @drag_old_y
-          end
-        when @resize_bottom
-          case true
-          when @resize_left
-            width += @drag_old_x - tx
-            x1 += tx - @drag_old_x
-            tx -= tx - @drag_old_x
-            height += ty - @drag_old_y
-          when @resize_right
-            width += tx - @drag_old_x
-            height += ty - @drag_old_y
-          else
-            height += ty - @drag_old_y
-          end
-        when @resize_left
+
+        if @resize_left
           width += @drag_old_x - tx
           x1 += tx - @drag_old_x
           tx -= tx - @drag_old_x
-        when @resize_right
+        end
+
+        if @resize_top
+          height += @drag_old_y - ty
+          y1 += ty - @drag_old_y
+          ty -= ty - @drag_old_y
+        end
+
+        if @resize_right
           width += tx - @drag_old_x
+        end
+
+        if @resize_bottom
+          height += ty - @drag_old_y
         end
 
         if width > 16 and height > 16
