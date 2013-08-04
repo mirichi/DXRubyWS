@@ -566,7 +566,6 @@ module WS
     # サイズ変更したら再描画する
     def resize(*args)
       super
-      Sprite.draw([$etc_objects, $my_shots, $enemies, $enemy_shots])
       @client.image.draw(-$myship.x/5,0,$rt)
     end
 
