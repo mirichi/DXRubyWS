@@ -8,8 +8,26 @@ require_relative './image'
 # ウィンドウシステム
 module WS
   class WSDesktop < WSContainer
+    @@default_z = 10000
+    def self.default_z;@@default_z;end
+    def self.default_z=(v);@@default_z=v;end
+
     def initialize
-      super(0, 0, Window.width, Window.height)
+      self.collision = [0, 0, Window.width, Window.height]
+      @childlen = []
+      @signal = {}
+      @cursor = Sprite.new
+      @cursor.collision = [0,0]
+      @font = @@default_font
+    end
+
+    def add_control(obj)
+      obj.z = @@default_z
+      super
+    end
+
+    def draw
+      Sprite.draw(@childlen)
     end
   end
 
