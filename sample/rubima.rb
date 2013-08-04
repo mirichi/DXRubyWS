@@ -1,4 +1,4 @@
-#!ruby -Ks
+#!ruby -Ku
 # るびまサンプルゲーム
 require 'dxruby'
 require 'ostruct'
