@@ -1,4 +1,4 @@
-﻿require_relative './module.rb'
+require_relative './module.rb'
 
 module WS
   # ウィンドウぽい動きを実現してみる
@@ -78,7 +78,6 @@ module WS
       self.parent.childlen.push(self.parent.childlen.delete(self))
       super
     end
-
   end
 
   # ウィンドウのタイトルバー用クラス
