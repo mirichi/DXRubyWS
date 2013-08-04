@@ -2,10 +2,10 @@ require 'dxruby'
 require_relative '../lib/dxrubyws'
 
 w = WS::WSWindow.new(100,100,300,100)
-b = WS::WSButton.new(10,30,100,20)
-l = WS::WSLabel.new(10,70,100,20)
-w.add_control(b)
-w.add_control(l)
+b = WS::WSButton.new(10,10,100,20)
+l = WS::WSLabel.new(10,50,100,20)
+w.client.add_control(b)
+w.client.add_control(l)
 
 image1 = Image.new(30,30,C_WHITE)
 image2 = Image.new(30,30,C_BLACK)
@@ -16,7 +16,7 @@ end
 i.add_handler(:mouse_out) do |obj|
   obj.image = image1
 end
-w.add_control(i)
+w.client.add_control(i)
 
 WS::desktop.add_control(w)
 

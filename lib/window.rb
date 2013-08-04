@@ -4,20 +4,23 @@ module WS
   # ウィンドウぽい動きを実現してみる
   class WSWindow < WSContainer
     attr_accessor :border_width # ウィンドウボーダーの幅
+    attr_reader   :client       # クライアント領域
     include Resizable
 
     def initialize(tx, ty, sx, sy)
       super(tx, ty, sx, sy)
       self.image.bgcolor = [160,160,160]
       @border_width = 2
+      @client = WSContainer.new(@border_width, @border_width + 16, sx - @border_width * 2, sy - @border_width * 2 - 16)
+      add_control(@client)
 
       # ウィンドウタイトルはそれでひとつのコントロールを作る
+      # メニューやツールバー、ステータスバーもたぶんそうなる
       @window_title = WSWindowTitle.new(@border_width, @border_width, sx - @border_width * 2, 16)
       add_control(@window_title)
       @window_title.add_handler(:close) {self.parent.remove_control(self)}
       @window_title.add_handler(:drag_move, self, :move)
 
-      # 
       add_handler(:resize_move, self, :resize)
 
       # タイトルバーのダブルクリックで最大化する
@@ -51,6 +54,7 @@ module WS
       obj.x, obj.y = x1, y1
       obj.image.resize(width, height)
       @window_title.resize(obj, @border_width, @border_width, width - @border_width * 2, 16)
+      @client.image.resize(width - @border_width * 2, height - @border_width * 2 - 16)
     end
 
     def maximize(obj)
