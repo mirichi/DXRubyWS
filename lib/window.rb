@@ -1,34 +1,28 @@
 ﻿require_relative './module.rb'
 
 module WS
+  # ウィンドウぽい動きを実現してみる
   class WSWindow < WSContainer
-    attr_accessor :border_width
+    attr_accessor :border_width # ウィンドウボーダーの幅
     include Resizable
 
     def initialize(tx, ty, sx, sy)
       super(tx, ty, sx, sy)
       self.image.bgcolor = [160,160,160]
       @border_width = 2
+
+      # ウィンドウタイトルはそれでひとつのコントロールを作る
       @window_title = WSWindowTitle.new(@border_width, @border_width, sx - @border_width * 2, 16)
       add_control(@window_title)
       @window_title.add_handler(:close) {self.parent.remove_control(self)}
       @window_title.add_handler(:drag_move, self, :move)
+
+      # 
       add_handler(:resize_move, self, :resize)
 
+      # タイトルバーのダブルクリックで最大化する
       @maximize_flag = false
-      @window_title.add_handler(:doubleclick) do
-        if @maximize_flag
-          resize(self, @origin_x, @origin_y, @origin_width, @origin_height)
-          @maximize_flag = false
-        else
-          @origin_x = self.x
-          @origin_y = self.y
-          @origin_width = self.image.width
-          @origin_height = self.image.height
-          resize(self, 0 - @border_width, 0 - @border_width, self.target.width + @border_width * 2, self.target.height + @border_width * 2)
-          @maximize_flag = true
-        end
-      end
+      @window_title.add_handler(:doubleclick, self, :maximize)
     end
 
     # RenderTarget#draw_lineは現在バグってて右/下が1ピクセル短くなる。
@@ -59,6 +53,23 @@ module WS
       @window_title.resize(obj, @border_width, @border_width, width - @border_width * 2, 16)
     end
 
+    def maximize(obj)
+      if @maximize_flag
+        # 最大化状態から戻す処理
+        resize(self, @origin_x, @origin_y, @origin_width, @origin_height)
+        @maximize_flag = false
+      else
+        # 最大化する処理
+        @origin_x = self.x
+        @origin_y = self.y
+        @origin_width = self.image.width
+        @origin_height = self.image.height
+        resize(self, 0 - @border_width, 0 - @border_width, self.target.width + @border_width * 2, self.target.height + @border_width * 2)
+        @maximize_flag = true
+      end
+    end
+
+    # マウスのボタンが押されたときに手前に持ってくる処理
     def on_mouse_down(tx, ty, button)
       self.parent.childlen.push(self.parent.childlen.delete(self))
       super
@@ -66,19 +77,22 @@ module WS
 
   end
 
+  # ウィンドウのタイトルバー用クラス
   class WSWindowTitle < WSContainer
-    include Draggable
-    include DoubleClickable
+    include Draggable       # ウィンドウのドラッグ用
+    include DoubleClickable # 最大化用
 
     def initialize(tx, ty, sx, sy, title="Title")
       super(tx, ty, sx, sy)
       self.image.bgcolor = C_BLUE
 
+      # タイトルバーのクロースボタン
       @close_button = WSButton.new(sx-16, 1, sy-2, sy-2, "X")
       @close_button.fore_color = C_BLACK
       add_control(@close_button)
       @close_button.add_handler(:click) {signal(:close)}
 
+      # ウィンドウタイトル
       @label = WSLabel.new(2, 2, sx, sy, title)
       add_control(@label)
     end
