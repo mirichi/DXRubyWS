@@ -102,7 +102,7 @@ module WS
 
     def find_hit_object(tx, ty)
       @cursor.x, @cursor.y = tx, ty
-      @cursor.check(@childlen)[0]
+      @cursor.check(@childlen.reverse)[0]
     end
 
     def on_mouse_down(tx, ty, button)
