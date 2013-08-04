@@ -22,8 +22,9 @@ module WS
     end
 
     def add_control(obj)
-      obj.z = @@default_z
       super
+      obj.z = @@default_z
+      obj.target = Window
     end
 
     def draw
@@ -90,6 +91,4 @@ module WS
   def self.captured?(obj)
     @@capture == obj
   end
-
 end
-
