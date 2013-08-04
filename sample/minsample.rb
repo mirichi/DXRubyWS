@@ -16,9 +16,11 @@ end
 i.add_handler(:mouse_out) do |obj|
   obj.image = image1
 end
-
 w.add_control(i)
 
+WS::desktop.add_control(w)
+
+w = WS::WSWindow.new(400,300,300,100)
 WS::desktop.add_control(w)
 
 Window.loop do
