@@ -16,7 +16,7 @@ module WS
       add_handler(:resize_move, self, :resize)
     end
 
-    # RenderTarget#draw_lineは現在バグってて右/下が1ピクセル短くなる。
+    # RenderTarget#draw_line縺ｯ迴ｾ蝨ｨ繝舌げ縺｣縺ｦ縺ｦ蜿ｳ/荳九′1繝斐け繧ｻ繝ｫ遏ｭ縺上↑繧九�
     def draw
       sx = self.image.width
       sy = self.image.height

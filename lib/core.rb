@@ -1,4 +1,4 @@
-# ウィンドウシステム
+# 繧ｦ繧｣繝ｳ繝峨え繧ｷ繧ｹ繝�繝
 module WS
   class WSControl < Sprite
     attr_accessor :parent, :font

@@ -5,7 +5,7 @@ require_relative './button.rb'
 require_relative './label'
 require_relative './image'
 
-# ƒEƒBƒ“ƒhƒEƒVƒXƒeƒ€
+# ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚·ã‚¹ãƒ†ãƒ 
 module WS
   class WSDesktop < WSContainer
     @@default_z = 10000
@@ -37,14 +37,14 @@ module WS
   @@capture = nil
   @@over_object = nil
 
-  # ƒEƒBƒ“ƒhƒEƒVƒXƒeƒ€‚ÌƒƒCƒ“ˆ—
+  # ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚·ã‚¹ãƒ†ãƒ ã®ãƒ¡ã‚¤ãƒ³å‡¦ç†
   def self.update
     oldx, oldy = @@cursor.x, @@cursor.y
     @@cursor.x, @@cursor.y = Input.mouse_pos_x, Input.mouse_pos_y
 
-    # ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ÌˆÚ“®ˆ—
+    # ãƒžã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã®ç§»å‹•å‡¦ç†
     if oldx != @@cursor.x or oldy != @@cursor.y
-      # ƒLƒƒƒvƒ`ƒƒ‚³‚ê‚Ä‚¢‚½‚ç@@capture‚Ìƒƒ\ƒbƒh‚ðŒÄ‚Ô
+      # ã‚­ãƒ£ãƒ—ãƒãƒ£ã•ã‚Œã¦ã„ãŸã‚‰@@captureã®ãƒ¡ã‚½ãƒƒãƒ‰ã‚’å‘¼ã¶
       old_over_object = @@over_object
       if @@capture
         tx, ty = @@capture.get_global_vertex
@@ -58,13 +58,13 @@ module WS
       end
     end
 
-    # ƒ{ƒ^ƒ“‰Ÿ‚µ‚½
+    # ãƒœã‚¿ãƒ³æŠ¼ã—ãŸ
     if Input.mouse_down?(M_LBUTTON) and @@mouse_flag == false
       @@mouse_flag = true
       @@desktop.on_mouse_down(@@cursor.x, @@cursor.y, M_LBUTTON)
     end
 
-    # ƒ{ƒ^ƒ“—£‚µ‚½BƒLƒƒƒvƒ`ƒƒ‚³‚ê‚Ä‚½‚ç@@capture‚Ìƒƒ\ƒbƒh‚ðŒÄ‚Ô
+    # ãƒœã‚¿ãƒ³é›¢ã—ãŸã€‚ã‚­ãƒ£ãƒ—ãƒãƒ£ã•ã‚Œã¦ãŸã‚‰@@captureã®ãƒ¡ã‚½ãƒƒãƒ‰ã‚’å‘¼ã¶
     if !Input.mouse_down?(M_LBUTTON) and @@mouse_flag == true
       @@mouse_flag = false
       if @@capture
