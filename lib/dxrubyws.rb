@@ -21,7 +21,7 @@ module WS
       @font = @@default_font
     end
 
-    def add_control(obj)
+    def add_control(obj, name=nil)
       super
       obj.z = @@default_z
       obj.target = Window

@@ -80,10 +80,18 @@ module WS
       @childlen = []
     end
 
-    def add_control(obj)
+    def add_control(obj, name=nil)
       obj.target = self.image
       obj.parent = self
       @childlen << obj
+      if name.class == Symbol
+        tmp = class << self;self;end
+        tmp.class_eval do
+          define_method(name) do
+            obj
+          end
+        end
+      end
     end
 
     def remove_control(obj)

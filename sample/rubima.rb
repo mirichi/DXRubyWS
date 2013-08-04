@@ -596,11 +596,11 @@ module WS
       damage_button = WSButton.new(5, 100, 50, 20, "自爆")
       @client.add_control(damage_button)
       damage_button.add_handler(:click) do |obj|
-        if $gamewindow.selected
+        if WS.desktop.gamewindow.selected
           tmp = OpenStruct.new
           tmp.damage = 1000
-          $gamewindow.selected.hit(tmp)
-          $gamewindow.selected = nil
+          WS.desktop.gamewindow.selected.hit(tmp)
+          WS.desktop.gamewindow.selected = nil
           @enemy_image.image = @clear_image
         end
       end
@@ -609,19 +609,19 @@ module WS
       attack_button = WSButton.new(105, 100, 50, 20, "攻撃")
       @client.add_control(attack_button)
       attack_button.add_handler(:click) do |obj|
-        if $gamewindow.selected
-          $gamewindow.selected.fire
+        if WS.desktop.gamewindow.selected
+          WS.desktop.gamewindow.selected.fire
         end
       end
     end
 
     # 敵キャラの状態更新
     def update
-      if $gamewindow.selected
-        @enemy_image.image = $gamewindow.selected.image
-        @label.caption = "HP:#{$gamewindow.selected.hp}"
-        if $gamewindow.selected.hp <= 0
-          $gamewindow.selected = nil
+      if WS.desktop.gamewindow.selected
+        @enemy_image.image = WS.desktop.gamewindow.selected.image
+        @label.caption = "HP:#{WS.desktop.gamewindow.selected.hp}"
+        if WS.desktop.gamewindow.selected.hp <= 0
+          WS.desktop.gamewindow.selected = nil
           @enemy_image.image = @clear_image
         end
       else
@@ -657,10 +657,10 @@ $etc_objects << $myship  # 自機をオブジェクト配列に追加
 $etc_objects << Map.new  # 背景オブジェクト生成＆オブジェクト配列に追加
 
 # ウィンドウシステムのWindowオブジェクト
-$gamewindow = WS::GameWindow.new(50,100,360,480)
-WS::desktop.add_control($gamewindow)
-$detailwindow = WS::DetailWindow.new(450,100,200,200)
-WS::desktop.add_control($detailwindow)
+gamewindow = WS::GameWindow.new(50,100,360,480)
+WS::desktop.add_control(gamewindow, :gamewindow)
+detailwindow = WS::DetailWindow.new(450,100,200,200)
+WS::desktop.add_control(detailwindow, :detailwindow)
 
 # メインループ
 Window.loop do
@@ -697,7 +697,7 @@ Window.loop do
   Sprite.draw([$etc_objects, $my_shots, $enemies, $enemy_shots])
 
   # 描画先はウィンドウシステムのウィンドウオブジェクト
-  $gamewindow.client.image.draw(-$myship.x/5,0,$rt)
+  WS.desktop.gamewindow.client.image.draw(-$myship.x/5,0,$rt)
   WS.update
 
   # Esc キーで終了
@@ -707,4 +707,3 @@ Window.loop do
   Window.draw_font(0, 0, Window.get_load.to_i.to_s + " %", font, :z => 100)
   Window.draw_font(0, 32, [$etc_objects, $my_shots, $enemies, $enemy_shots].flatten.size.to_s + " objects", font, :z => 100)
 end
-
