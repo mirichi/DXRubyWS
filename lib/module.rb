@@ -7,7 +7,7 @@ module WS
   # マウスボタンを押した瞬間に:clickシグナルを発行する
   module Clickable
     def mouse_down(tx, ty, button)
-      signal(:click)
+      signal(:click, tx, ty)
       super
     end
   end
@@ -123,16 +123,16 @@ module WS
           height += ty - @drag_old_y
         end
 
-        if width > 16
+        if width > 32
           @drag_old_x = tx
         else
-          width = 16
+          width = 32
           x1 = self.x
         end
-        if height > 16
+        if height > 32
           @drag_old_y = ty
         else
-          height = 16
+          height = 32
           y1 = self.y
         end
         signal(:resize_move, x1, y1, width, height)
