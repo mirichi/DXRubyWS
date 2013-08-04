@@ -45,6 +45,12 @@ module WS
       obj.image.resize(width, height)
       @window_title.resize(obj, @border_width, @border_width, width - @border_width * 2, 16)
     end
+
+    def on_mouse_down(tx, ty, button)
+      self.parent.childlen.push(self.parent.childlen.delete(self))
+      super
+    end
+
   end
 
   class WSWindowTitle < WSContainer
