@@ -1,4 +1,10 @@
+# Mix-in用のモジュール
+# いずれモジュール単位に分割するかもしれない。
+# どれも結局マウスイベントを拾って判定・処理してシグナル投げるだけなので、
+# ユーザレベルで作れないものはまったくない。
+
 module WS
+  # マウスボタンを押した瞬間に:clickシグナルを発行する
   module Clickable
     def mouse_down(tx, ty, button)
       signal(:click)
@@ -6,6 +12,7 @@ module WS
     end
   end
 
+  # Windowsのボタンのようにマウスボタンを離した瞬間に:clickシグナルを発行する
   module ButtonClickable
     def mouse_down(tx, ty, button)
       WS.capture(self)
@@ -20,6 +27,10 @@ module WS
     end
   end
 
+  # マウスでドラッグしたときに:drag_moveシグナルを発行する
+  # また、ボタン押したら:drag_start、離したら:drag_endを発行する
+  # :drag_moveシグナルの引数は相対座標
+  # インスタンス変数@dragging_flagを使う
   module Draggable
     def initialize(*args)
       super
@@ -48,6 +59,7 @@ module WS
     end
   end
 
+  # オブジェクトにマウスカーソルを乗せたときに:mouse_over、離れたときに:mouse_outシグナルを発行する
   module MouseOver
     def mouse_over
       signal(:mouse_over)
@@ -60,6 +72,11 @@ module WS
     end
   end
 
+  # オブジェクトのボーダーをつかんでサイズ変更したときに:resize_moveシグナルを発行する
+  # また、サイズ変更開始時に:resize_start、終了時に:resize_endシグナルを発行する
+  # マウスカーソルの見た目を変更する機能付き
+  # :resize_moveシグナルの引数は新しい座標とサイズ
+  # インスタンス変数@resize_top/@resize_left/@resize_right/@resize_bottomを使う
   module Resizable
     def mouse_down(tx, ty, button)
       if @resize_top or @resize_left or @resize_right or @resize_bottom
