@@ -173,4 +173,26 @@ module WS
       super
     end
   end
+
+  # ダブルクリックしたときの2回目のボタン押下時に:doubleclickシグナルを発行する
+  # インスタンス変数@doubleclickcout/@doubleclick_x/@doubleclick_yを使う
+  # ダブルクリックの余裕は30フレーム/縦横5pixel以内で固定
+  module DoubleClickable
+    def mouse_down(tx, ty, button)
+      if @doubleclickcount and @doubleclickcount > 0 and
+         (@doubleclick_x - tx).abs < 5 and (@doubleclick_y - ty).abs < 5
+          signal(:doubleclick)
+      else
+        @doubleclickcount = 30
+        @doubleclick_x = tx
+        @doubleclick_y = ty
+      end
+      super
+    end
+
+    def update
+      @doubleclickcount -= 1 if @doubleclickcount and @doubleclickcount > 0
+      super
+    end
+  end
 end
