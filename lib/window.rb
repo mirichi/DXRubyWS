@@ -1,4 +1,4 @@
-require_relative './module.rb'
+﻿require_relative './module.rb'
 
 module WS
   class WSWindow < WSContainer
@@ -11,9 +11,24 @@ module WS
       @border_width = 2
       @window_title = WSWindowTitle.new(@border_width, @border_width, sx - @border_width * 2, 16)
       add_control(@window_title)
-      @window_title.add_handler(:close, self, :close)
+      @window_title.add_handler(:close) {self.parent.remove_control(self)}
       @window_title.add_handler(:drag_move, self, :move)
       add_handler(:resize_move, self, :resize)
+
+      @maximize_flag = false
+      @window_title.add_handler(:doubleclick) do
+        if @maximize_flag
+          resize(self, @origin_x, @origin_y, @origin_width, @origin_height)
+          @maximize_flag = false
+        else
+          @origin_x = self.x
+          @origin_y = self.y
+          @origin_width = self.image.width
+          @origin_height = self.image.height
+          resize(self, 0 - @border_width, 0 - @border_width, self.target.width + @border_width * 2, self.target.height + @border_width * 2)
+          @maximize_flag = true
+        end
+      end
     end
 
     # RenderTarget#draw_lineは現在バグってて右/下が1ピクセル短くなる。
@@ -31,13 +46,11 @@ module WS
       super
     end
 
-    def close(obj)
-      self.parent.remove_control(self)
-    end
-
     def move(obj, dx, dy)
-      self.x += dx
-      self.y += dy
+      unless @maximize_flag
+        self.x += dx
+        self.y += dy
+      end
     end
 
     def resize(obj, x1, y1, width, height)
@@ -55,6 +68,7 @@ module WS
 
   class WSWindowTitle < WSContainer
     include Draggable
+    include DoubleClickable
 
     def initialize(tx, ty, sx, sy, title="Title")
       super(tx, ty, sx, sy)
