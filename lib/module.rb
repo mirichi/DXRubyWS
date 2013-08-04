@@ -40,8 +40,8 @@ module WS
     def mouse_down(tx, ty, button)
       @dragging_flag = true
       WS.capture(self)
-      @drag_old_x = tx
-      @drag_old_y = ty
+      @drag_old_x = Input.mouse_pos_x
+      @drag_old_y = Input.mouse_pos_y
       signal(:drag_start)
       super
     end
@@ -54,7 +54,11 @@ module WS
     end
 
     def mouse_move(tx, ty)
-      signal(:drag_move, tx - @drag_old_x, ty - @drag_old_y) if @dragging_flag
+      if @dragging_flag
+        signal(:drag_move, Input.mouse_pos_x - @drag_old_x, Input.mouse_pos_y - @drag_old_y)
+        @drag_old_x = Input.mouse_pos_x
+        @drag_old_y = Input.mouse_pos_y
+      end
       super
     end
   end
