@@ -540,6 +540,7 @@ end
 
 # ウィンドウシステム用クラス定義
 module WS
+  # ゲームのメインウィンドウ
   class GameWindow < WSWindow
     attr_accessor :selected
     def initialize(*args)
@@ -576,17 +577,23 @@ module WS
     end
   end
 
+  # 敵キャラ詳細ウィンドウ
   class DetailWindow < WSWindow
     attr_accessor :enemy_image
+
     def initialize(*args)
       super
+
+      # 敵の絵を描画するためのWSImageコントロール
       @clear_image = Image.new(48,48)
       @enemy_image = WSImage.new(5, 5, @clear_image)
       @client.add_control(@enemy_image)
 
+      # HPを表示するWSLabelコントロール
       @label = WSLabel.new(5, 70, 100, 16, "HP:")
       @client.add_control(@label)
 
+      # 自爆ボタン
       damage_button = WSButton.new(5, 100, 50, 20, "自爆")
       @client.add_control(damage_button)
       damage_button.add_handler(:click) do |obj|
@@ -599,6 +606,7 @@ module WS
         end
       end
 
+      # 攻撃ボタン
       attack_button = WSButton.new(105, 100, 50, 20, "攻撃")
       @client.add_control(attack_button)
       attack_button.add_handler(:click) do |obj|
@@ -608,6 +616,7 @@ module WS
       end
     end
 
+    # 敵キャラの状態更新
     def update
       if $gamewindow.selected
         @enemy_image.image = $gamewindow.selected.image
