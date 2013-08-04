@@ -1,4 +1,4 @@
-DXRubyWS
+DXRubyWS(DXRuby1.5.2dev用)
 ========
 
 ## 概要
