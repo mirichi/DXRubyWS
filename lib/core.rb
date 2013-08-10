@@ -1,11 +1,12 @@
 # ウィンドウシステム
 module WS
-  class WSControl < Sprite
-    attr_accessor :parent, :font
+  class WSControlBase < Sprite
+    attr_accessor :parent, :font, :width, :height
     @@default_font = Font.new(16)
 
-    def initialize(x=0, y=0, image=nil)
-      super
+    def initialize(tx, ty, width, height)
+      super(tx, ty)
+      @width, @height = width, height
       @signal = {}
       @cursor = Sprite.new
       @cursor.collision = [0,0]
@@ -72,11 +73,12 @@ module WS
     end
   end
 
-  class WSContainer < WSControl
+  class WSControl < WSControlBase
     attr_accessor :childlen
 
-    def initialize(tx, ty, sx, sy)
-      super(tx, ty, RenderTarget.new(sx, sy))
+    def initialize(tx, ty, width, height)
+      super(tx, ty, width, height)
+      self.image = RenderTarget.new(width, height)
       @childlen = []
     end
 

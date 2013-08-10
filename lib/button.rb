@@ -7,7 +7,7 @@ module WS
     include ButtonClickable
 
     def initialize(tx, ty, sx, sy, caption = "Button")
-      super(tx, ty)
+      super(tx, ty, sx, sy)
       @image = {}
       @image[false] = Image.new(sx, sy, [160,160,160])
                      .line(0,0,sx-1,0,[240,240,240])

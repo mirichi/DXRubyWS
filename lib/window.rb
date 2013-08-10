@@ -2,7 +2,7 @@ require_relative './module.rb'
 
 module WS
   # ウィンドウぽい動きを実現してみる
-  class WSWindow < WSContainer
+  class WSWindow < WSControl
     attr_accessor :border_width # ウィンドウボーダーの幅
     attr_reader   :client       # クライアント領域
     include Resizable
@@ -11,7 +11,7 @@ module WS
       super(tx, ty, sx, sy)
       self.image.bgcolor = [160,160,160]
       @border_width = 2
-      @client = WSContainer.new(@border_width, @border_width + 16, sx - @border_width * 2, sy - @border_width * 2 - 16)
+      @client = WSControl.new(@border_width, @border_width + 16, sx - @border_width * 2, sy - @border_width * 2 - 16)
       add_control(@client)
 
       # ウィンドウタイトルはそれでひとつのコントロールを作る
@@ -81,7 +81,7 @@ module WS
   end
 
   # ウィンドウのタイトルバー用クラス
-  class WSWindowTitle < WSContainer
+  class WSWindowTitle < WSControl
     include Draggable       # ウィンドウのドラッグ用
     include DoubleClickable # 最大化用
 
