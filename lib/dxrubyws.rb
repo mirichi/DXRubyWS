@@ -8,80 +8,76 @@ require_relative './image'
 # ウィンドウシステム
 module WS
   class WSDesktop < WSContainer
-    @@default_z = 10000
-    def self.default_z;@@default_z;end
-    def self.default_z=(v);@@default_z=v;end
-
+    attr_accessor :capture_object
     def initialize
-      self.collision = [0, 0, Window.width, Window.height]
+      self.collision = [0, 0, Window.width - 1, Window.height - 1]
       @childlen = []
       @signal = {}
       @cursor = Sprite.new
       @cursor.collision = [0,0]
       @font = @@default_font
+      @mouse_flag = false
+      @capture_object = nil
+      @over_object = nil
     end
 
     def add_control(obj, name=nil)
       super
-      obj.z = @@default_z
+      obj.z = WS.default_z
       obj.target = Window
     end
 
-    def draw
-      Sprite.draw(@childlen)
+    def update
+      oldx, oldy = @cursor.x, @cursor.y
+      @cursor.x, @cursor.y = Input.mouse_pos_x, Input.mouse_pos_y
+  
+      # マウスカーソルの移動処理
+      if oldx != @cursor.x or oldy != @cursor.y
+        # キャプチャされていたら@captureのメソッドを呼ぶ
+        old_over_object = @over_object
+        if @capture_object
+          tx, ty = @capture_object.get_global_vertex
+          @over_object = @capture_object.mouse_move(@cursor.x - tx, @cursor.y - ty)
+        else
+          @over_object = self.on_mouse_move(@cursor.x, @cursor.y)
+        end
+        if old_over_object != @over_object
+          old_over_object.mouse_out if old_over_object
+          @over_object.mouse_over
+        end
+      end
+  
+      # ボタン押した
+      if Input.mouse_down?(M_LBUTTON) and @mouse_flag == false
+        @mouse_flag = true
+        self.on_mouse_down(@cursor.x, @cursor.y, M_LBUTTON)
+      end
+  
+      # ボタン離した。キャプチャされてたら@@captureのメソッドを呼ぶ
+      if !Input.mouse_down?(M_LBUTTON) and @mouse_flag == true
+        @mouse_flag = false
+        if @capture_object
+          tx, ty = @capture_object.get_global_vertex
+          @capture_object.on_mouse_up(@cursor.x - tx, @cursor.y - ty, M_LBUTTON)
+        else
+          self.on_mouse_up(@cursor.x, @cursor.y, M_LBUTTON)
+        end
+      end
+
+      super
     end
   end
 
   @@desktop = WSDesktop.new
-  @@cursor = Sprite.new
-  @@mouse_flag = false
-  @@capture = nil
-  @@over_object = nil
 
   # ウィンドウシステムのメイン処理
   def self.update
-    oldx, oldy = @@cursor.x, @@cursor.y
-    @@cursor.x, @@cursor.y = Input.mouse_pos_x, Input.mouse_pos_y
-
-    # マウスカーソルの移動処理
-    if oldx != @@cursor.x or oldy != @@cursor.y
-      # キャプチャされていたら@@captureのメソッドを呼ぶ
-      old_over_object = @@over_object
-      if @@capture
-        tx, ty = @@capture.get_global_vertex
-        @@over_object = @@capture.mouse_move(@@cursor.x - tx, @@cursor.y - ty)
-      else
-        @@over_object = @@desktop.on_mouse_move(@@cursor.x, @@cursor.y)
-      end
-      if old_over_object != @@over_object
-        old_over_object.mouse_out if old_over_object
-        @@over_object.mouse_over
-      end
-    end
-
-    # ボタン押した
-    if Input.mouse_down?(M_LBUTTON) and @@mouse_flag == false
-      @@mouse_flag = true
-      @@desktop.on_mouse_down(@@cursor.x, @@cursor.y, M_LBUTTON)
-    end
-
-    # ボタン離した。キャプチャされてたら@@captureのメソッドを呼ぶ
-    if !Input.mouse_down?(M_LBUTTON) and @@mouse_flag == true
-      @@mouse_flag = false
-      if @@capture
-        tx, ty = @@capture.get_global_vertex
-        @@capture.on_mouse_up(@@cursor.x - tx, @@cursor.y - ty, M_LBUTTON)
-      else
-        @@desktop.on_mouse_up(@@cursor.x, @@cursor.y, M_LBUTTON)
-      end
-    end
-
-    Sprite.update @@desktop
-    Sprite.draw @@desktop
+    @@desktop.update
+    @@desktop.draw
   end
 
   def self.capture(obj)
-    @@capture = obj
+    @@desktop.capture_object = obj
   end
 
   def self.desktop
@@ -89,6 +85,10 @@ module WS
   end
 
   def self.captured?(obj)
-    @@capture == obj
+    @@desktop.capture_object == obj
   end
+
+  @@default_z = 10000
+  def self.default_z;@@default_z;end
+  def self.default_z=(v);@@default_z=v;end
 end
