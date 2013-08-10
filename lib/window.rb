@@ -28,7 +28,6 @@ module WS
       @window_title.add_handler(:doubleclick, self, :maximize)
     end
 
-    # RenderTarget#draw_lineは現在バグってて右/下が1ピクセル短くなる。
     def draw
       sx = self.image.width
       sy = self.image.height

@@ -53,7 +53,7 @@ module WS
         self.on_mouse_down(@cursor.x, @cursor.y, M_LBUTTON)
       end
   
-      # ボタン離した。キャプチャされてたら@@captureのメソッドを呼ぶ
+      # ボタン離した。キャプチャされてたら@captureのメソッドを呼ぶ
       if !Input.mouse_down?(M_LBUTTON) and @mouse_flag == true
         @mouse_flag = false
         if @capture_object
