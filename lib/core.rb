@@ -1,6 +1,6 @@
 # ウィンドウシステム
 module WS
-  class WSControlBase < Sprite
+  class WSControl < Sprite
     attr_accessor :parent, :font, :width, :height
     @@default_font = Font.new(16)
 
@@ -73,7 +73,7 @@ module WS
     end
   end
 
-  class WSControl < WSControlBase
+  class WSContainer < WSControl
     attr_accessor :childlen
 
     def initialize(tx, ty, width, height)

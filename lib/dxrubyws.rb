@@ -7,7 +7,7 @@ require_relative './image'
 
 # ウィンドウシステム
 module WS
-  class WSDesktop < WSControl
+  class WSDesktop < WSContainer
     @@default_z = 10000
     def self.default_z;@@default_z;end
     def self.default_z=(v);@@default_z=v;end

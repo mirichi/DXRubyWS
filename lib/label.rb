@@ -1,5 +1,5 @@
 module WS
-  class WSLabel < WSControlBase
+  class WSLabel < WSControl
     attr_accessor :caption
     def initialize(tx, ty, width, height, caption = "Label")
       super(tx, ty, width, height)
