@@ -577,47 +577,39 @@ module WS
       windowimage = Image.new(Window.width, Window.height)
                          .roundbox_fill(50, 100, 309, 379, 20, C_WHITE)
                          .roundbox_fill(55, 105, 304, 374, 16, C_BLACK)
-      add_control(WSImage.new(0, 0, windowimage))
+      wsimage = WSImage.new(0, 0, Window.width, Window.height)
+      wsimage.image = windowimage
+      add_control(wsimage)
 
-      image = Image.new(200, 32).box_fill(0,0,199,31,C_GREEN).box_fill(3,3,196,28,[0,0,0,0])
-      add_control(WSImage.new(80, 210, image), :sel2)
-      add_control(WSImage.new(80, 270, image), :sel3)
-      self.sel2.visible = false
-      self.sel2.collision_enable = false
-      self.sel3.visible = false
-      self.sel3.collision_enable = false
+      # セレクタ
+      wsimage = WSImage.new(80, 210, 200, 32)
+      wsimage.image = Image.new(200, 32).box_fill(0,0,199,31,C_GREEN).box_fill(3,3,196,28,[0,0,0,0])
+      wsimage.visible = false
+      add_control(wsimage, :sel2)
 
+      wsimage = WSImage.new(80, 270, 200, 32)
+      wsimage.image = self.sel2.image
+      wsimage.visible = false
+      add_control(wsimage, :sel3)
+
+      # メッセージ
       font = Font.new(32)
-      mes1 = Image.new(200, 32).draw_font_ex(0, 0, "もうおわる？", font, :edge=>true, :edge_color=>C_CYAN)
-      mes2 = Image.new(200, 32).draw_font_ex(70, 0, "うん", font, :edge=>true, :edge_color=>C_YELLOW)
-      mes3 = Image.new(200, 32).draw_font_ex(70, 0, "やだ", font, :edge=>true, :edge_color=>C_RED)
+      wsimage = WSImage.new(100, 150, 200, 32)
+      wsimage.image = Image.new(200, 32).draw_font_ex(0, 0, "もうおわる？", font, :edge=>true, :edge_color=>C_CYAN)
+      add_control(wsimage, :mes1)
+      wsimage = WSImage.new(80, 210, 200, 32)
+      wsimage.image = Image.new(200, 32).draw_font_ex(70, 0, "うん", font, :edge=>true, :edge_color=>C_YELLOW)
+      add_control(wsimage, :mes2)
+      wsimage = WSImage.new(80, 270, 200, 32)
+      wsimage.image = Image.new(200, 32).draw_font_ex(70, 0, "やだ", font, :edge=>true, :edge_color=>C_RED)
+      add_control(wsimage, :mes3)
 
-      add_control(WSImage.new(100, 150, mes1))
-      add_control(WSImage.new(80, 210, mes2), :mes2)
-      add_control(WSImage.new(80, 270, mes3), :mes3)
-
-      self.mes2.add_handler(:click) do
-        exit
-      end
-      self.mes2.add_handler(:mouse_over) do
-        sel2.visible = true
-        sel2.collision_enable = true
-      end
-      self.mes2.add_handler(:mouse_out) do
-        sel2.visible = false
-        sel2.collision_enable = false
-      end
-      self.mes3.add_handler(:click) do
-        $menu_flag = false
-      end
-      self.mes3.add_handler(:mouse_over) do
-        sel3.visible = true
-        sel3.collision_enable = true
-      end
-      self.mes3.add_handler(:mouse_out) do
-        sel3.visible = false
-        sel3.collision_enable = false
-      end
+      self.mes2.add_handler(:click){exit}
+      self.mes2.add_handler(:mouse_over){self.sel2.visible = true}
+      self.mes2.add_handler(:mouse_out){self.sel2.visible = false}
+      self.mes3.add_handler(:click){$menu_flag = false}
+      self.mes3.add_handler(:mouse_over){self.sel3.visible = true}
+      self.mes3.add_handler(:mouse_out){self.sel3.visible = false}
     end
   end
 end
