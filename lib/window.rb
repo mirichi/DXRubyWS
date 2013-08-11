@@ -50,10 +50,11 @@ module WS
     end
 
     def resize(obj, x1, y1, width, height)
-      obj.x, obj.y = x1, y1
-      obj.image.resize(width, height)
-      @window_title.resize(obj, @border_width, @border_width, width - @border_width * 2, 16)
+      self.x, self.y = x1, y1
+      self.image.resize(width, height)
+      @window_title.resize(self, @border_width, @border_width, width - @border_width * 2, 16)
       @client.image.resize(width - @border_width * 2, height - @border_width * 2 - 16)
+      self.collision = [0, 0, width - 1, height - 1]
     end
 
     def maximize(obj)
@@ -103,6 +104,7 @@ module WS
       self.x, self.y = x1, y1
       self.image.resize(width, height)
       @close_button.x = width - 16
+      self.collision = [0, 0, width - 1, height - 1]
     end
   end
 end

@@ -7,6 +7,7 @@ module WS
     def initialize(tx, ty, width, height)
       super(tx, ty)
       @width, @height = width, height
+      self.collision = [0, 0, width - 1, height - 1]
       @signal = {}
       @cursor = Sprite.new
       @cursor.collision = [0,0]
