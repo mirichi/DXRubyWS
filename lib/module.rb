@@ -40,8 +40,8 @@ module WS
     def on_mouse_down(tx, ty, button)
       @dragging_flag = true
       WS.capture(self)
-      @drag_old_x = Input.mouse_pos_x
-      @drag_old_y = Input.mouse_pos_y
+      @drag_old_x = tx
+      @drag_old_y = ty
       signal(:drag_start)
       super
     end
@@ -54,11 +54,7 @@ module WS
     end
 
     def on_mouse_move(tx, ty)
-      if @dragging_flag
-        signal(:drag_move, Input.mouse_pos_x - @drag_old_x, Input.mouse_pos_y - @drag_old_y)
-        @drag_old_x = Input.mouse_pos_x
-        @drag_old_y = Input.mouse_pos_y
-      end
+      signal(:drag_move, tx - @drag_old_x, ty - @drag_old_y) if @dragging_flag
       super
     end
   end
@@ -196,6 +192,39 @@ module WS
 
     def update
       @doubleclickcount -= 1 if @doubleclickcount and @doubleclickcount > 0
+      super
+    end
+  end
+
+  # スクロールバーのボタンのようにオートリピートで:clickシグナルを発行し続ける
+  # このシグナルはupdate時に発生する
+  module RepeatClickable
+    def initialize(*args)
+      super
+      @downcount = 0
+    end
+    def on_mouse_down(tx, ty, button)
+      WS.capture(self)
+      @downcount = 20
+      super
+      signal(:click)
+    end
+
+    def on_mouse_up(tx, ty, button)
+      WS.capture(nil)
+      @cursor.x, @cursor.y = tx + self.x, ty + self.y
+      @downcount = 0
+      super
+    end
+
+    def update
+      if @downcount > 0
+        @downcount -= 1
+        if @downcount == 0
+          @downcount = 5
+          signal(:click)
+        end
+      end
       super
     end
   end
