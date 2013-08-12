@@ -19,13 +19,13 @@ module WS
       @window_title = WSWindowTitle.new(@border_width, @border_width, sx - @border_width * 2, 16)
       add_control(@window_title)
       @window_title.add_handler(:close) {self.parent.remove_control(self)}
-      @window_title.add_handler(:drag_move, self, :move)
+      @window_title.add_handler(:drag_move, self, :on_move)
 
-      add_handler(:resize_move, self, :resize)
+      add_handler(:resize_move, self, :on_resize)
 
       # タイトルバーのダブルクリックで最大化する
       @maximize_flag = false
-      @window_title.add_handler(:doubleclick, self, :maximize)
+      @window_title.add_handler(:doubleclick, self, :on_maximize)
     end
 
     def draw
@@ -42,25 +42,25 @@ module WS
       super
     end
 
-    def move(obj, dx, dy)
+    def on_move(obj, dx, dy)
       unless @maximize_flag
         self.x += dx
         self.y += dy
       end
     end
 
-    def resize(obj, x1, y1, width, height)
+    def on_resize(obj, x1, y1, width, height)
       self.x, self.y = x1, y1
       self.image.resize(width, height)
-      @window_title.resize(self, @border_width, @border_width, width - @border_width * 2, 16)
+      @window_title.on_resize(self, @border_width, @border_width, width - @border_width * 2, 16)
       @client.image.resize(width - @border_width * 2, height - @border_width * 2 - 16)
       self.collision = [0, 0, width - 1, height - 1]
     end
 
-    def maximize(obj)
+    def on_maximize(obj)
       if @maximize_flag
         # 最大化状態から戻す処理
-        resize(self, @origin_x, @origin_y, @origin_width, @origin_height)
+        on_resize(self, @origin_x, @origin_y, @origin_width, @origin_height)
         @maximize_flag = false
       else
         # 最大化する処理
@@ -68,13 +68,13 @@ module WS
         @origin_y = self.y
         @origin_width = self.image.width
         @origin_height = self.image.height
-        resize(self, 0 - @border_width, 0 - @border_width, self.target.width + @border_width * 2, self.target.height + @border_width * 2)
+        on_resize(self, 0 - @border_width, 0 - @border_width, self.target.width + @border_width * 2, self.target.height + @border_width * 2)
         @maximize_flag = true
       end
     end
 
-    # マウスのボタンが押されたときに手前に持ってくる処理
-    def on_mouse_down(tx, ty, button)
+    # マウスのボタンが押されたときに手前に持ってくる処理(ちょっとアレな手)
+    def on_mouse_down_internal(tx, ty, button)
       self.parent.childlen.push(self.parent.childlen.delete(self))
       super
     end
@@ -100,7 +100,7 @@ module WS
       add_control(@label)
     end
 
-    def resize(obj, x1, y1, width, height)
+    def on_resize(obj, x1, y1, width, height)
       self.x, self.y = x1, y1
       self.image.resize(width, height)
       @close_button.x = width - 16

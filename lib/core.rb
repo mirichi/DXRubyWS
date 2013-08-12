@@ -14,34 +14,34 @@ module WS
       @font = @@default_font
     end
 
-    def mouse_down(tx, ty, button)
-    end
-
-    def mouse_up(tx, ty, button)
-    end
-
-    def mouse_move(tx, ty)
-      return self
-    end
-
-    def mouse_over
-    end
-
-    def mouse_out
-    end
-
     def on_mouse_down(tx, ty, button)
-      self.mouse_down(tx, ty, button)
-      return self
     end
 
     def on_mouse_up(tx, ty, button)
-      self.mouse_up(tx, ty, button)
-      return self
     end
 
     def on_mouse_move(tx, ty)
-      self.mouse_move(tx, ty)
+      return self
+    end
+
+    def on_mouse_over
+    end
+
+    def on_mouse_out
+    end
+
+    def on_mouse_down_internal(tx, ty, button)
+      self.on_mouse_down(tx, ty, button)
+      return self
+    end
+
+    def on_mouse_up_internal(tx, ty, button)
+      self.on_mouse_up(tx, ty, button)
+      return self
+    end
+
+    def on_mouse_move_internal(tx, ty)
+      self.on_mouse_move(tx, ty)
       return self
     end
 
@@ -116,28 +116,28 @@ module WS
       @cursor.check(@childlen.reverse)[0]
     end
 
-    def on_mouse_down(tx, ty, button)
+    def on_mouse_down_internal(tx, ty, button)
       ctl = find_hit_object(tx, ty)
       if ctl
-        ctl.on_mouse_down(tx - ctl.x, ty - ctl.y, button)
+        ctl.on_mouse_down_internal(tx - ctl.x, ty - ctl.y, button)
       else
         super
       end
     end
 
-    def on_mouse_up(tx, ty, button)
+    def on_mouse_up_internal(tx, ty, button)
       ctl = find_hit_object(tx, ty)
       if ctl
-        ctl.on_mouse_up(tx - ctl.x, ty - ctl.y, button)
+        ctl.on_mouse_up_internal(tx - ctl.x, ty - ctl.y, button)
       else
         super
       end
     end
 
-    def on_mouse_move(tx, ty)
+    def on_mouse_move_internal(tx, ty)
       ctl = find_hit_object(tx, ty)
       if ctl
-        ctl.on_mouse_move(tx - ctl.x, ty - ctl.y)
+        ctl.on_mouse_move_internal(tx - ctl.x, ty - ctl.y)
       else
         super
       end

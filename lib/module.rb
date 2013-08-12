@@ -6,7 +6,7 @@
 module WS
   # マウスボタンを押した瞬間に:clickシグナルを発行する
   module Clickable
-    def mouse_down(tx, ty, button)
+    def on_mouse_down(tx, ty, button)
       signal(:click, tx, ty)
       super
     end
@@ -14,12 +14,12 @@ module WS
 
   # Windowsのボタンのようにマウスボタンを離した瞬間に:clickシグナルを発行する
   module ButtonClickable
-    def mouse_down(tx, ty, button)
+    def on_mouse_down(tx, ty, button)
       WS.capture(self)
       super
     end
 
-    def mouse_up(tx, ty, button)
+    def on_mouse_up(tx, ty, button)
       WS.capture(nil)
       @cursor.x, @cursor.y = tx + self.x, ty + self.y
       signal(:click) if @cursor === self
@@ -37,7 +37,7 @@ module WS
       @dragging_flag = false
     end
 
-    def mouse_down(tx, ty, button)
+    def on_mouse_down(tx, ty, button)
       @dragging_flag = true
       WS.capture(self)
       @drag_old_x = Input.mouse_pos_x
@@ -46,14 +46,14 @@ module WS
       super
     end
 
-    def mouse_up(tx, ty, button)
+    def on_mouse_up(tx, ty, button)
       @dragging_flag = false
       WS.capture(nil)
       signal(:drag_end)
       super
     end
 
-    def mouse_move(tx, ty)
+    def on_mouse_move(tx, ty)
       if @dragging_flag
         signal(:drag_move, Input.mouse_pos_x - @drag_old_x, Input.mouse_pos_y - @drag_old_y)
         @drag_old_x = Input.mouse_pos_x
@@ -65,12 +65,12 @@ module WS
 
   # オブジェクトにマウスカーソルを乗せたときに:mouse_over、離れたときに:mouse_outシグナルを発行する
   module MouseOver
-    def mouse_over
+    def on_mouse_over
       signal(:mouse_over)
       super
     end
 
-    def mouse_out
+    def on_mouse_out
       signal(:mouse_out)
       super
     end
@@ -82,7 +82,7 @@ module WS
   # :resize_moveシグナルの引数は新しい座標とサイズ
   # インスタンス変数@resize_top/@resize_left/@resize_right/@resize_bottomを使う
   module Resizable
-    def mouse_down(tx, ty, button)
+    def on_mouse_down(tx, ty, button)
       if @resize_top or @resize_left or @resize_right or @resize_bottom
         WS.capture(self)
         @drag_old_x = tx
@@ -92,14 +92,14 @@ module WS
       super
     end
 
-    def mouse_up(tx, ty, button)
+    def on_mouse_up(tx, ty, button)
       WS.capture(nil)
       Input.set_cursor(IDC_ARROW)
       signal(:resize_end)
       super
     end
 
-    def mouse_move(tx, ty)
+    def on_mouse_move(tx, ty)
       if WS.captured?(self)
         x1, y1, width, height = self.x, self.y, self.image.width, self.image.height
 
@@ -172,7 +172,7 @@ module WS
       super
     end
 
-    def mouse_out
+    def on_mouse_out
       Input.set_cursor(IDC_ARROW)
       super
     end
@@ -182,7 +182,7 @@ module WS
   # インスタンス変数@doubleclickcout/@doubleclick_x/@doubleclick_yを使う
   # ダブルクリックの余裕は30フレーム/縦横5pixel以内で固定
   module DoubleClickable
-    def mouse_down(tx, ty, button)
+    def on_mouse_down(tx, ty, button)
       if @doubleclickcount and @doubleclickcount > 0 and
          (@doubleclick_x - tx).abs < 5 and (@doubleclick_y - ty).abs < 5
           signal(:doubleclick)

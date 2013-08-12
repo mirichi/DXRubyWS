@@ -37,20 +37,20 @@ module WS
         old_over_object = @over_object
         if @capture_object
           tx, ty = @capture_object.get_global_vertex
-          @over_object = @capture_object.mouse_move(@cursor.x - tx, @cursor.y - ty)
+          @over_object = @capture_object.on_mouse_move(@cursor.x - tx, @cursor.y - ty)
         else
-          @over_object = self.on_mouse_move(@cursor.x, @cursor.y)
+          @over_object = self.on_mouse_move_internal(@cursor.x, @cursor.y)
         end
         if old_over_object != @over_object
-          old_over_object.mouse_out if old_over_object
-          @over_object.mouse_over
+          old_over_object.on_mouse_out if old_over_object
+          @over_object.on_mouse_over
         end
       end
   
       # ボタン押した
       if Input.mouse_down?(M_LBUTTON) and @mouse_flag == false
         @mouse_flag = true
-        self.on_mouse_down(@cursor.x, @cursor.y, M_LBUTTON)
+        self.on_mouse_down_internal(@cursor.x, @cursor.y, M_LBUTTON)
       end
   
       # ボタン離した。キャプチャされてたら@captureのメソッドを呼ぶ
@@ -60,7 +60,7 @@ module WS
           tx, ty = @capture_object.get_global_vertex
           @capture_object.on_mouse_up(@cursor.x - tx, @cursor.y - ty, M_LBUTTON)
         else
-          self.on_mouse_up(@cursor.x, @cursor.y, M_LBUTTON)
+          self.on_mouse_up_internal(@cursor.x, @cursor.y, M_LBUTTON)
         end
       end
 

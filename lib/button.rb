@@ -31,17 +31,17 @@ module WS
       @caption = caption
     end
 
-    def mouse_down(tx, ty, button)
+    def on_mouse_down(tx, ty, button)
       @image_flag = true
       super
     end
 
-    def mouse_up(tx, ty, button)
+    def on_mouse_up(tx, ty, button)
       @image_flag = false
       super
     end
 
-    def mouse_move(tx, ty)
+    def on_mouse_move(tx, ty)
       @cursor.x, @cursor.y = tx + self.x, ty + self.y
       @image_flag = (WS.captured?(self) and @cursor === self)
       super
