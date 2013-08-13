@@ -4,6 +4,7 @@ require_relative './window'
 require_relative './button.rb'
 require_relative './label'
 require_relative './image'
+require_relative './listbox'
 
 # ウィンドウシステム
 module WS
@@ -13,8 +14,8 @@ module WS
       self.collision = [0, 0, Window.width - 1, Window.height - 1]
       @childlen = []
       @signal = {}
-      @cursor = Sprite.new
-      @cursor.collision = [0,0]
+      @hit_cursor = Sprite.new
+      @hit_cursor.collision = [0,0]
       @font = @@default_font
       @mouse_flag = false
       @capture_object = nil
@@ -28,18 +29,18 @@ module WS
     end
 
     def update
-      oldx, oldy = @cursor.x, @cursor.y
-      @cursor.x, @cursor.y = Input.mouse_pos_x, Input.mouse_pos_y
+      oldx, oldy = @hit_cursor.x, @hit_cursor.y
+      @hit_cursor.x, @hit_cursor.y = Input.mouse_pos_x, Input.mouse_pos_y
   
       # マウスカーソルの移動処理
-      if oldx != @cursor.x or oldy != @cursor.y
+      if oldx != @hit_cursor.x or oldy != @hit_cursor.y
         # キャプチャされていたら@captureのメソッドを呼ぶ
         old_over_object = @over_object
         if @capture_object
           tx, ty = @capture_object.get_global_vertex
-          @over_object = @capture_object.on_mouse_move(@cursor.x - tx, @cursor.y - ty)
+          @over_object = @capture_object.on_mouse_move(@hit_cursor.x - tx, @hit_cursor.y - ty)
         else
-          @over_object = self.on_mouse_move_internal(@cursor.x, @cursor.y)
+          @over_object = self.on_mouse_move_internal(@hit_cursor.x, @hit_cursor.y)
         end
         if old_over_object != @over_object
           old_over_object.on_mouse_out if old_over_object
@@ -50,7 +51,7 @@ module WS
       # ボタン押した
       if Input.mouse_down?(M_LBUTTON) and @mouse_flag == false
         @mouse_flag = true
-        self.on_mouse_down_internal(@cursor.x, @cursor.y, M_LBUTTON)
+        self.on_mouse_down_internal(@hit_cursor.x, @hit_cursor.y, M_LBUTTON)
       end
   
       # ボタン離した。キャプチャされてたら@captureのメソッドを呼ぶ
@@ -58,9 +59,9 @@ module WS
         @mouse_flag = false
         if @capture_object
           tx, ty = @capture_object.get_global_vertex
-          @capture_object.on_mouse_up(@cursor.x - tx, @cursor.y - ty, M_LBUTTON)
+          @capture_object.on_mouse_up(@hit_cursor.x - tx, @hit_cursor.y - ty, M_LBUTTON)
         else
-          self.on_mouse_up_internal(@cursor.x, @cursor.y, M_LBUTTON)
+          self.on_mouse_up_internal(@hit_cursor.x, @hit_cursor.y, M_LBUTTON)
         end
       end
 

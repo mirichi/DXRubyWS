@@ -42,8 +42,8 @@ module WS
     end
 
     def on_mouse_move(tx, ty)
-      @cursor.x, @cursor.y = tx + self.x, ty + self.y
-      @image_flag = (WS.captured?(self) and @cursor === self)
+      @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
+      @image_flag = (WS.captured?(self) and @hit_cursor === self)
       super
     end
 

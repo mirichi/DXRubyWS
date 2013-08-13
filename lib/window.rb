@@ -4,19 +4,18 @@ module WS
   # ウィンドウぽい動きを実現してみる
   class WSWindow < WSContainer
     attr_accessor :border_width # ウィンドウボーダーの幅
-    attr_reader   :client       # クライアント領域
     include Resizable
 
-    def initialize(tx, ty, sx, sy)
+    def initialize(tx, ty, sx, sy, caption = "WindowTitle")
       super(tx, ty, sx, sy)
       self.image.bgcolor = [160,160,160]
       @border_width = 2
       @client = WSContainer.new(@border_width, @border_width + 16, sx - @border_width * 2, sy - @border_width * 2 - 16)
-      add_control(@client)
+      add_control(@client, :client)
 
       # ウィンドウタイトルはそれでひとつのコントロールを作る
       # メニューやツールバー、ステータスバーもたぶんそうなる
-      @window_title = WSWindowTitle.new(@border_width, @border_width, sx - @border_width * 2, 16)
+      @window_title = WSWindowTitle.new(@border_width, @border_width, sx - @border_width * 2, 16, caption)
       add_control(@window_title)
       @window_title.add_handler(:close) {self.parent.remove_control(self)}
       @window_title.add_handler(:drag_move, self, :on_move)

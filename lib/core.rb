@@ -9,8 +9,8 @@ module WS
       @width, @height = width, height
       self.collision = [0, 0, width - 1, height - 1]
       @signal = {}
-      @cursor = Sprite.new
-      @cursor.collision = [0,0]
+      @hit_cursor = Sprite.new
+      @hit_cursor.collision = [0,0]
       @font = @@default_font
     end
 
@@ -112,8 +112,8 @@ module WS
     end
 
     def find_hit_object(tx, ty)
-      @cursor.x, @cursor.y = tx, ty
-      @cursor.check(@childlen.reverse)[0]
+      @hit_cursor.x, @hit_cursor.y = tx, ty
+      @hit_cursor.check(@childlen.reverse)[0]
     end
 
     def on_mouse_down_internal(tx, ty, button)

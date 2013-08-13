@@ -21,8 +21,8 @@ module WS
 
     def on_mouse_up(tx, ty, button)
       WS.capture(nil)
-      @cursor.x, @cursor.y = tx + self.x, ty + self.y
-      signal(:click) if @cursor === self
+      @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
+      signal(:click, tx, ty) if @hit_cursor === self
       super
     end
   end
@@ -204,16 +204,22 @@ module WS
       @downcount = 0
     end
     def on_mouse_down(tx, ty, button)
+      @old_tx, @old_ty = tx, ty
       WS.capture(self)
       @downcount = 20
       super
-      signal(:click)
+      signal(:click, tx, ty)
     end
 
     def on_mouse_up(tx, ty, button)
       WS.capture(nil)
-      @cursor.x, @cursor.y = tx + self.x, ty + self.y
       @downcount = 0
+      super
+    end
+
+    def on_mouse_move(tx, ty)
+      @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
+      @image_flag = (WS.captured?(self) and @hit_cursor === self)
       super
     end
 
@@ -222,7 +228,7 @@ module WS
         @downcount -= 1
         if @downcount == 0
           @downcount = 5
-          signal(:click)
+          signal(:click, @old_tx, @old_ty)
         end
       end
       super
