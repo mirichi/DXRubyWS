@@ -72,6 +72,10 @@ module WS
       tx, ty = self.parent.get_global_vertex
       [self.x + tx, self.y + ty]
     end
+
+    def resize(x, y, width, height)
+      self.x, self.y, @width, @height = x, y, width, height
+    end
   end
 
   class WSContainer < WSControl

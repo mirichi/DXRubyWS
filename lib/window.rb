@@ -20,7 +20,7 @@ module WS
       @window_title.add_handler(:close) {self.parent.remove_control(self)}
       @window_title.add_handler(:drag_move, self, :on_move)
 
-      add_handler(:resize_move, self, :on_resize)
+#      add_handler(:resize_move, self, :on_resize)
 
       # タイトルバーのダブルクリックで最大化する
       @maximize_flag = false
@@ -41,6 +41,14 @@ module WS
       super
     end
 
+    def resize(x1, y1, width, height)
+      self.image.resize(width, height)
+      @window_title.resize(@border_width, @border_width, width - @border_width * 2, 16)
+      @client.image.resize(width - @border_width * 2, height - @border_width * 2 - 16)
+      self.collision = [0, 0, width - 1, height - 1]
+      super
+    end
+
     def on_move(obj, dx, dy)
       unless @maximize_flag
         self.x += dx
@@ -48,18 +56,10 @@ module WS
       end
     end
 
-    def on_resize(obj, x1, y1, width, height)
-      self.x, self.y = x1, y1
-      self.image.resize(width, height)
-      @window_title.on_resize(self, @border_width, @border_width, width - @border_width * 2, 16)
-      @client.image.resize(width - @border_width * 2, height - @border_width * 2 - 16)
-      self.collision = [0, 0, width - 1, height - 1]
-    end
-
     def on_maximize(obj)
       if @maximize_flag
         # 最大化状態から戻す処理
-        on_resize(self, @origin_x, @origin_y, @origin_width, @origin_height)
+        resize(@origin_x, @origin_y, @origin_width, @origin_height)
         @maximize_flag = false
       else
         # 最大化する処理
@@ -67,7 +67,7 @@ module WS
         @origin_y = self.y
         @origin_width = self.image.width
         @origin_height = self.image.height
-        on_resize(self, 0 - @border_width, 0 - @border_width, self.target.width + @border_width * 2, self.target.height + @border_width * 2)
+        resize(0 - @border_width, 0 - @border_width, self.target.width + @border_width * 2, self.target.height + @border_width * 2)
         @maximize_flag = true
       end
     end
@@ -95,15 +95,15 @@ module WS
       @close_button.add_handler(:click) {signal(:close)}
 
       # ウィンドウタイトル
-      @label = WSLabel.new(2, 2, sx, sy, title)
+      @label = WSLabel.new(2, 0, sx, sy, title)
       add_control(@label)
     end
 
-    def on_resize(obj, x1, y1, width, height)
-      self.x, self.y = x1, y1
+    def resize(x1, y1, width, height)
       self.image.resize(width, height)
       @close_button.x = width - 16
       self.collision = [0, 0, width - 1, height - 1]
+      super
     end
   end
 end

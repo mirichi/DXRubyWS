@@ -72,10 +72,11 @@ module WS
     end
   end
 
-  # オブジェクトのボーダーをつかんでサイズ変更したときに:resize_moveシグナルを発行する
-  # また、サイズ変更開始時に:resize_start、終了時に:resize_endシグナルを発行する
-  # マウスカーソルの見た目を変更する機能付き
-  # :resize_moveシグナルの引数は新しい座標とサイズ
+  # オブジェクトのボーダーをつかんでサイズ変更したときにresizeメソッドを呼ぶ。
+  # また、サイズ変更開始時にresize_start、終了時にresize_endメソッドを呼ぶ。
+  # それらを呼んだあとで同名のシグナルを発行する。
+  # マウスカーソルの見た目を変更する機能付き。
+  # resizeの引数は新しい座標とサイズ
   # インスタンス変数@resize_top/@resize_left/@resize_right/@resize_bottomを使う
   module Resizable
     def on_mouse_down(tx, ty, button)
@@ -83,6 +84,7 @@ module WS
         WS.capture(self)
         @drag_old_x = tx
         @drag_old_y = ty
+        resize_start
         signal(:resize_start)
       end
       super
@@ -91,6 +93,7 @@ module WS
     def on_mouse_up(tx, ty, button)
       WS.capture(nil)
       Input.set_cursor(IDC_ARROW)
+      resize_end
       signal(:resize_end)
       super
     end
@@ -131,6 +134,7 @@ module WS
           height = 32
           y1 = self.y
         end
+        resize(x1, y1, width, height)
         signal(:resize_move, x1, y1, width, height)
       else
         border_width = @border_width ? @border_width : 2
@@ -171,6 +175,11 @@ module WS
     def on_mouse_out
       Input.set_cursor(IDC_ARROW)
       super
+    end
+
+    def resize_start
+    end
+    def resize_end
     end
   end
 
