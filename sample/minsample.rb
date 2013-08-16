@@ -30,6 +30,33 @@ w.client.add_control(lbl)
 
 WS::desktop.add_control(w)
 
+class Test < WS::WSWindow
+  def initialize
+    super(100, 300, 300, 100, "LayoutTest")
+    self.image.bgcolor = [160,160,160]
+
+    b1 = WS::WSButton.new(10, 10, 100, 20, "btn1")
+    self.client.add_control(b1)
+    b2 = WS::WSButton.new(10, 30, 100, 20, "btn2")
+    self.client.add_control(b2)
+    b3 = WS::WSButton.new(10, 50, 100, 20, "btn3")
+    self.client.add_control(b3)
+
+    layout(:hbox) do
+      layout(:vbox) do
+        add b1
+        add b2
+      end
+      layout(:vbox) do
+        add b3
+      end
+    end
+  end
+end
+
+t = Test.new
+WS.desktop.add_control(t)
+
 Window.loop do
   WS.update
   break if Input.key_push?(K_ESCAPE)

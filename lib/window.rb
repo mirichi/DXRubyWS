@@ -3,6 +3,42 @@ require_relative './module.rb'
 module WS
   # ウィンドウぽい動きを実現してみる
   class WSWindow < WSContainer
+    
+    # ウィンドウのタイトルバー用クラス
+    class WSWindowTitle < WSContainer
+      include Draggable       # ウィンドウのドラッグ用
+      include DoubleClickable # 最大化用
+  
+      def initialize(tx, ty, sx, sy, title="Title")
+        super(tx, ty, sx, sy)
+        self.image.bgcolor = C_BLUE
+  
+        # タイトルバーのクロースボタン
+        @close_button = WSButton.new(sx-16, 1, sy-2, sy-2, "X")
+        @close_button.fore_color = C_BLACK
+        add_control(@close_button)
+        @close_button.add_handler(:click) {signal(:close)}
+  
+        # ウィンドウタイトル
+        @label = WSLabel.new(2, 0, sx, sy, title)
+        add_control(@label)
+      end
+  
+      def resize(x1, y1, width, height)
+        self.image.resize(width, height)
+        @close_button.x = width - 16
+        self.collision = [0, 0, width - 1, height - 1]
+        super
+      end
+    end
+
+    class WSWindowClient < WSContainer
+      def resize(tx, ty, width, height)
+        self.image.resize(width, height)
+        super(self.x, self.y, width, height)
+      end
+    end
+
     attr_accessor :border_width # ウィンドウボーダーの幅
     include Resizable
 
@@ -10,7 +46,7 @@ module WS
       super(tx, ty, sx, sy)
       self.image.bgcolor = [160,160,160]
       @border_width = 2
-      @client = WSContainer.new(@border_width, @border_width + 16, sx - @border_width * 2, sy - @border_width * 2 - 16)
+      @client = WSWindowClient.new(@border_width, @border_width + 16, sx - @border_width * 2, sy - @border_width * 2 - 16)
       add_control(@client, :client)
 
       # ウィンドウタイトルはそれでひとつのコントロールを作る
@@ -41,10 +77,10 @@ module WS
       super
     end
 
-    def resize(x1, y1, width, height)
+    def resize(tx, ty, width, height)
       self.image.resize(width, height)
       @window_title.resize(@border_width, @border_width, width - @border_width * 2, 16)
-      @client.image.resize(width - @border_width * 2, height - @border_width * 2 - 16)
+      @client.resize(tx, ty, width - @border_width * 2, height - @border_width * 2 - 16)
       self.collision = [0, 0, width - 1, height - 1]
       super
     end
@@ -77,33 +113,9 @@ module WS
       self.parent.childlen.push(self.parent.childlen.delete(self))
       super
     end
-  end
 
-  # ウィンドウのタイトルバー用クラス
-  class WSWindowTitle < WSContainer
-    include Draggable       # ウィンドウのドラッグ用
-    include DoubleClickable # 最大化用
-
-    def initialize(tx, ty, sx, sy, title="Title")
-      super(tx, ty, sx, sy)
-      self.image.bgcolor = C_BLUE
-
-      # タイトルバーのクロースボタン
-      @close_button = WSButton.new(sx-16, 1, sy-2, sy-2, "X")
-      @close_button.fore_color = C_BLACK
-      add_control(@close_button)
-      @close_button.add_handler(:click) {signal(:close)}
-
-      # ウィンドウタイトル
-      @label = WSLabel.new(2, 0, sx, sy, title)
-      add_control(@label)
-    end
-
-    def resize(x1, y1, width, height)
-      self.image.resize(width, height)
-      @close_button.x = width - 16
-      self.collision = [0, 0, width - 1, height - 1]
-      super
+    def layout(type=nil, &b)
+      @client.layout(type, &b)
     end
   end
 end

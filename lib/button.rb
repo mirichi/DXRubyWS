@@ -31,7 +31,6 @@ module WS
     end
 
     def resize(tx, ty, width, height)
-      super
       if @image.has_key?(true)
         @image[false].dispose
         @image[true].dispose
@@ -54,7 +53,7 @@ module WS
                      .line(0,height-1,width-1,height-1,[200,200,200])
                      .line(width-2,1,width-2,height-2,[240,240,240])
                      .line(1,height-2,width-2,height-2,[240,240,240])
-       signal(:resize)
+      super
     end
 
     def draw
