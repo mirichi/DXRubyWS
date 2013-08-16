@@ -76,7 +76,6 @@ module WS
   # また、サイズ変更開始時にresize_start、終了時にresize_endメソッドを呼ぶ。
   # それらを呼んだあとで同名のシグナルを発行する。
   # マウスカーソルの見た目を変更する機能付き。
-  # resizeの引数は新しい座標とサイズ
   # インスタンス変数@resize_top/@resize_left/@resize_right/@resize_bottomを使う
   module Resizable
     def on_mouse_down(tx, ty, button)
@@ -135,7 +134,7 @@ module WS
           y1 = self.y
         end
         resize(x1, y1, width, height)
-        signal(:resize_move, x1, y1, width, height)
+        signal(:resize)
       else
         border_width = @border_width ? @border_width : 2
         @resize_top = ty < border_width
