@@ -182,7 +182,7 @@ module WS
       @data = []
       @resizable_width = true
       @resizable_height = true
-      self.instance_eval &b
+      self.instance_eval &b if b
     end
 
     def layout(type=nil, &b)

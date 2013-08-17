@@ -39,23 +39,44 @@ class Test < WS::WSWindow
     self.image.bgcolor = [160,160,160]
 
     b1 = WS::WSButton.new(10, 10, 100, 20, "btn1")
+    b1.resizable_height = true
     self.client.add_control(b1)
     b2 = WS::WSButton.new(10, 30, 100, 20, "btn2")
+    b2.resizable_height = true
     self.client.add_control(b2)
     b3 = WS::WSButton.new(10, 50, 100, 20, "btn3")
-    self.client.add_control(b3)
     b3.resizable_width = true
-    b3.resizable_height = true
+    self.client.add_control(b3)
 
+    # オートレイアウトのテスト
+    # WSContainer#layoutでレイアウト定義を開始する。
+    # 内部でLayoutオブジェクトを作成し、そのインスタンスでブロックがinstance_evalされる。
+    # addメソッドはそのレイアウトボックス内にコントロールを追加する。
+    # layoutの引数は:hboxと:vboxで、それぞれ水平配置、垂直配置となり、コントロールを並べてくれる。
+    # WSContainer#layoutはコンテナ直下にレイアウトボックスを1つ作成する。
+    # Layout#layoutはその位置に可変サイズのレイアウトボックスを作成する。
+    
+    # WSControl#resizable_width/resizable_heightがfalseのコントロールはサイズが変更されない。
+    # trueになってるやつは下記ルールでサイズが変更される。
+    # レイアウトボックス内にサイズ可変のものが無い場合：コントロールは均等の間隔で配置される。
+    # ある場合：レイアウトボックスがすべて埋まるように、可変サイズのオブジェクトを大きくする。
+    #           このとき、可変サイズのオブジェクトが複数あったらそれらすべてが同じサイズになるように調整される。
+
+    # hbox(水平配置)のレイアウトボックス内にresizeble_height=trueのオブジェクトが存在した場合、
+    # 縦サイズはレイアウトボックスのサイズまで拡大される。縦横逆の場合も同じ。
+
+    # レイアウトボックスは縦横可変サイズのオブジェクトとして扱われ、
+    # 引数なしのlayoutだけを配置すると空っぽの可変サイズオブジェクトとして動作する。
     layout(:vbox) do
       layout(:hbox) do
         add b1
         add b2
       end
       layout(:hbox) do
-          add b3
-        end
+        add b3
       end
+      layout
+    end
   end
 end
 
