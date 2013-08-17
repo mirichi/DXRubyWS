@@ -24,11 +24,18 @@ WS.desktop.add_control(w)
 w = WS::WSWindow.new(400, 100, 200, 250, "ListBoxTest")
 lbx = WS::WSListBox.new(50, 30, 100, 160)
 lbx.items.concat(String.instance_methods(false))
+lbx.resizable_width = lbx.resizable_height = true
 w.client.add_control(lbx)
 lbl = WS::WSLabel.new(0, 0, 100, 16)
 lbl.caption = lbx.items[lbx.cursor].to_s
+lbl.resizable_width = true
 lbx.add_handler(:select){|obj, cursor| lbl.caption = obj.items[cursor].to_s}
 w.client.add_control(lbl)
+
+w.layout(:vbox) do
+  add lbl
+  add lbx
+end
 
 WS::desktop.add_control(w)
 

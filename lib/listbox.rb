@@ -34,7 +34,6 @@ module WS
       @item_image = {}
       @pos = 0
       @cursor = 0
-      @cursor_image = Image.new(width - 4 - 16, @font.size, C_BLACK)
 
       client = WSListBoxClient.new(2, 2, width - 4 - 16, height - 4)
       add_control(client, :client)
@@ -68,6 +67,16 @@ module WS
         @pos = max if @pos > max
         sb.set_slider(@pos.quo(max) )
       end
+
+      self.resize(width, height)
+    end
+
+    def resize(width, height)
+      @cursor_image = Image.new(width - 4 - 16, @font.size, C_BLACK)
+      self.client.resize(width - 4 - 16, height - 4)
+      self.scrollbar.move(width - 16 - 2, 2)
+      self.scrollbar.resize(16, height - 4)
+      super
     end
 
     def slide_range
@@ -144,24 +153,24 @@ module WS
       def initialize(tx, ty, width, height, caption = "Button")
         super(tx, ty, width, height)
         @image = {}
-      @image[false] = Image.new(width, height, [160,160,160])
-                     .line(0,0,width-1,0,[240,240,240])
-                     .line(0,0,0,height-1,[240,240,240])
-                     .line(1,1,width-1,1,[200,200,200])
-                     .line(1,1,1,height-1,[200,200,200])
-                     .line(width-1,0,width-1,height-1,[80,80,80])
-                     .line(0,height-1,width-1,height-1,[80,80,80])
-                     .line(width-2,1,width-2,height-2,[120,120,120])
-                     .line(1,height-2,width-2,height-2,[120,120,120])
-      @image[true] = Image.new(width, height, [160,160,160])
-                     .line(0,0,width-1,0,[80,80,80])
-                     .line(0,0,0,height-1,[80,80,80])
-                     .line(1,1,width-1,1,[120,120,120])
-                     .line(1,1,1,height-1,[120,120,120])
-                     .line(width-1,0,width-1,height-1,[200,200,200])
-                     .line(0,height-1,width-1,height-1,[200,200,200])
-                     .line(width-2,1,width-2,height-2,[240,240,240])
-                     .line(1,height-2,width-2,height-2,[240,240,240])
+        @image[false] = Image.new(width, height, [160,160,160])
+                       .line(0,0,width-1,0,[240,240,240])
+                       .line(0,0,0,height-1,[240,240,240])
+                       .line(1,1,width-1,1,[200,200,200])
+                       .line(1,1,1,height-1,[200,200,200])
+                       .line(width-1,0,width-1,height-1,[80,80,80])
+                       .line(0,height-1,width-1,height-1,[80,80,80])
+                       .line(width-2,1,width-2,height-2,[120,120,120])
+                       .line(1,height-2,width-2,height-2,[120,120,120])
+        @image[true] = Image.new(width, height, [160,160,160])
+                       .line(0,0,width-1,0,[80,80,80])
+                       .line(0,0,0,height-1,[80,80,80])
+                       .line(1,1,width-1,1,[120,120,120])
+                       .line(1,1,1,height-1,[120,120,120])
+                       .line(width-1,0,width-1,height-1,[200,200,200])
+                       .line(0,height-1,width-1,height-1,[200,200,200])
+                       .line(width-2,1,width-2,height-2,[240,240,240])
+                       .line(1,height-2,width-2,height-2,[240,240,240])
         @image_flag = false
         @caption = caption
       end
@@ -222,6 +231,11 @@ module WS
     def draw
       self.slider.height = @screen_length / @item_length * (@height - 32)
       self.slider.height = self.slider.height.clamp(8, @height - 32)
+      super
+    end
+
+    def resize(width, height)
+      self.btn_down.move(0, height - 16)
       super
     end
 
