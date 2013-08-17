@@ -189,143 +189,95 @@ module WS
       @data << o
     end
 
-    def auto_layout
-      undef_size_count = 0
+    def adjust_x
+      @data.each do |o|
+        yield o
+        # 直交位置サイズ調整
+        if o.resizable_height
+          # いっぱいに広げる
+          o.y = self.y
+          o.height = self.height
+        else
+          # 真ん中にする
+          o.y = self.height / 2 - o.height / 2 + self.y
+        end
+      end
+    end
 
+    def adjust_y
+      @data.each do |o|
+        yield o
+        # 直交位置サイズ調整
+        if o.resizable_width
+          # いっぱいに広げる
+          o.x = self.x
+          o.width = self.width
+        else
+          # 真ん中にする
+          o.x = self.width / 2 - o.width / 2 + self.x
+        end
+      end
+    end
+
+    def auto_layout
       case @type
       when :hbox # 水平に並べる
-        @data.each do |o|
-          # サイズ未定のもの
-          if o.resizable_width
-            undef_size_count += 1
-          end
-        end
+        # サイズ未定のものをカウント
+        undef_size_count = @data.count {|o| o.resizable_width }
+
+        # サイズ確定オブジェクトのサイズ合計
+        total = @data.inject(0) {|t, o| t += (o.resizable_width ? 0 : o.width)}
+
+        # 座標開始位置
+        point = self.x
 
         case undef_size_count
         when 0 # 均等
-          h_total = 0
-          @data.each do |o| # オブジェクトのサイズ合計
-            h_total += o.width unless o.resizable_width
+          # 座標調整
+          adjust_x do |o|
+            point += (self.width - total) / (@data.size + 1) # オブジェクトの間隔を足す
+            o.x = point
+            point += o.width
           end
-          h = self.width - h_total # あまったサイズ
-          tmp = h / (@data.size + 1)
-          old = self.x
-          @data.each do |o|
-            o.x = old + tmp
-            old = o.x + o.width
-            o.y = self.height / 2 - o.height / 2 + self.y
-            if o.resizable_height
-              o.height = self.height     
-            end
-          end
-        when 1 # ひとつだけ最大
-          h_total = 0
-          @data.each do |o| # オブジェクトのサイズ合計
-            h_total += o.width unless o.resizable_width
-          end
-          h = self.width - h_total # あまったサイズ
-          tmp = self.x
-          @data.each do |o|
-            if o.resizable_width
-              o.x = tmp
-              o.width = h
-            else
-              o.x = tmp
-            end
-            o.y = self.height / 2 - o.height / 2 + self.y
-            if o.resizable_height
-              o.height = self.height     
-            end
-            tmp += o.width
-          end
-        else # サイズ未定のものを同じサイズに
-          h_total = 0
-          @data.each do |o| # オブジェクトのサイズ合計
-            h_total += o.width unless o.resizable_width
-          end
-          h = (self.width - h_total) / undef_size_count # 可変オブジェクトのサイズ
-          tmp = self.x
-          @data.each do |o|
-            if o.resizable_width
-              o.x = tmp
-              o.width = h
-            else
-              o.x = tmp
-            end
-            o.y = self.height / 2 - o.height / 2 + self.y
-            if o.resizable_height
-              o.height = self.height     
-            end
-            tmp += o.width
+
+        else # 最大化するものを含む
+          # 座標調整
+          adjust_x do |o|
+            o.x = point
+            o.width = (self.width - total) / undef_size_count if o.resizable_width # 最大化するオブジェクトを最大化
+            point += o.width
           end
         end
 
       when :vbox # 垂直に並べる
-        @data.each do |o|
-          # サイズ未定のもの
-          if o.resizable_height
-            undef_size_count += 1
-          end
-        end
+        # サイズ未定のものをカウント
+        undef_size_count = @data.count {|o| o.resizable_height }
+
+        # サイズ確定オブジェクトのサイズ合計
+        total = @data.inject(0) {|t, o| t += (o.resizable_height ? 0 : o.height)}
+
+        # 座標開始位置
+        point = self.y
+
         case undef_size_count
         when 0 # 均等
-          v_total = 0
-          @data.each do |o| # オブジェクトのサイズ合計
-            v_total += o.height unless o.resizable_height
+          # 座標調整
+          adjust_y do |o|
+            point += (self.height - total) / (@data.size + 1) # オブジェクトの間隔を足す
+            o.y = point
+            point += o.height
           end
-          v = self.height - v_total # あまったサイズ
-          tmp = v / (@data.size + 1)
-          old = self.y
-          @data.each do |o|
-            o.y = old + tmp
-            old = o.y + o.height
-            o.x = self.width / 2 - o.width / 2 + self.x
-            if o.resizable_width
-              o.width = self.width
-            end
-          end
-        when 1 # ひとつだけ最大
-          v_total = 0
-          @data.each do |o| # オブジェクトのサイズ合計
-            v_total += o.height unless o.resizable_height
-          end
-          v = self.height - v_total # あまったサイズ
-          tmp = self.y
-          @data.each do |o|
-            if o.resizable_height
-              o.y = tmp
-              o.height = v
-            else
-              o.y = tmp
-            end
-            o.x = self.width / 2 - o.width / 2 + self.x
-            if o.resizable_width
-              o.width = self.width
-            end
-            tmp += o.height
-          end
-        else # サイズ未定のものを同じサイズに
-          v_total = 0
-          @data.each do |o| # オブジェクトのサイズ合計
-            v_total += o.height unless o.resizable_height
-          end
-          v = (self.height - v_total) / undef_size_count # 可変オブジェクトのサイズ
-          tmp = self.y
-          @data.each do |o|
-            if o.resizable_height
-              o.y = tmp
-              o.height = v
-            else
-              o.y = tmp
-            end
-            o.x = self.width / 2 - o.width / 2 + self.x
-            if o.resizable_width
-              o.width = self.width
-            end
-            tmp += o.height
+
+        else # 最大化するものを含む
+          # 座標調整
+          adjust_y do |o|
+            o.y = point
+            o.height = (self.height - total) / undef_size_count if o.resizable_height # 最大化するオブジェクトを最大化
+            point += o.height
           end
         end
       end
+
       @data.each do |o|
         o.auto_layout if Layout === o
       end
