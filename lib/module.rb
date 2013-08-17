@@ -189,7 +189,7 @@ module WS
     def on_mouse_down(tx, ty, button)
       if @doubleclickcount and @doubleclickcount > 0 and
          (@doubleclick_x - tx).abs < 5 and (@doubleclick_y - ty).abs < 5
-          signal(:doubleclick)
+          signal(:doubleclick, tx, ty)
       else
         @doubleclickcount = 30
         @doubleclick_x = tx
