@@ -191,6 +191,7 @@ module WS
 
     def adjust_x
       @data.each do |o|
+        old_width, old_height = o.width, o.height
         yield o
         # 直交位置サイズ調整
         if o.resizable_height
@@ -201,11 +202,17 @@ module WS
           # 真ん中にする
           o.y = self.height / 2 - o.height / 2 + self.y
         end
+
+        # 変わってたらresizeを呼び出す
+        if old_width != o.width or old_height != o.height
+          o.resize(o.x, o.y, o.width, o.height)
+        end
       end
     end
 
     def adjust_y
       @data.each do |o|
+        old_width, old_height = o.width, o.height
         yield o
         # 直交位置サイズ調整
         if o.resizable_width
@@ -215,6 +222,11 @@ module WS
         else
           # 真ん中にする
           o.x = self.width / 2 - o.width / 2 + self.x
+        end
+
+        # 変わってたらresizeを呼び出す
+        if old_width != o.width or old_height != o.height
+          o.resize(o.x, o.y, o.width, o.height)
         end
       end
     end
@@ -281,6 +293,10 @@ module WS
       @data.each do |o|
         o.auto_layout if Layout === o
       end
+    end
+
+    def resize(tx, ty, width, height)
+      @x, @y, @width, @height = tx, ty, width, height
     end
   end
 end

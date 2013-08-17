@@ -1,6 +1,7 @@
 require 'dxruby'
 require_relative '../lib/dxrubyws'
 
+# TestWindow1
 w = WS::WSWindow.new(100, 100, 300, 100, "Test")
 b = WS::WSButton.new(10, 10, 100, 20)
 l = WS::WSLabel.new(10, 50, 100, 20)
@@ -19,6 +20,7 @@ w.client.add_control(i)
 
 WS.desktop.add_control(w)
 
+# ListBoxTestWindow
 w = WS::WSWindow.new(400, 100, 200, 250, "ListBoxTest")
 lbx = WS::WSListBox.new(50, 30, 100, 160)
 lbx.items.concat(String.instance_methods(false))
@@ -30,6 +32,7 @@ w.client.add_control(lbl)
 
 WS::desktop.add_control(w)
 
+# LayoutTestWindow
 class Test < WS::WSWindow
   def initialize
     super(100, 300, 300, 100, "LayoutTest")
@@ -41,16 +44,18 @@ class Test < WS::WSWindow
     self.client.add_control(b2)
     b3 = WS::WSButton.new(10, 50, 100, 20, "btn3")
     self.client.add_control(b3)
+    b3.resizable_width = true
+    b3.resizable_height = true
 
     layout(:hbox) do
       layout(:vbox) do
         add b1
-        add b2
+          add b2
       end
       layout(:vbox) do
-        add b3
+          add b3
+        end
       end
-    end
   end
 end
 
