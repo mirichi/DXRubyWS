@@ -196,54 +196,58 @@ module WS
 
     def adjust_x
       @data.each do |o|
-        old_x, old_y = o.x, o.y
-        old_width, old_height = o.width, o.height
+        @new_x, @new_y = o.x, o.y
+        @new_width, @new_height = o.width, o.height
+
         yield o
+
         # 直交位置サイズ調整
         if o.resizable_height
           # いっぱいに広げる
-          o.y = self.y
-          o.height = self.height
+          @new_y = self.y
+          @new_height = self.height
         else
           # 真ん中にする
-          o.y = self.height / 2 - o.height / 2 + self.y
+          @new_y = self.height / 2 - @new_height / 2 + self.y
         end
 
         # 変わってたらmoveを呼び出す
-        if old_x != o.x or old_y != o.y
-          o.move(o.x, o.y)
+        if @new_x != o.x or @new_y != o.y
+          o.move(@new_x, @new_y)
         end
 
         # 変わってたらresizeを呼び出す
-        if old_width != o.width or old_height != o.height
-          o.resize(o.width, o.height)
+        if @new_width != o.width or @new_height != o.height
+          o.resize(@new_width, @new_height)
         end
       end
     end
 
     def adjust_y
       @data.each do |o|
-        old_x, old_y = o.x, o.y
-        old_width, old_height = o.width, o.height
+        @new_x, @new_y = o.x, o.y
+        @new_width, @new_height = o.width, o.height
+
         yield o
+
         # 直交位置サイズ調整
         if o.resizable_width
           # いっぱいに広げる
-          o.x = self.x
-          o.width = self.width
+          @new_x = self.x
+          @new_width = self.width
         else
           # 真ん中にする
-          o.x = self.width / 2 - o.width / 2 + self.x
+          @new_x = self.width / 2 - @new_width / 2 + self.x
         end
 
         # 変わってたらmoveを呼び出す
-        if old_x != o.x or old_y != o.y
-          o.move(o.x, o.y)
+        if @new_x != o.x or @new_y != o.y
+          o.move(@new_x, @new_y)
         end
 
         # 変わってたらresizeを呼び出す
-        if old_width != o.width or old_height != o.height
-          o.resize(o.width, o.height)
+        if @new_width != o.width or @new_height != o.height
+          o.resize(@new_width, @new_height)
         end
       end
     end
@@ -265,16 +269,16 @@ module WS
           # 座標調整
           adjust_x do |o|
             point += (self.width - total) / (@data.size + 1) # オブジェクトの間隔を足す
-            o.x = point
-            point += o.width
+            @new_x = point
+            point += @new_width
           end
 
         else # 最大化するものを含む
           # 座標調整
           adjust_x do |o|
-            o.x = point
-            o.width = (self.width - total) / undef_size_count if o.resizable_width # 最大化するオブジェクトを最大化
-            point += o.width
+            @new_x = point
+            @new_width = (self.width - total) / undef_size_count if o.resizable_width # 最大化するオブジェクトを最大化
+            point += @new_width
           end
         end
 
@@ -293,16 +297,16 @@ module WS
           # 座標調整
           adjust_y do |o|
             point += (self.height - total) / (@data.size + 1) # オブジェクトの間隔を足す
-            o.y = point
-            point += o.height
+            @new_y = point
+            point += @new_height
           end
 
         else # 最大化するものを含む
           # 座標調整
           adjust_y do |o|
-            o.y = point
-            o.height = (self.height - total) / undef_size_count if o.resizable_height # 最大化するオブジェクトを最大化
-            point += o.height
+            @new_y = point
+            @new_height = (self.height - total) / undef_size_count if o.resizable_height # 最大化するオブジェクトを最大化
+            point += @new_height
           end
         end
       end

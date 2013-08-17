@@ -47,12 +47,12 @@ class Test < WS::WSWindow
     b3.resizable_width = true
     b3.resizable_height = true
 
-    layout(:hbox) do
-      layout(:vbox) do
+    layout(:vbox) do
+      layout(:hbox) do
         add b1
-          add b2
+        add b2
       end
-      layout(:vbox) do
+      layout(:hbox) do
           add b3
         end
       end
