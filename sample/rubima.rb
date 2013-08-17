@@ -554,8 +554,8 @@ module WS
       # クリックされたら敵キャラとの判定を行って、クリックしたキャラを@selectedに格納
       # また、そのサイズのセレクタ画像(黄色の四角)を作って@selectorに格納
       @client.add_handler(:click) do |obj, tx, ty|
-        @cursor.x, @cursor.y = tx+$myship.x/5, ty
-        @selected = @cursor.check($enemies)[0]
+        @hit_cursor.x, @hit_cursor.y = tx+$myship.x/5, ty
+        @selected = @hit_cursor.check($enemies)[0]
         if @selected
           @selector = Image.new(@selected.image.width, @selected.image.height, C_YELLOW).
                             box_fill(2, 2, @selected.image.width-3, @selected.image.height-3, [0,0,0,0])
@@ -585,7 +585,8 @@ module WS
 
       # 敵の絵を描画するためのWSImageコントロール
       @clear_image = Image.new(48,48)
-      @enemy_image = WSImage.new(5, 5, @clear_image)
+      @enemy_image = WSImage.new(5, 5, 48, 48)
+      @enemy_image.image = @clear_image
       @client.add_control(@enemy_image)
 
       # HPを表示するWSLabelコントロール
