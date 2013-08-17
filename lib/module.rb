@@ -133,8 +133,8 @@ module WS
           height = 32
           y1 = self.y
         end
-        resize(x1, y1, width, height)
-        signal(:resize)
+        move(x1, y1)
+        resize(width, height)
       else
         border_width = @border_width ? @border_width : 2
         @resize_top = ty < border_width

@@ -23,8 +23,8 @@ module WS
         @label = WSLabel.new(2, 0, sx, sy, title)
         add_control(@label)
       end
-  
-      def resize(x1, y1, width, height)
+
+      def resize(width, height)
         self.image.resize(width, height)
         @close_button.x = width - 16
         self.collision = [0, 0, width - 1, height - 1]
@@ -33,9 +33,9 @@ module WS
     end
 
     class WSWindowClient < WSContainer
-      def resize(tx, ty, width, height)
+      def resize(width, height)
         self.image.resize(width, height)
-        super(tx, ty, width, height)
+        super(width, height)
       end
     end
 
@@ -54,7 +54,7 @@ module WS
       @window_title = WSWindowTitle.new(@border_width, @border_width, sx - @border_width * 2, 16, caption)
       add_control(@window_title)
       @window_title.add_handler(:close) {self.parent.remove_control(self)}
-      @window_title.add_handler(:drag_move, self, :on_move)
+      @window_title.add_handler(:drag_move, self, :on_drag_move)
 
       # タイトルバーのダブルクリックで最大化する
       @maximize_flag = false
@@ -75,25 +75,22 @@ module WS
       super
     end
 
-    def resize(tx, ty, width, height)
+    def resize(width, height)
       self.image.resize(width, height)
-      @window_title.resize(@border_width, @border_width, width - @border_width * 2, 16)
-      @client.resize(@border_width, @border_width + 16, width - @border_width * 2, height - @border_width * 2 - 16)
-      self.collision = [0, 0, width - 1, height - 1]
+      @window_title.resize(width - @border_width * 2, 16)
+      @client.resize(width - @border_width * 2, height - @border_width * 2 - 16)
       super
     end
 
-    def on_move(obj, dx, dy)
-      unless @maximize_flag
-        self.x += dx
-        self.y += dy
-      end
+    def on_drag_move(obj, dx, dy)
+      move(self.x + dx, self.y + dy) unless @maximize_flag
     end
 
     def on_maximize(obj)
       if @maximize_flag
         # 最大化状態から戻す処理
-        resize(@origin_x, @origin_y, @origin_width, @origin_height)
+        move(@origin_x, @origin_y)
+        resize(@origin_width, @origin_height)
         @maximize_flag = false
       else
         # 最大化する処理
@@ -101,7 +98,8 @@ module WS
         @origin_y = self.y
         @origin_width = self.image.width
         @origin_height = self.image.height
-        resize(0 - @border_width, 0 - @border_width, self.target.width + @border_width * 2, self.target.height + @border_width * 2)
+        move(0 - @border_width, 0 - @border_width)
+        resize(self.target.width + @border_width * 2, self.target.height + @border_width * 2)
         @maximize_flag = true
       end
     end

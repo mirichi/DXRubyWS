@@ -11,7 +11,7 @@ module WS
       @image = {}
       @image_flag = false
       @caption = caption
-      resize(tx, ty, width, height)
+      resize(width, height)
     end
 
     def on_mouse_down(tx, ty, button)
@@ -30,7 +30,7 @@ module WS
       super
     end
 
-    def resize(tx, ty, width, height)
+    def resize(width, height)
       if @image.has_key?(true)
         @image[false].dispose
         @image[true].dispose

@@ -76,8 +76,13 @@ module WS
       [self.x + tx, self.y + ty]
     end
 
-    def resize(x, y, width, height)
-      self.x, self.y, @width, @height = x, y, width, height
+    def move(tx, ty)
+      self.x, self.y = tx, ty
+      signal(:move, tx, ty)
+    end
+
+    def resize(width, height)
+      @width, @height = width, height
       self.collision = [0, 0, width - 1, height - 1]
       signal(:resize)
     end
@@ -157,7 +162,7 @@ module WS
       @layout.auto_layout
     end
 
-    def resize(tx, ty, width, height)
+    def resize(width, height)
       super
       if @layout
         @layout.width, @layout.height = width, height
@@ -191,6 +196,7 @@ module WS
 
     def adjust_x
       @data.each do |o|
+        old_x, old_y = o.x, o.y
         old_width, old_height = o.width, o.height
         yield o
         # 直交位置サイズ調整
@@ -203,15 +209,21 @@ module WS
           o.y = self.height / 2 - o.height / 2 + self.y
         end
 
+        # 変わってたらmoveを呼び出す
+        if old_x != o.x or old_y != o.y
+          o.move(o.x, o.y)
+        end
+
         # 変わってたらresizeを呼び出す
         if old_width != o.width or old_height != o.height
-          o.resize(o.x, o.y, o.width, o.height)
+          o.resize(o.width, o.height)
         end
       end
     end
 
     def adjust_y
       @data.each do |o|
+        old_x, old_y = o.x, o.y
         old_width, old_height = o.width, o.height
         yield o
         # 直交位置サイズ調整
@@ -224,9 +236,14 @@ module WS
           o.x = self.width / 2 - o.width / 2 + self.x
         end
 
+        # 変わってたらmoveを呼び出す
+        if old_x != o.x or old_y != o.y
+          o.move(o.x, o.y)
+        end
+
         # 変わってたらresizeを呼び出す
         if old_width != o.width or old_height != o.height
-          o.resize(o.x, o.y, o.width, o.height)
+          o.resize(o.width, o.height)
         end
       end
     end
@@ -295,8 +312,12 @@ module WS
       end
     end
 
-    def resize(tx, ty, width, height)
-      @x, @y, @width, @height = tx, ty, width, height
+    def move(tx, ty)
+      @x, @y = tx, ty
+    end
+
+    def resize(width, height)
+      @width, @height = width, height
     end
   end
 end
