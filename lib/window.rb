@@ -35,7 +35,7 @@ module WS
     class WSWindowClient < WSContainer
       def resize(tx, ty, width, height)
         self.image.resize(width, height)
-        super(self.x, self.y, width, height)
+        super(tx, ty, width, height)
       end
     end
 
@@ -55,8 +55,6 @@ module WS
       add_control(@window_title)
       @window_title.add_handler(:close) {self.parent.remove_control(self)}
       @window_title.add_handler(:drag_move, self, :on_move)
-
-#      add_handler(:resize_move, self, :on_resize)
 
       # タイトルバーのダブルクリックで最大化する
       @maximize_flag = false
@@ -80,7 +78,7 @@ module WS
     def resize(tx, ty, width, height)
       self.image.resize(width, height)
       @window_title.resize(@border_width, @border_width, width - @border_width * 2, 16)
-      @client.resize(tx, ty, width - @border_width * 2, height - @border_width * 2 - 16)
+      @client.resize(@border_width, @border_width + 16, width - @border_width * 2, height - @border_width * 2 - 16)
       self.collision = [0, 0, width - 1, height - 1]
       super
     end
