@@ -163,6 +163,7 @@ module WS
     end
 
     def resize(width, height)
+      self.image.resize(width, height)
       super
       if @layout
         @layout.width, @layout.height = width, height

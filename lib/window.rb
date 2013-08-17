@@ -25,17 +25,12 @@ module WS
       end
 
       def resize(width, height)
-        self.image.resize(width, height)
         @close_button.x = width - 16
         super
       end
     end
 
     class WSWindowClient < WSContainer
-      def resize(width, height)
-        self.image.resize(width, height)
-        super
-      end
     end
 
     attr_accessor :border_width # ウィンドウボーダーの幅
@@ -75,7 +70,6 @@ module WS
     end
 
     def resize(width, height)
-      self.image.resize(width, height)
       @window_title.resize(width - @border_width * 2, 16)
       @client.resize(width - @border_width * 2, height - @border_width * 2 - 16)
       super
