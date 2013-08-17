@@ -79,7 +79,7 @@ module WS
       move(self.x + dx, self.y + dy) unless @maximize_flag
     end
 
-    def on_maximize(obj)
+    def on_maximize(obj, dx, dy)
       if @maximize_flag
         # 最大化状態から戻す処理
         move(@origin_x, @origin_y)
