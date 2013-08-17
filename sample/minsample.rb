@@ -38,15 +38,21 @@ class Test < WS::WSWindow
     super(100, 300, 300, 100, "LayoutTest")
     self.image.bgcolor = [160,160,160]
 
-    b1 = WS::WSButton.new(10, 10, 100, 20, "btn1")
+    b1 = WS::WSButton.new(0, 0, 100, 20, "btn1")
     b1.resizable_height = true
+    b2 = WS::WSButton.new(0, 0, 100, 20, "btn2")
+    b2.resizable_width = true
     self.client.add_control(b1)
-    b2 = WS::WSButton.new(10, 30, 100, 20, "btn2")
-    b2.resizable_height = true
     self.client.add_control(b2)
-    b3 = WS::WSButton.new(10, 50, 100, 20, "btn3")
-    b3.resizable_width = true
-    self.client.add_control(b3)
+
+    img = WS::WSImage.new(0, 0, 100, 10)
+    img.resizable_height = true
+    self.client.add_control(img)
+
+    img.add_handler(:resize) do
+      img.image.dispose if img.image
+      img.image = Image.new(img.width, img.height, C_WHITE).circle_fill(img.width/2, img.height/2, img.width>img.height ? img.height/2 : img.width/2, C_GREEN)
+    end
 
     # オートレイアウトのテスト
     # WSContainer#layoutでレイアウト定義を開始する。
@@ -70,10 +76,10 @@ class Test < WS::WSWindow
     layout(:vbox) do
       layout(:hbox) do
         add b1
-        add b2
+        add img
       end
       layout(:hbox) do
-        add b3
+        add b2
       end
       layout
     end
