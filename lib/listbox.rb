@@ -1,21 +1,43 @@
 # coding: utf-8
 require_relative './module.rb'
 
+class Numeric
+  def clamp(min, max)
+    if self < min
+      min
+    elsif self > max
+      max
+    else
+      self
+    end
+  end
+end
+
 module WS
   class WSListBox < WSContainer
+    class WSListBoxClient < WSContainer
+      include Clickable
+      include DoubleClickable
+
+      def resize(width, height)
+        self.image.resize(width, height)
+        super
+      end
+    end
+
     attr_reader :items, :pos, :cursor
     def initialize(tx, ty, width, height)
       super
       self.image.bgcolor = C_WHITE
+      @font = Font.new(12)
       @items = []
       @item_image = {}
       @pos = 0
       @cursor = 0
       @cursor_image = Image.new(width - 4 - 16, @font.size, C_BLACK)
 
-      client = WSContainer.new(2, 2, width - 4 - 16, height - 4)
+      client = WSListBoxClient.new(2, 2, width - 4 - 16, height - 4)
       add_control(client, :client)
-      client.extend Clickable
       client.add_handler(:click) do |obj, tx, ty|
         @cursor = ((@pos * @font.size + ty) / @font.size).to_i
         signal(:select, @cursor)
@@ -23,20 +45,33 @@ module WS
 
       sb = WSScrollBar.new(width - 16 - 2, 2, 16, height - 4)
       add_control(sb, :scrollbar)
-      sb.add_handler(:slide) do |obj, pos|
-        @pos = pos * (@items.length - client.height.quo(@font.size))
-      end
+      sb.add_handler(:slide) {|obj, pos| @pos = pos * slide_range}
       sb.add_handler(:btn_up) do
         @pos -= 1
         @pos = 0 if @pos < 0
-        sb.set_slider(@pos.quo(@items.length - client.height.quo(@font.size)) )
+        sb.set_slider(@pos.quo(slide_range) )
       end
       sb.add_handler(:btn_down) do
-        max = @items.length - client.height.quo(@font.size)
+        max = slide_range
         @pos += 1
         @pos = max if @pos > max
         sb.set_slider(@pos.quo(max) )
       end
+      sb.add_handler(:page_up) do
+        @pos -= client.height / @font.size
+        @pos = 0 if @pos < 0
+        sb.set_slider(@pos.quo(slide_range) )
+      end
+      sb.add_handler(:page_down) do
+        max = slide_range
+        @pos += client.height / @font.size
+        @pos = max if @pos > max
+        sb.set_slider(@pos.quo(max) )
+      end
+    end
+
+    def slide_range
+      @items.length - client.height.quo(@font.size)
     end
 
     def draw
@@ -75,30 +110,29 @@ module WS
       include Draggable
       def initialize(tx, ty, width, height)
         super
-        add_handler(:drag_move) do |obj, dx, dy|
-          self.y += dy
-          signal(:slide, self.y)
-        end
+        add_handler(:drag_move) {|obj, dx, dy| self.slide(dy)}
       end
 
       def draw
         if @old_height != @height
+          self.image.dispose if self.image
           self.image = Image.new(@width, @height, [160,160,160])
-                      .line(0,0,@width-1,0,[240,240,240])
-                      .line(0,0,0,@height-1,[240,240,240])
-                      .line(1,1,@width-1,1,[200,200,200])
-                      .line(1,1,1,@height-1,[200,200,200])
-                      .line(@width-1,0,@width-1,@height-1,[80,80,80])
-                      .line(0,@height-1,@width-1,@height-1,[80,80,80])
-                      .line(@width-2,1,@width-2,@height-2,[120,120,120])
-                      .line(1,@height-2,@width-2,@height-2,[120,120,120])
-          self.collision = [0, 0, @width, @height]
+                            .line(0,0,@width-1,0,[240,240,240])
+                            .line(0,0,0,@height-1,[240,240,240])
+                            .line(1,1,@width-1,1,[200,200,200])
+                            .line(1,1,1,@height-1,[200,200,200])
+                            .line(@width-1,0,@width-1,@height-1,[80,80,80])
+                            .line(0,@height-1,@width-1,@height-1,[80,80,80])
+                            .line(@width-2,1,@width-2,@height-2,[120,120,120])
+                            .line(1,@height-2,@width-2,@height-2,[120,120,120])
+          self.collision = [0, 0, @width-1, @height-1]
         end
         @old_height = @height
         super
       end
 
-      def slide
+      def slide(dy)
+        self.y = (self.y + dy).clamp(16, @parent.height - 16 - @height)
         signal(:slide, self.y)
       end
     end
@@ -107,31 +141,31 @@ module WS
       attr_accessor :caption, :fore_color
       include RepeatClickable
   
-      def initialize(tx, ty, sx, sy, caption = "Button")
-        super(tx, ty, sx, sy)
+      def initialize(tx, ty, width, height, caption = "Button")
+        super(tx, ty, width, height)
         @image = {}
-        @image[false] = Image.new(sx, sy, [160,160,160])
-                       .line(0,0,sx-1,0,[240,240,240])
-                       .line(0,0,0,sy-1,[240,240,240])
-                       .line(1,1,sx-1,1,[200,200,200])
-                       .line(1,1,1,sy-1,[200,200,200])
-                       .line(sx-1,0,sx-1,sy-1,[80,80,80])
-                       .line(0,sy-1,sx-1,sy-1,[80,80,80])
-                       .line(sx-2,1,sx-2,sy-2,[120,120,120])
-                       .line(1,sy-2,sx-2,sy-2,[120,120,120])
-        @image[true] = Image.new(sx, sy, [160,160,160])
-                       .line(0,0,sx-1,0,[80,80,80])
-                       .line(0,0,0,sy-1,[80,80,80])
-                       .line(1,1,sx-1,1,[120,120,120])
-                       .line(1,1,1,sy-1,[120,120,120])
-                       .line(sx-1,0,sx-1,sy-1,[200,200,200])
-                       .line(0,sy-1,sx-1,sy-1,[200,200,200])
-                       .line(sx-2,1,sx-2,sy-2,[240,240,240])
-                       .line(1,sy-2,sx-2,sy-2,[240,240,240])
+      @image[false] = Image.new(width, height, [160,160,160])
+                     .line(0,0,width-1,0,[240,240,240])
+                     .line(0,0,0,height-1,[240,240,240])
+                     .line(1,1,width-1,1,[200,200,200])
+                     .line(1,1,1,height-1,[200,200,200])
+                     .line(width-1,0,width-1,height-1,[80,80,80])
+                     .line(0,height-1,width-1,height-1,[80,80,80])
+                     .line(width-2,1,width-2,height-2,[120,120,120])
+                     .line(1,height-2,width-2,height-2,[120,120,120])
+      @image[true] = Image.new(width, height, [160,160,160])
+                     .line(0,0,width-1,0,[80,80,80])
+                     .line(0,0,0,height-1,[80,80,80])
+                     .line(1,1,width-1,1,[120,120,120])
+                     .line(1,1,1,height-1,[120,120,120])
+                     .line(width-1,0,width-1,height-1,[200,200,200])
+                     .line(0,height-1,width-1,height-1,[200,200,200])
+                     .line(width-2,1,width-2,height-2,[240,240,240])
+                     .line(1,height-2,width-2,height-2,[240,240,240])
         @image_flag = false
         @caption = caption
       end
-  
+
       def on_mouse_down(tx, ty, button)
         @image_flag = true
         super
@@ -187,17 +221,11 @@ module WS
     
     def draw
       self.slider.height = @screen_length / @item_length * (@height - 32)
-      self.slider.height = 16 if self.slider.height < 16
-      self.slider.height = (@height - 32) if self.slider.height > (@height - 32)
+      self.slider.height = self.slider.height.clamp(8, @height - 32)
       super
     end
 
     def on_slide(obj, pos)
-      pos = 16 if pos < 16
-      if pos > height - 16 - slider.height
-        pos = height - 16 - slider.height
-      end
-      slider.y = pos
       signal(:slide, (pos - 16).quo(height - 32 - slider.height))
     end
 
@@ -207,11 +235,9 @@ module WS
 
     def on_click(obj, tx, ty)
       if ty < self.slider.y
-        self.slider.y -= self.slider.height
-        self.slider.slide
+        signal(:page_up)
       elsif ty >= self.slider.y + self.slider.height
-        self.slider.y += self.slider.height
-        self.slider.slide
+        signal(:page_down)
       end
     end
   end
