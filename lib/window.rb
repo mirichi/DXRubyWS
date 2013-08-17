@@ -27,7 +27,6 @@ module WS
       def resize(width, height)
         self.image.resize(width, height)
         @close_button.x = width - 16
-        self.collision = [0, 0, width - 1, height - 1]
         super
       end
     end
@@ -35,7 +34,7 @@ module WS
     class WSWindowClient < WSContainer
       def resize(width, height)
         self.image.resize(width, height)
-        super(width, height)
+        super
       end
     end
 
