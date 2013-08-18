@@ -18,14 +18,14 @@ module WS
       @pos = 0
       @cursor = 0
 
-      client = WSListBoxClient.new(2, 2, width - 4 - 16, height - 4)
+      client = WSListBoxClient.new(0, 0, width - 4 - 16, height - 4)
       add_control(client, :client)
       client.add_handler(:click) do |obj, tx, ty|
         @cursor = ((@pos * @font.size + ty) / @font.size).to_i
         signal(:select, @cursor)
       end
 
-      sb = WSScrollBar.new(width - 16 - 2, 2, 16, height - 4)
+      sb = WSScrollBar.new(0, 0, 16, height - 4)
       add_control(sb, :scrollbar)
       sb.add_handler(:slide) {|obj, pos| @pos = pos * slide_range}
       sb.add_handler(:btn_up) do
@@ -51,15 +51,17 @@ module WS
         sb.set_slider(@pos.quo(max) )
       end
 
-      self.resize(width, height)
+      layout(:hbox) do
+        self.margin_left = self.margin_top = self.margin_right = self.margin_bottom = 2
+        add client, true, true
+        add sb, false, true
+      end
     end
 
     def resize(width, height)
-      @cursor_image = Image.new(width - 4 - 16, @font.size, C_BLACK)
-      self.client.resize(width - 4 - 16, height - 4)
-      self.scrollbar.move(width - 16 - 2, 2)
-      self.scrollbar.resize(16, height - 4)
       super
+      @cursor_image.dispose if @cursor_image
+      @cursor_image = Image.new(self.client.width, @font.size, C_BLACK)
     end
 
     def slide_range
