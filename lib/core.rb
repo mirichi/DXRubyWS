@@ -191,8 +191,10 @@ module WS
       self
     end
     
-    def add(o)
+    def add(o, rsw=nil, rsh=nil)
       @data << o
+      o.resizable_width = rsw if rsw != nil
+      o.resizable_height = rsh if rsh != nil
     end
 
     def adjust_x

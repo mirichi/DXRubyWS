@@ -24,17 +24,15 @@ WS.desktop.add_control(w)
 w = WS::WSWindow.new(400, 100, 200, 250, "ListBoxTest")
 lbx = WS::WSListBox.new(50, 30, 100, 160)
 lbx.items.concat(String.instance_methods(false))
-lbx.resizable_width = lbx.resizable_height = true
 w.client.add_control(lbx)
 lbl = WS::WSLabel.new(0, 0, 100, 16)
 lbl.caption = lbx.items[lbx.cursor].to_s
-lbl.resizable_width = true
 lbx.add_handler(:select){|obj, cursor| lbl.caption = obj.items[cursor].to_s}
 w.client.add_control(lbl)
 
 w.layout(:vbox) do
-  add lbl
-  add lbx
+  add lbl, true
+  add lbx, true, true
 end
 
 WS::desktop.add_control(w)
@@ -46,15 +44,11 @@ class Test < WS::WSWindow
     self.image.bgcolor = [160,160,160]
 
     b1 = WS::WSButton.new(0, 0, 100, 20, "btn1")
-    b1.resizable_height = true
     b2 = WS::WSButton.new(0, 0, 100, 20, "btn2")
-    b2.resizable_width = true
-    b2.resizable_height = true
     self.client.add_control(b1)
     self.client.add_control(b2)
 
     img = WS::WSImage.new(0, 0, 100, 10)
-    img.resizable_height = true
     self.client.add_control(img)
 
     img.add_handler(:resize) do
@@ -70,7 +64,7 @@ class Test < WS::WSWindow
     # WSContainer#layoutはコンテナ直下にレイアウトボックスを1つ作成する。
     # Layout#layoutはその位置に可変サイズのレイアウトボックスを作成する。
     
-    # WSControl#resizable_width/resizable_heightがfalseのコントロールはサイズが変更されない。
+    # WSControl#resizable_width/resizable_heightがfalseのコントロールはサイズが変更されない。デフォルトはfalse。
     # trueになってるやつは下記ルールでサイズが変更される。
     # レイアウトボックス内にサイズ可変のものが無い場合：コントロールは均等の間隔で配置される。
     # ある場合：レイアウトボックスがすべて埋まるように、可変サイズのオブジェクトを大きくする。
@@ -84,18 +78,20 @@ class Test < WS::WSWindow
 
     # self.margin_top=/left=/bottom=/right=でレイアウトボックスのマージンを設定できる。
     # self.をつけないとローカル変数への代入とみなされてしまうらしい。
+
+    # addメソッドの第2、第3引数でそれぞれresizable_width/resizable_heightを指定できるようにした。
     layout(:vbox) do
       self.margin_top = 10
       self.margin_bottom = 10
       layout(:hbox) do
-        add b1
-        add img
+        add b1, false, true
+        add img, false, true
       end
       layout(:hbox) do
         self.margin_left = 10
         self.margin_right = 10
         self.margin_top = 10
-        add b2
+        add b2, true, true
       end
       layout
     end

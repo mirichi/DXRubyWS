@@ -21,14 +21,13 @@ module WS
   
         # ウィンドウタイトル
         label = WSLabel.new(0, 0, width, height, title)
-        label.resizable_width = true
         add_control(label)
 
         # オートレイアウト
         layout(:hbox) do
           self.margin_top = self.margin_right = 1
           self.margin_left = 2
-          add label
+          add label, true
           add close_button
         end
       end
@@ -45,7 +44,6 @@ module WS
       # ウィンドウタイトルはそれでひとつのコントロールを作る
       # メニューやツールバー、ステータスバーもたぶんそうなる
       window_title = WSWindowTitle.new(0, 0, sx - @border_width * 2, 16, caption)
-      window_title.resizable_width = true
       add_control(window_title)
       window_title.add_handler(:close) {self.parent.remove_control(self)}
       window_title.add_handler(:drag_move, self, :on_drag_move)
@@ -56,15 +54,14 @@ module WS
 
       # クライアント領域は単純なコンテナである
       client = WSContainer.new(0, 0, sx - @border_width * 2, sy - @border_width * 2 - 16)
-      client.resizable_width = client.resizable_height = true
       add_control(client, :client)
 
       # オートレイアウトでコントロールの位置を決める
       # Layout#objで元のコンテナを参照できる
       layout(:vbox) do
         self.margin_top = self.margin_left = self.margin_right = self.margin_bottom = self.obj.border_width
-        add window_title
-        add client
+        add window_title, true
+        add client, true, true
       end
 
       # ↑ではWSWindow自身のlayoutを呼びたいので呼んだあとに特異メソッドを定義して上書きする
