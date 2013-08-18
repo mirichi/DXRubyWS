@@ -3,7 +3,7 @@ module WS
     attr_accessor :caption
     def initialize(tx, ty, width, height, caption = "Label")
       super(tx, ty, width, height)
-      self.image = Image.new(width, height)
+#      self.image = Image.new(width, height)
       self.collision_enable = false
       @caption = caption
     end
