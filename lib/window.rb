@@ -100,10 +100,8 @@ module WS
         @maximize_flag = false
       else
         # 最大化する処理
-        @origin_x = self.x
-        @origin_y = self.y
-        @origin_width = self.image.width
-        @origin_height = self.image.height
+        @origin_x, @origin_y = self.x, self.y
+        @origin_width, @origin_height = self.width, self.height
         move(-@border_width, -@border_width)
         resize(self.target.width + @border_width * 2, self.target.height + @border_width * 2)
         @maximize_flag = true
