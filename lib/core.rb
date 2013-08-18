@@ -23,6 +23,12 @@ module WS
     def on_mouse_up(tx, ty)
     end
 
+    def on_mouse_r_down(tx, ty)
+    end
+
+    def on_mouse_r_up(tx, ty)
+    end
+
     def on_mouse_move(tx, ty)
       return self
     end
@@ -40,6 +46,16 @@ module WS
 
     def on_mouse_up_internal(tx, ty)
       self.on_mouse_up(tx, ty)
+      return self
+    end
+
+    def on_mouse_r_down_internal(tx, ty)
+      self.on_mouse_r_down(tx, ty)
+      return self
+    end
+
+    def on_mouse_r_up_internal(tx, ty)
+      self.on_mouse_r_up(tx, ty)
       return self
     end
 
@@ -143,6 +159,24 @@ module WS
       ctl = find_hit_object(tx, ty)
       if ctl
         ctl.on_mouse_up_internal(tx - ctl.x, ty - ctl.y)
+      else
+        super
+      end
+    end
+
+    def on_mouse_r_down_internal(tx, ty)
+      ctl = find_hit_object(tx, ty)
+      if ctl
+        ctl.on_mouse_r_down_internal(tx - ctl.x, ty - ctl.y)
+      else
+        super
+      end
+    end
+
+    def on_mouse_r_up_internal(tx, ty)
+      ctl = find_hit_object(tx, ty)
+      if ctl
+        ctl.on_mouse_r_up_internal(tx - ctl.x, ty - ctl.y)
       else
         super
       end

@@ -18,7 +18,8 @@ module WS
       @hit_cursor = Sprite.new
       @hit_cursor.collision = [0,0]
       @font = @@default_font
-      @mouse_flag = false
+      @mouse_l_flag = false
+      @mouse_r_flag = false
       @capture_object = nil
       @over_object = nil
     end
@@ -50,19 +51,36 @@ module WS
       end
   
       # ボタン押した
-      if Input.mouse_down?(M_LBUTTON) and @mouse_flag == false
-        @mouse_flag = true
+      if Input.mouse_down?(M_LBUTTON) and @mouse_l_flag == false
+        @mouse_l_flag = true
         self.on_mouse_down_internal(@hit_cursor.x, @hit_cursor.y)
       end
   
       # ボタン離した。キャプチャされてたら@captureのメソッドを呼ぶ
-      if !Input.mouse_down?(M_LBUTTON) and @mouse_flag == true
-        @mouse_flag = false
+      if !Input.mouse_down?(M_LBUTTON) and @mouse_l_flag == true
+        @mouse_l_flag = false
         if @capture_object
           tx, ty = @capture_object.get_global_vertex
           @capture_object.on_mouse_up(@hit_cursor.x - tx, @hit_cursor.y - ty)
         else
           self.on_mouse_up_internal(@hit_cursor.x, @hit_cursor.y)
+        end
+      end
+
+      # 右ボタン押した
+      if Input.mouse_down?(M_RBUTTON) and @mouse_r_flag == false
+        @mouse_r_flag = true
+        self.on_mouse_r_down_internal(@hit_cursor.x, @hit_cursor.y)
+      end
+  
+      # 右ボタン離した。キャプチャされてたら@captureのメソッドを呼ぶ
+      if !Input.mouse_down?(M_RBUTTON) and @mouse_r_flag == true
+        @mouse_r_flag = false
+        if @capture_object
+          tx, ty = @capture_object.get_global_vertex
+          @capture_object.on_mouse_r_up(@hit_cursor.x - tx, @hit_cursor.y - ty)
+        else
+          self.on_mouse_r_up_internal(@hit_cursor.x, @hit_cursor.y)
         end
       end
 
