@@ -12,7 +12,7 @@ module WS
       @signal = {}             # シグナルデータ
       @hit_cursor = Sprite.new # 衝突判定用スプライト
       @hit_cursor.collision = [0,0]
-      @font = @@default_font
+      @font ||= @@default_font
       @resizable_width = false  # オートレイアウト用設定
       @resizable_height = false # オートレイアウト用設定
     end
