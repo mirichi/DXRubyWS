@@ -49,6 +49,7 @@ class Test < WS::WSWindow
     b1.resizable_height = true
     b2 = WS::WSButton.new(0, 0, 100, 20, "btn2")
     b2.resizable_width = true
+    b2.resizable_height = true
     self.client.add_control(b1)
     self.client.add_control(b2)
 
@@ -80,12 +81,20 @@ class Test < WS::WSWindow
 
     # レイアウトボックスは縦横可変サイズのオブジェクトとして扱われ、
     # 引数なしのlayoutだけを配置すると空っぽの可変サイズオブジェクトとして動作する。
+
+    # self.margin_top=/left=/bottom=/right=でレイアウトボックスのマージンを設定できる。
+    # self.をつけないとローカル変数への代入とみなされてしまうらしい。
     layout(:vbox) do
+      self.margin_top = 10
+      self.margin_bottom = 10
       layout(:hbox) do
         add b1
         add img
       end
       layout(:hbox) do
+        self.margin_left = 10
+        self.margin_right = 10
+        self.margin_top = 10
         add b2
       end
       layout

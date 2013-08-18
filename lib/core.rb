@@ -174,15 +174,15 @@ module WS
 
   class Layout
     attr_accessor :type, :x, :y, :width, :height, :resizable_width, :resizable_height
+    attr_accessor :margin_left, :margin_right, :margin_top, :margin_bottom
 
     def initialize(type, obj, &b)
       @type, @obj = type, obj
+      @width, @height = obj.width, obj.height
       @x = @y = 0
-      @width = obj.width
-      @height = obj.height
+      @margin_left = @margin_right = @margin_top = @margin_bottom = 0
+      @resizable_width = @resizable_height = true
       @data = []
-      @resizable_width = true
-      @resizable_height = true
       self.instance_eval &b if b
     end
 
@@ -205,11 +205,11 @@ module WS
         # 直交位置サイズ調整
         if o.resizable_height
           # いっぱいに広げる
-          @new_y = self.y
-          @new_height = self.height
+          @new_y = self.y + @margin_top
+          @new_height = self.height - @margin_top - @margin_bottom
         else
           # 真ん中にする
-          @new_y = self.height / 2 - @new_height / 2 + self.y
+          @new_y = (self.height - @margin_top - @margin_bottom) / 2 - @new_height / 2 + self.y + @margin_top
         end
 
         # 変わってたらmoveを呼び出す
@@ -234,11 +234,11 @@ module WS
         # 直交位置サイズ調整
         if o.resizable_width
           # いっぱいに広げる
-          @new_x = self.x
-          @new_width = self.width
+          @new_x = self.x + @margin_left
+          @new_width = self.width - @margin_left - @margin_right
         else
           # 真ん中にする
-          @new_x = self.width / 2 - @new_width / 2 + self.x
+          @new_x = (self.width - @margin_left - @margin_right) / 2 - @new_width / 2 + self.x + @margin_left
         end
 
         # 変わってたらmoveを呼び出す
@@ -263,13 +263,13 @@ module WS
         total = @data.inject(0) {|t, o| t += (o.resizable_width ? 0 : o.width)}
 
         # 座標開始位置
-        point = self.x
+        point = self.x + @margin_left
 
         case undef_size_count
         when 0 # 均等
           # 座標調整
           adjust_x do |o|
-            point += (self.width - total) / (@data.size + 1) # オブジェクトの間隔を足す
+            point += (self.width - @margin_left - @margin_right - total) / (@data.size + 1) # オブジェクトの間隔を足す
             @new_x = point
             point += @new_width
           end
@@ -278,7 +278,7 @@ module WS
           # 座標調整
           adjust_x do |o|
             @new_x = point
-            @new_width = (self.width - total) / undef_size_count if o.resizable_width # 最大化するオブジェクトを最大化
+            @new_width = (self.width - @margin_left - @margin_right - total) / undef_size_count if o.resizable_width # 最大化するオブジェクトを最大化
             point += @new_width
           end
         end
@@ -291,13 +291,13 @@ module WS
         total = @data.inject(0) {|t, o| t += (o.resizable_height ? 0 : o.height)}
 
         # 座標開始位置
-        point = self.y
+        point = self.y + @margin_top
 
         case undef_size_count
         when 0 # 均等
           # 座標調整
           adjust_y do |o|
-            point += (self.height - total) / (@data.size + 1) # オブジェクトの間隔を足す
+            point += (self.height - @margin_top - @margin_bottom - total) / (@data.size + 1) # オブジェクトの間隔を足す
             @new_y = point
             point += @new_height
           end
@@ -306,7 +306,7 @@ module WS
           # 座標調整
           adjust_y do |o|
             @new_y = point
-            @new_height = (self.height - total) / undef_size_count if o.resizable_height # 最大化するオブジェクトを最大化
+            @new_height = (self.height - @margin_top - @margin_bottom - total) / undef_size_count if o.resizable_height # 最大化するオブジェクトを最大化
             point += @new_height
           end
         end
