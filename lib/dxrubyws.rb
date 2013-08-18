@@ -11,6 +11,7 @@ require_relative './scrollbar'
 module WS
   class WSDesktop < WSContainer
     attr_accessor :capture_object
+    include RightClickable
     def initialize
       self.collision = [0, 0, Window.width - 1, Window.height - 1]
       @childlen = []

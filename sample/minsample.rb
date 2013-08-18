@@ -11,11 +11,14 @@ w.client.add_control(l)
 image1 = Image.new(30, 30, C_WHITE)
 image2 = Image.new(30, 30, C_BLACK)
 image3 = Image.new(30, 30, C_RED)
+image4 = Image.new(30, 30, C_BLUE)
 i = WS::WSImage.new(200, 30, 30, 30)
+i.extend WS::RightClickable
 i.image = image1
 i.add_handler(:mouse_over){|obj|obj.image = image2}
 i.add_handler(:mouse_out){|obj|obj.image = image1}
 i.add_handler(:click){|obj|obj.image = image3}
+i.add_handler(:rightclick){|obj|obj.image = image4}
 w.client.add_control(i)
 
 WS.desktop.add_control(w)

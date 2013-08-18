@@ -12,6 +12,14 @@ module WS
     end
   end
 
+  # マウスの右ボタンを押した瞬間に:clickシグナルを発行する
+  module RightClickable
+    def on_mouse_r_down(tx, ty)
+      signal(:rightclick, tx, ty)
+      super
+    end
+  end
+
   # Windowsのボタンのようにマウスボタンを離した瞬間に:clickシグナルを発行する
   module ButtonClickable
     def on_mouse_down(tx, ty)
