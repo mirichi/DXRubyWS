@@ -99,40 +99,38 @@ module WS
 
     def on_mouse_move(tx, ty)
       if WS.captured?(self)
-        x1, y1, width, height = self.x, self.y, self.image.width, self.image.height
+        x1, y1, width, height = self.x, self.y, self.width, self.height
 
         if @resize_left
           width += @drag_old_x - tx
           x1 += tx - @drag_old_x
-          tx -= tx - @drag_old_x
+          tx = @drag_old_x
+          x1 -= (32 - width) if width < 32
+        elsif @resize_right
+          width += tx - @drag_old_x
+          x1 = self.x if width < 32
+        end
+        if width >= 32
+          @drag_old_x = tx
+        else
+           width = 32
         end
 
         if @resize_top
           height += @drag_old_y - ty
           y1 += ty - @drag_old_y
-          ty -= ty - @drag_old_y
-        end
-
-        if @resize_right
-          width += tx - @drag_old_x
-        end
-
-        if @resize_bottom
+          ty = @drag_old_y
+          y1 -= (32 - height) if height < 32
+        elsif @resize_bottom
           height += ty - @drag_old_y
+          y1 = self.y if height < 32
         end
-
-        if width > 32
-          @drag_old_x = tx
-        else
-          width = 32
-          x1 = self.x
-        end
-        if height > 32
+        if height >= 32
           @drag_old_y = ty
         else
-          height = 32
-          y1 = self.y
+           height = 32
         end
+
         move(x1, y1)
         resize(width, height)
       else
