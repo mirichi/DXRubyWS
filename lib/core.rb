@@ -173,7 +173,7 @@ module WS
   end
 
   class Layout
-    attr_accessor :type, :x, :y, :width, :height, :resizable_width, :resizable_height
+    attr_accessor :type, :x, :y, :width, :height, :resizable_width, :resizable_height, :obj
     attr_accessor :margin_left, :margin_right, :margin_top, :margin_bottom
 
     def initialize(type, obj, &b)

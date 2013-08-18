@@ -9,28 +9,29 @@ module WS
       include Draggable       # ウィンドウのドラッグ用
       include DoubleClickable # 最大化用
   
-      def initialize(tx, ty, sx, sy, title="Title")
-        super(tx, ty, sx, sy)
+      def initialize(tx, ty, width, height, title="Title")
+        super(tx, ty, width, height)
         self.image.bgcolor = C_BLUE
   
         # タイトルバーのクロースボタン
-        @close_button = WSButton.new(sx-16, 1, sy-2, sy-2, "X")
-        @close_button.fore_color = C_BLACK
-        add_control(@close_button)
-        @close_button.add_handler(:click) {signal(:close)}
+        close_button = WSButton.new(0, 0, height-2, height-2, "X")
+        close_button.fore_color = C_BLACK
+        add_control(close_button)
+        close_button.add_handler(:click) {signal(:close)}
   
         # ウィンドウタイトル
-        @label = WSLabel.new(2, 0, sx, sy, title)
-        add_control(@label)
-      end
+        label = WSLabel.new(0, 0, width, height, title)
+        label.resizable_width = true
+        add_control(label)
 
-      def resize(width, height)
-        @close_button.x = width - 16
-        super
+        # オートレイアウト
+        layout(:hbox) do
+          self.margin_top = self.margin_right = 1
+          self.margin_left = 2
+          add label
+          add close_button
+        end
       end
-    end
-
-    class WSWindowClient < WSContainer
     end
 
     attr_accessor :border_width # ウィンドウボーダーの幅
@@ -40,19 +41,37 @@ module WS
       super(tx, ty, sx, sy)
       self.image.bgcolor = [160,160,160]
       @border_width = 2
-      @client = WSWindowClient.new(@border_width, @border_width + 16, sx - @border_width * 2, sy - @border_width * 2 - 16)
-      add_control(@client, :client)
 
       # ウィンドウタイトルはそれでひとつのコントロールを作る
       # メニューやツールバー、ステータスバーもたぶんそうなる
-      @window_title = WSWindowTitle.new(@border_width, @border_width, sx - @border_width * 2, 16, caption)
-      add_control(@window_title)
-      @window_title.add_handler(:close) {self.parent.remove_control(self)}
-      @window_title.add_handler(:drag_move, self, :on_drag_move)
+      window_title = WSWindowTitle.new(0, 0, sx - @border_width * 2, 16, caption)
+      window_title.resizable_width = true
+      add_control(window_title)
+      window_title.add_handler(:close) {self.parent.remove_control(self)}
+      window_title.add_handler(:drag_move, self, :on_drag_move)
 
       # タイトルバーのダブルクリックで最大化する
       @maximize_flag = false
-      @window_title.add_handler(:doubleclick, self, :on_maximize)
+      window_title.add_handler(:doubleclick, self, :on_maximize)
+
+      # クライアント領域は単純なコンテナである
+      client = WSContainer.new(0, 0, sx - @border_width * 2, sy - @border_width * 2 - 16)
+      client.resizable_width = client.resizable_height = true
+      add_control(client, :client)
+
+      # オートレイアウトでコントロールの位置を決める
+      # Layout#objで元のコンテナを参照できる
+      layout(:vbox) do
+        self.margin_top = self.margin_left = self.margin_right = self.margin_bottom = self.obj.border_width
+        add window_title
+        add client
+      end
+
+      # ↑ではWSWindow自身のlayoutを呼びたいので呼んだあとに特異メソッドを定義して上書きする
+      # 外部からWSWindow#layoutしたときはクライアント領域のレイアウト設定になるように。
+      def self.layout(type=nil, &b)
+        self.client.layout(type, &b)
+      end
     end
 
     def draw
@@ -66,12 +85,6 @@ module WS
       self.image.draw_line(0,sy-1,sx-1,sy-1,[80,80,80])
       self.image.draw_line(sx-2,1,sx-2,sy-2,[120,120,120])
       self.image.draw_line(1,sy-2,sx-2,sy-2,[120,120,120])
-      super
-    end
-
-    def resize(width, height)
-      @window_title.resize(width - @border_width * 2, 16)
-      @client.resize(width - @border_width * 2, height - @border_width * 2 - 16)
       super
     end
 
@@ -91,7 +104,7 @@ module WS
         @origin_y = self.y
         @origin_width = self.image.width
         @origin_height = self.image.height
-        move(0 - @border_width, 0 - @border_width)
+        move(-@border_width, -@border_width)
         resize(self.target.width + @border_width * 2, self.target.height + @border_width * 2)
         @maximize_flag = true
       end
@@ -101,10 +114,6 @@ module WS
     def on_mouse_down_internal(tx, ty, button)
       self.parent.childlen.push(self.parent.childlen.delete(self))
       super
-    end
-
-    def layout(type=nil, &b)
-      @client.layout(type, &b)
     end
   end
 end
