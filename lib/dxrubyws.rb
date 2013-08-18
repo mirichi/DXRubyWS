@@ -1,10 +1,11 @@
 require 'dxruby'
 require_relative './core'
 require_relative './window'
-require_relative './button.rb'
+require_relative './button'
 require_relative './label'
 require_relative './image'
 require_relative './listbox'
+require_relative './scrollbar'
 
 # ウィンドウシステム
 module WS
