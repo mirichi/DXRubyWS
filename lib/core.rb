@@ -328,3 +328,15 @@ module WS
     end
   end
 end
+
+class Numeric
+  def clamp(min, max)
+    if self < min
+      min
+    elsif self > max
+      max
+    else
+      self
+    end
+  end
+end

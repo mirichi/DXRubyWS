@@ -1,18 +1,6 @@
 # coding: utf-8
 require_relative './module.rb'
 
-class Numeric
-  def clamp(min, max)
-    if self < min
-      min
-    elsif self > max
-      max
-    else
-      self
-    end
-  end
-end
-
 module WS
   class WSListBox < WSContainer
     class WSListBoxClient < WSContainer
