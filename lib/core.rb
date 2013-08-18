@@ -17,6 +17,12 @@ module WS
       @resizable_height = false # オートレイアウト用設定
     end
 
+    # マウスイベント
+    # ユーザはこれをオーバーライドして使う。
+    # ありがちな処理なら自分で書かなくてもmodule.rbのモジュールをincludeすれば、
+    # これらをオーバーライドして判定してシグナルを発行してくれるので、
+    # シグナルを受けるだけでよくなる。
+
     # マウスの左ボタンを押したときに呼ばれる
     def on_mouse_down(tx, ty)
     end
@@ -45,6 +51,9 @@ module WS
     # コントロールからマウスカーソルが離れたときに呼ばれる
     def on_mouse_out
     end
+
+    # マウスイベント用の内部処理
+    # WSContainerとの協調に必要。特殊なパターンでない限り、ユーザが意識する必要はない。
 
     # マウスの左ボタンを押したときに呼ばれる内部処理
     def on_mouse_down_internal(tx, ty)
@@ -75,6 +84,10 @@ module WS
       self.on_mouse_move(tx, ty)
       return self
     end
+
+    # シグナル処理
+    # add_handlerで登録しておいたオブジェクト-メソッド名の組もしくはブロックを、signal実行時に呼び出す
+    # 一応、1つのシグナルに複数のハンドラを設定することができるようになっている。はず。
 
     # シグナルハンドラの登録
     def add_handler(signal, obj=nil, handler=nil, &block)
@@ -107,6 +120,13 @@ module WS
       [self.x + tx, self.y + ty]
     end
 
+    # コントロールの移動/リサイズをするときはmove/resizeを呼ぶ。
+    # 自分でコントロールのクラスを実装した場合、move/resize時になにか処理が必要なら実装すること。
+    # :move/:resizeシグナルは外部の処理でこのコントロールのmove/resize後に何かをしたい場合に使う。
+    # たとえばWSImageを派生クラスを作らず直接newした場合、画像データは外部から設定することになるが、
+    # resize時に画像の再生成が必要になる。そういうときにこのイベントを捕まえて新しいサイズの画像を生成、設定する。
+    # :moveシグナルは使い道ないかもしれん。
+
     # コントロールの移動
     def move(tx, ty)
       self.x, self.y = tx, ty
@@ -122,6 +142,10 @@ module WS
   end
 
   # 配下にコントロールを保持する機能を追加したコントロール
+  # ウィンドウやリストボックスなど、自身の内部にコントロールを配置するものはWSContainerを使う。
+  # マウスイベントやdraw/updateの伝播をしてくれる。
+  # imageにRenderTargetを持ち、配下のオブジェクトのtargetはそれが設定される。
+  # したがって、配下のオブジェクトの座標は親になるWSContainerの左上隅が0,0となる。
   class WSContainer < WSControl
     attr_accessor :childlen
 
@@ -135,7 +159,7 @@ module WS
     # 自身の配下にコントロールを追加する
     # nameでシンボルを渡されるとその名前でgetterメソッドを追加する
     def add_control(obj, name=nil)
-      obj.target = self.image
+      obj.target = self.image # 子コントロールの描画先は親のRenderTargetである
       obj.parent = self
       @childlen << obj
       if name.class == Symbol
