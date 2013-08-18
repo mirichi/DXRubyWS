@@ -72,8 +72,8 @@ module WS
     end
 
     def draw
-      sx = self.image.width
-      sy = self.image.height
+      sx = @width
+      sy = @height
       self.image.draw_line(0,0,sx-1,0,[240,240,240])
       self.image.draw_line(0,0,0,sy-1,[240,240,240])
       self.image.draw_line(1,1,sx-1,1,[200,200,200])
