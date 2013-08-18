@@ -52,7 +52,7 @@ module WS
       # ボタン押した
       if Input.mouse_down?(M_LBUTTON) and @mouse_flag == false
         @mouse_flag = true
-        self.on_mouse_down_internal(@hit_cursor.x, @hit_cursor.y, M_LBUTTON)
+        self.on_mouse_down_internal(@hit_cursor.x, @hit_cursor.y)
       end
   
       # ボタン離した。キャプチャされてたら@captureのメソッドを呼ぶ
@@ -60,9 +60,9 @@ module WS
         @mouse_flag = false
         if @capture_object
           tx, ty = @capture_object.get_global_vertex
-          @capture_object.on_mouse_up(@hit_cursor.x - tx, @hit_cursor.y - ty, M_LBUTTON)
+          @capture_object.on_mouse_up(@hit_cursor.x - tx, @hit_cursor.y - ty)
         else
-          self.on_mouse_up_internal(@hit_cursor.x, @hit_cursor.y, M_LBUTTON)
+          self.on_mouse_up_internal(@hit_cursor.x, @hit_cursor.y)
         end
       end
 

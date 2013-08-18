@@ -17,10 +17,10 @@ module WS
       @resizable_height = false
     end
 
-    def on_mouse_down(tx, ty, button)
+    def on_mouse_down(tx, ty)
     end
 
-    def on_mouse_up(tx, ty, button)
+    def on_mouse_up(tx, ty)
     end
 
     def on_mouse_move(tx, ty)
@@ -33,13 +33,13 @@ module WS
     def on_mouse_out
     end
 
-    def on_mouse_down_internal(tx, ty, button)
-      self.on_mouse_down(tx, ty, button)
+    def on_mouse_down_internal(tx, ty)
+      self.on_mouse_down(tx, ty)
       return self
     end
 
-    def on_mouse_up_internal(tx, ty, button)
-      self.on_mouse_up(tx, ty, button)
+    def on_mouse_up_internal(tx, ty)
+      self.on_mouse_up(tx, ty)
       return self
     end
 
@@ -130,19 +130,19 @@ module WS
       @hit_cursor.check(@childlen.reverse)[0]
     end
 
-    def on_mouse_down_internal(tx, ty, button)
+    def on_mouse_down_internal(tx, ty)
       ctl = find_hit_object(tx, ty)
       if ctl
-        ctl.on_mouse_down_internal(tx - ctl.x, ty - ctl.y, button)
+        ctl.on_mouse_down_internal(tx - ctl.x, ty - ctl.y)
       else
         super
       end
     end
 
-    def on_mouse_up_internal(tx, ty, button)
+    def on_mouse_up_internal(tx, ty)
       ctl = find_hit_object(tx, ty)
       if ctl
-        ctl.on_mouse_up_internal(tx - ctl.x, ty - ctl.y, button)
+        ctl.on_mouse_up_internal(tx - ctl.x, ty - ctl.y)
       else
         super
       end

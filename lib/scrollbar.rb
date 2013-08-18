@@ -63,12 +63,12 @@ module WS
         @caption = caption
       end
 
-      def on_mouse_down(tx, ty, button)
+      def on_mouse_down(tx, ty)
         @image_flag = true
         super
       end
   
-      def on_mouse_up(tx, ty, button)
+      def on_mouse_up(tx, ty)
         @image_flag = false
         super
       end

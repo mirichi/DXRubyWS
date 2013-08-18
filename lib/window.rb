@@ -106,7 +106,7 @@ module WS
     end
 
     # マウスのボタンが押されたときに手前に持ってくる処理(ちょっとアレな手)
-    def on_mouse_down_internal(tx, ty, button)
+    def on_mouse_down_internal(tx, ty)
       self.parent.childlen.push(self.parent.childlen.delete(self))
       super
     end
