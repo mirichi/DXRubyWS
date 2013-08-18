@@ -549,11 +549,11 @@ module WS
       @selector = nil
 
       # ゲーム画面のクライアント領域のクリックで:clickシグナルを発行する
-      @client.extend Clickable
+      self.client.extend Clickable
 
       # クリックされたら敵キャラとの判定を行って、クリックしたキャラを@selectedに格納
       # また、そのサイズのセレクタ画像(黄色の四角)を作って@selectorに格納
-      @client.add_handler(:click) do |obj, tx, ty|
+      self.client.add_handler(:click) do |obj, tx, ty|
         @hit_cursor.x, @hit_cursor.y = tx+$myship.x/5, ty
         @selected = @hit_cursor.check($enemies)[0]
         if @selected
@@ -566,12 +566,12 @@ module WS
     # サイズ変更したら再描画する
     def resize(*args)
       super
-      @client.image.draw(-$myship.x/5,0,$rt)
+      self.client.image.draw(-$myship.x/5,0,$rt)
     end
 
     # セレクタ画像を描画する
     def draw
-      @client.image.draw(@selected.x-$myship.x/5, @selected.y, @selector, 10000) if @selected
+      self.client.image.draw(@selected.x-$myship.x/5, @selected.y, @selector, 10000) if @selected
       super
     end
   end
@@ -587,15 +587,15 @@ module WS
       @clear_image = Image.new(48,48)
       @enemy_image = WSImage.new(5, 5, 48, 48)
       @enemy_image.image = @clear_image
-      @client.add_control(@enemy_image)
+      self.client.add_control(@enemy_image)
 
       # HPを表示するWSLabelコントロール
       @label = WSLabel.new(5, 70, 100, 16, "HP:")
-      @client.add_control(@label)
+      self.client.add_control(@label)
 
       # 自爆ボタン
       damage_button = WSButton.new(5, 100, 50, 20, "自爆")
-      @client.add_control(damage_button)
+      self.client.add_control(damage_button)
       damage_button.add_handler(:click) do |obj|
         if WS.desktop.gamewindow.selected
           tmp = OpenStruct.new
@@ -608,7 +608,7 @@ module WS
 
       # 攻撃ボタン
       attack_button = WSButton.new(105, 100, 50, 20, "攻撃")
-      @client.add_control(attack_button)
+      self.client.add_control(attack_button)
       attack_button.add_handler(:click) do |obj|
         if WS.desktop.gamewindow.selected
           WS.desktop.gamewindow.selected.fire
