@@ -1,5 +1,6 @@
 # ウィンドウシステム
 module WS
+  # すべての基本、コントロールのクラス
   class WSControl < Sprite
     attr_accessor :parent, :font, :width, :height, :resizable_width, :resizable_height
     @@default_font = Font.new(16)
@@ -8,62 +9,74 @@ module WS
       super(tx, ty)
       @width, @height = width, height
       self.collision = [0, 0, width - 1, height - 1]
-      @signal = {}
-      @hit_cursor = Sprite.new
+      @signal = {}             # シグナルデータ
+      @hit_cursor = Sprite.new # 衝突判定用スプライト
       @hit_cursor.collision = [0,0]
       @font = @@default_font
-      @layout = nil
-      @resizable_width = false
-      @resizable_height = false
+      @resizable_width = false  # オートレイアウト用設定
+      @resizable_height = false # オートレイアウト用設定
     end
 
+    # マウスの左ボタンを押したときに呼ばれる
     def on_mouse_down(tx, ty)
     end
 
+    # マウスの左ボタンを離したときに呼ばれる
     def on_mouse_up(tx, ty)
     end
 
+    # マウスの右ボタンを押したときに呼ばれる
     def on_mouse_r_down(tx, ty)
     end
 
+    # マウスの右ボタンを離したときに呼ばれる
     def on_mouse_r_up(tx, ty)
     end
 
+    # マウスカーソルを動かしたときに呼ばれる
     def on_mouse_move(tx, ty)
       return self
     end
 
+    # コントロールにマウスカーソルが乗ったときに呼ばれる
     def on_mouse_over
     end
 
+    # コントロールからマウスカーソルが離れたときに呼ばれる
     def on_mouse_out
     end
 
+    # マウスの左ボタンを押したときに呼ばれる内部処理
     def on_mouse_down_internal(tx, ty)
       self.on_mouse_down(tx, ty)
       return self
     end
 
+    # マウスの左ボタンを離したときに呼ばれる内部処理
     def on_mouse_up_internal(tx, ty)
       self.on_mouse_up(tx, ty)
       return self
     end
 
+    # マウスの右ボタンを押したときに呼ばれる内部処理
     def on_mouse_r_down_internal(tx, ty)
       self.on_mouse_r_down(tx, ty)
       return self
     end
 
+    # マウスの右ボタンを離したときに呼ばれる内部処理
     def on_mouse_r_up_internal(tx, ty)
       self.on_mouse_r_up(tx, ty)
       return self
     end
 
+    # マウスカーソルを動かしたときに呼ばれる内部処理
     def on_mouse_move_internal(tx, ty)
       self.on_mouse_move(tx, ty)
       return self
     end
 
+    # シグナルハンドラの登録
     def add_handler(signal, obj=nil, handler=nil, &block)
       if obj
         tmp = [obj, handler]
@@ -78,6 +91,7 @@ module WS
       end
     end
 
+    # シグナルの発行(=ハンドラの呼び出し)
     def signal(s, *args)
       if @signal.has_key?(s)
         @signal[s].each do |tmp|
@@ -86,17 +100,20 @@ module WS
       end
     end
 
+    # 絶対座標の算出
     def get_global_vertex
       return [self.x, self.y] unless self.parent
       tx, ty = self.parent.get_global_vertex
       [self.x + tx, self.y + ty]
     end
 
+    # コントロールの移動
     def move(tx, ty)
       self.x, self.y = tx, ty
       signal(:move, tx, ty)
     end
 
+    # コントロールのリサイズ
     def resize(width, height)
       @width, @height = width, height
       self.collision = [0, 0, width - 1, height - 1]
@@ -104,15 +121,19 @@ module WS
     end
   end
 
+  # 配下にコントロールを保持する機能を追加したコントロール
   class WSContainer < WSControl
     attr_accessor :childlen
 
     def initialize(tx, ty, width, height)
       super(tx, ty, width, height)
-      self.image = RenderTarget.new(width, height)
+      self.image = RenderTarget.new(width, height) # ContainerはRenderTargetを持つ
       @childlen = []
+      @layout = nil
     end
 
+    # 自身の配下にコントロールを追加する
+    # nameでシンボルを渡されるとその名前でgetterメソッドを追加する
     def add_control(obj, name=nil)
       obj.target = self.image
       obj.parent = self
@@ -127,25 +148,30 @@ module WS
       end
     end
 
+    # コントロールの削除
     def remove_control(obj)
       @childlen.delete(obj)
     end
 
+    # Sprite#update時に配下のコントロールにもupdateを投げる
     def update
       Sprite.update(@childlen)
       super
     end
 
+    # Sprite#draw時に配下のコントロールにもupdateを投げる
     def draw
       Sprite.draw(@childlen)
       super
     end
 
+    # 引数の座標に存在する配下のコントロールを返す。無ければnil
     def find_hit_object(tx, ty)
       @hit_cursor.x, @hit_cursor.y = tx, ty
       @hit_cursor.check(@childlen.reverse)[0]
     end
 
+    # マウスの左ボタンが押されたイベントを配下のコントロールに伝播させる
     def on_mouse_down_internal(tx, ty)
       ctl = find_hit_object(tx, ty)
       if ctl
@@ -155,6 +181,7 @@ module WS
       end
     end
 
+    # マウスの左ボタンが離されたイベントを配下のコントロールに伝播させる
     def on_mouse_up_internal(tx, ty)
       ctl = find_hit_object(tx, ty)
       if ctl
@@ -164,6 +191,7 @@ module WS
       end
     end
 
+    # マウスの右ボタンが押されたイベントを配下のコントロールに伝播させる
     def on_mouse_r_down_internal(tx, ty)
       ctl = find_hit_object(tx, ty)
       if ctl
@@ -173,6 +201,7 @@ module WS
       end
     end
 
+    # マウスの右ボタンが離されたイベントを配下のコントロールに伝播させる
     def on_mouse_r_up_internal(tx, ty)
       ctl = find_hit_object(tx, ty)
       if ctl
@@ -182,6 +211,7 @@ module WS
       end
     end
 
+    # マウスカーソルが動いたイベントを配下のコントロールに伝播させる
     def on_mouse_move_internal(tx, ty)
       ctl = find_hit_object(tx, ty)
       if ctl
@@ -191,11 +221,13 @@ module WS
       end
     end
 
+    # オートレイアウト設定開始
     def layout(type=nil, &b)
       @layout = Layout.new(type, self, &b)
       @layout.auto_layout
     end
 
+    # サイズの変更でRenderTargetをresizeし、オートレイアウトを起動する
     def resize(width, height)
       self.image.resize(width, height)
       super
@@ -206,6 +238,7 @@ module WS
     end
   end
 
+  # オートレイアウト
   class Layout
     attr_accessor :type, :x, :y, :width, :height, :resizable_width, :resizable_height, :obj
     attr_accessor :margin_left, :margin_right, :margin_top, :margin_bottom
