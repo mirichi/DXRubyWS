@@ -18,11 +18,6 @@ module WS
     class WSListBoxClient < WSContainer
       include Clickable
       include DoubleClickable
-
-      def resize(width, height)
-        self.image.resize(width, height)
-        super
-      end
     end
 
     attr_reader :items, :pos, :cursor
@@ -226,16 +221,17 @@ module WS
       db.add_handler(:click){signal(:btn_down)}
       
       add_handler(:click, self, :on_click)
+
+      layout(:vbox) do
+        add ub
+        layout
+        add db
+      end
     end
     
     def draw
       self.slider.height = @screen_length / @item_length * (@height - 32)
       self.slider.height = self.slider.height.clamp(8, @height - 32)
-      super
-    end
-
-    def resize(width, height)
-      self.btn_down.move(0, height - 16)
       super
     end
 
