@@ -2,15 +2,19 @@
 require_relative './module.rb'
 
 module WS
+  # スクロールバークラス
   class WSScrollBar < WSContainer
+    # スクロールバーのスライダークラス
     class WSScrollBarSlider < WSControl
       include Draggable
+
       def initialize(tx, ty, width, height)
         super
         add_handler(:drag_move) {|obj, dx, dy| self.slide(dy)}
       end
 
       def draw
+        # スライダーの高さが変更された場合に画像を再生成する
         if @old_height != @height
           self.image.dispose if self.image
           self.image = Image.new(@width, @height, [160,160,160])
@@ -28,15 +32,18 @@ module WS
         super
       end
 
+      # ドラッグされた場合、はみ出さないように位置を補正して:slideシグナルを投げる
       def slide(dy)
         self.y = (self.y + dy).clamp(16, @parent.height - 16 - @height)
         signal(:slide, self.y)
       end
     end
 
+    # 押しっぱなしでリピートするボタンクラス
     class WSRepeatButton < WSControl
       attr_accessor :caption, :fore_color
-      include RepeatClickable
+      include RepeatClickable # リピートクリック用モジュール
+                              # 普通のボタンと違うのはここだけ。コードが無駄なのでなんとかならんかな。
   
       def initialize(tx, ty, width, height, caption = "Button")
         super(tx, ty, width, height)
@@ -121,7 +128,8 @@ module WS
         add db
       end
     end
-    
+
+    # 描画時にスライダーのサイズを再計算する
     def draw
       self.slider.height = (@item_length > 0 ? @screen_length / @item_length * (@height - 32) : 0)
       self.slider.height = self.slider.height.clamp(8, @height - 32)

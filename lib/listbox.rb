@@ -3,7 +3,7 @@ require_relative './module.rb'
 
 module WS
 
-  # リストボックス
+  # リストボックスクラス
   class WSListBox < WSContainer
     # リストボックス内のクライアント領域クラス
     # マウスボタンに反応する必要がある。
@@ -33,32 +33,34 @@ module WS
         end
       end
 
+      # スクロールバーオブジェクト作成
       sb = WSScrollBar.new(0, 0, 16, height - 4)
       add_control(sb, :scrollbar)
       sb.add_handler(:slide) {|obj, pos| @pos = pos * slide_range}
-      sb.add_handler(:btn_up) do
+      sb.add_handler(:btn_up) do # ▲ボタン
         @pos -= 1
         @pos = 0 if @pos < 0
         sb.set_slider(@pos.quo(slide_range) )
       end
-      sb.add_handler(:btn_down) do
+      sb.add_handler(:btn_down) do # ▼ボタン
         max = slide_range
         @pos += 1
         @pos = max if @pos > max
         sb.set_slider(@pos.quo(max) )
       end
-      sb.add_handler(:page_up) do
+      sb.add_handler(:page_up) do # スライダーの上の空き部分をクリック
         @pos -= client.height / @font.size
         @pos = 0 if @pos < 0
         sb.set_slider(@pos.quo(slide_range) )
       end
-      sb.add_handler(:page_down) do
+      sb.add_handler(:page_down) do # スライダーの下の空き部分をクリック
         max = slide_range
         @pos += client.height / @font.size
         @pos = max if @pos > max
         sb.set_slider(@pos.quo(max) )
       end
 
+      # オートレイアウト
       layout(:hbox) do
         self.margin_left = self.margin_top = self.margin_right = self.margin_bottom = 2
         add client, true, true
@@ -66,6 +68,7 @@ module WS
       end
     end
 
+    # resize時にカーソル位置の反転画像を再生成する
     def resize(width, height)
       super
       @cursor_image.dispose if @cursor_image
@@ -77,6 +80,7 @@ module WS
     end
 
     def draw
+      # リスト描画
       @items.each_with_index do |s, i|
         if @cursor != i
           self.client.image.draw_font(2, (i - @pos) * @font.size, s.to_s, @font, :color=>C_BLACK)
@@ -85,6 +89,8 @@ module WS
           self.client.image.draw_font(2, (i - @pos) * @font.size, s.to_s, @font, :color=>C_WHITE)
         end
       end
+
+      # ボーダーライン
       self.image.draw_line(0,0,@width-1,0,[80,80,80])
       self.image.draw_line(0,0,0,@height-1,[80,80,80])
       self.image.draw_line(1,1,@width-1,1,[120,120,120])
@@ -96,6 +102,7 @@ module WS
 
       self.scrollbar.item_length = @items.length
       self.scrollbar.screen_length = self.client.height.quo(@font.size)
+      # スクロールバーの描画が必要ない場合は描画しない
       if self.client.height.quo(@font.size) > @items.length
         self.scrollbar.visible = false
       else
