@@ -2,27 +2,35 @@
 require_relative './module.rb'
 
 module WS
+
+  # リストボックス
   class WSListBox < WSContainer
+    # リストボックス内のクライアント領域クラス
+    # マウスボタンに反応する必要がある。
     class WSListBoxClient < WSContainer
       include Clickable
       include DoubleClickable
     end
 
     attr_reader :items, :pos, :cursor
+
     def initialize(tx, ty, width, height)
       super
       self.image.bgcolor = C_WHITE
       @font = Font.new(12)
-      @items = []
-      @item_image = {}
-      @pos = 0
-      @cursor = 0
+      @items = [] # リストの中身
+      @pos = 0    # 描画の基点
+      @cursor = 0 # カーソルの位置
 
+      # クライアント領域作成
       client = WSListBoxClient.new(0, 0, width - 4 - 16, height - 4)
       add_control(client, :client)
       client.add_handler(:click) do |obj, tx, ty|
-        @cursor = ((@pos * @font.size + ty) / @font.size).to_i
-        signal(:select, @cursor)
+        tmp = ((@pos * @font.size + ty) / @font.size).to_i
+        if tmp < @items.size
+          @cursor = tmp
+          signal(:select, @cursor) # 項目がクリックされたら:selectシグナル発行
+        end
       end
 
       sb = WSScrollBar.new(0, 0, 16, height - 4)

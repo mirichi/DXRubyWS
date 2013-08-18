@@ -123,7 +123,7 @@ module WS
     end
     
     def draw
-      self.slider.height = @screen_length / @item_length * (@height - 32)
+      self.slider.height = (@item_length > 0 ? @screen_length / @item_length * (@height - 32) : 0)
       self.slider.height = self.slider.height.clamp(8, @height - 32)
       super
     end
