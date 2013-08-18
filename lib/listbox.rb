@@ -214,7 +214,7 @@ module WS
       add_control(ub, :btn_up)
       ub.add_handler(:click){signal(:btn_up)}
 
-      db = WSRepeatButton.new(0, height - 16, width, 16, "▼")
+      db = WSRepeatButton.new(0, 0, width, 16, "▼")
       db.fore_color = C_BLACK
       db.font = font
       add_control(db, :btn_down)
