@@ -1,6 +1,8 @@
 require 'dxruby'
 require_relative '../lib/dxrubyws'
 
+Window.width, Window.height = 800, 600
+
 # オブジェクトブラウザを作る実験
 class WS::WSObjectBrowser < WS::WSWindow
   def initialize(tx, ty, width, height, caption, obj)
