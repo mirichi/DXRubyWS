@@ -111,9 +111,9 @@ ary = []
 ary << WS::WSMenuItem.new("Add new Window") do
   WS.desktop.add_control(WS::WSWindow.new(Input.mouse_pos_x, Input.mouse_pos_y, 300, 100, "PopupTestWindow"))
 end
-ary << nil
+ary << nil # nilが入っていたらセパレータラインが表示される
 ary << WS::WSMenuItem.new("Exit") do
-  exit
+  break
 end
 
 # extendでいつでもポップアップ機能を追加できる。menuitemsにWSMenuItemの配列をセットする。
