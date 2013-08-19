@@ -2,6 +2,17 @@
 require_relative './module.rb'
 
 module WS
+  # マウスの右ボタンを押したらポップアップメニューを表示する機能を追加するモジュール
+  module PopupMenu
+    attr_accessor :menuitems
+    def on_mouse_r_down(tx, ty)
+      self.remove_control(@popupmenu) if @popupmenu
+      @popupmenu = WSPopupMenu.new(tx, ty, @menuitems)
+      self.add_control(@popupmenu)
+      super
+    end
+  end
+
   # ポップアップメニュー
   class WSPopupMenu < WSContainer
     def initialize(tx, ty, menuitems)
@@ -29,27 +40,28 @@ module WS
       if ctl
         ctl.on_mouse_down_internal(tx - ctl.x, ty - ctl.y)
       else
-        self.parent.remove_control(self)
         super
       end
+      self.parent.remove_control(self)
       WS.capture(nil)
     end
 
     def on_mouse_r_down(tx, ty)
       ctl = find_hit_object(tx, ty)
       if ctl
-        ctl.on_mouse_r_down_internal(tx - ctl.x, ty - ctl.y)
+        ctl.on_mouse_down_internal(tx - ctl.x, ty - ctl.y)
       else
-        self.parent.remove_control(self)
         super
       end
+      self.parent.remove_control(self)
       WS.capture(nil)
     end
     
     def on_mouse_r_up(tx, ty)
       ctl = find_hit_object(tx, ty)
       if ctl
-        ctl.on_mouse_r_up_internal(tx - ctl.x, ty - ctl.y)
+        ctl.on_mouse_down_internal(tx - ctl.x, ty - ctl.y)
+        self.parent.remove_control(self)
         WS.capture(nil)
       else
         super

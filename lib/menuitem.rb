@@ -24,15 +24,6 @@ module WS
       super
     end
     
-    def on_mouse_r_up(tx, ty)
-      if @obj
-        @obj.__send__(@method)
-      elsif @block
-        @block.call 
-      end
-      super
-    end
-
     def on_mouse_over
       @select = true
       super
