@@ -6,12 +6,13 @@ require_relative './label'
 require_relative './image'
 require_relative './listbox'
 require_relative './scrollbar'
+require_relative './popupmenu'
+require_relative './menuitem'
 
 # ウィンドウシステム
 module WS
   class WSDesktop < WSContainer
     attr_accessor :capture_object
-    include RightClickable
     def initialize
       self.collision = [0, 0, Window.width - 1, Window.height - 1]
       @childlen = []
@@ -54,7 +55,12 @@ module WS
       # ボタン押した
       if Input.mouse_down?(M_LBUTTON) and @mouse_l_flag == false
         @mouse_l_flag = true
-        self.on_mouse_down_internal(@hit_cursor.x, @hit_cursor.y)
+        if @capture_object
+          tx, ty = @capture_object.get_global_vertex
+          @capture_object.on_mouse_down(@hit_cursor.x - tx, @hit_cursor.y - ty)
+        else
+          self.on_mouse_down_internal(@hit_cursor.x, @hit_cursor.y)
+        end
       end
   
       # ボタン離した。キャプチャされてたら@captureのメソッドを呼ぶ
@@ -71,7 +77,12 @@ module WS
       # 右ボタン押した
       if Input.mouse_down?(M_RBUTTON) and @mouse_r_flag == false
         @mouse_r_flag = true
-        self.on_mouse_r_down_internal(@hit_cursor.x, @hit_cursor.y)
+        if @capture_object
+          tx, ty = @capture_object.get_global_vertex
+          @capture_object.on_mouse_r_down(@hit_cursor.x - tx, @hit_cursor.y - ty)
+        else
+          self.on_mouse_r_down_internal(@hit_cursor.x, @hit_cursor.y)
+        end
       end
   
       # 右ボタン離した。キャプチャされてたら@captureのメソッドを呼ぶ

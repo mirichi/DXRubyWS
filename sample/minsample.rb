@@ -104,8 +104,27 @@ end
 t = Test.new
 WS.desktop.add_control(t)
 
+
+# とりあえずの右クリックメニューテスト
+# 仕様はこれから考える。
+ary = []
+ary << WS::WSMenuItem.new("Add new Window") do
+  WS.desktop.add_control(WS::WSWindow.new(Input.mouse_pos_x, Input.mouse_pos_y, 300, 100, "PopupTestWindow"))
+  WS.desktop.remove_control(@popupmenu)
+end
+ary << nil
+ary << WS::WSMenuItem.new("Exit") do
+  exit
+end
+
+WS.desktop.extend WS::RightClickable
+WS.desktop.add_handler(:rightclick) do |obj, tx, ty|
+  WS.desktop.remove_control(@popupmenu) if @popupmenu
+  @popupmenu = WS::WSPopupMenu.new(tx, ty, ary)
+  WS.desktop.add_control(@popupmenu)
+end
+
 Window.loop do
   WS.update
   break if Input.key_push?(K_ESCAPE)
 end
-
