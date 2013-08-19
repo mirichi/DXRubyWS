@@ -6,22 +6,25 @@ module WS
   module PopupMenu
     attr_accessor :menuitems
     def on_mouse_r_down(tx, ty)
-      self.remove_control(@popupmenu) if @popupmenu
-      @popupmenu = WSPopupMenu.new(tx, ty, @menuitems)
-      self.add_control(@popupmenu)
+      WS.desktop.remove_control(@popupmenu) if @popupmenu
+      tmpx, tmpy = self.get_global_vertex
+      @popupmenu = WSPopupMenu.new(tx + tmpx, ty + tmpy, @menuitems)
+      WS.desktop.add_control(@popupmenu)
+      @popupmenu.object = self
       super
     end
   end
 
   # ポップアップメニュー
   class WSPopupMenu < WSContainer
+    attr_accessor :object
     def initialize(tx, ty, menuitems)
       @menuitems = menuitems
       @font = Font.new(12)
       width = @font.get_width(menuitems[0].str)
       height = @font.size * menuitems.size
       super(tx, ty, width + 10, height + 8)
-      self.image.bgcolor = [160, 160, 160]
+      self.image.bgcolor = [190, 190, 190]
       menuitems.each_with_index do |o, i|
         if o
           o.x = 5
