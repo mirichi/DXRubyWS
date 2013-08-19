@@ -1,6 +1,64 @@
 require 'dxruby'
 require_relative '../lib/dxrubyws'
 
+# オブジェクトブラウザを作る実験
+class WS::WSObjectBrowser < WS::WSWindow
+  def initialize(tx, ty, width, height, caption, obj)
+    super(tx, ty, width, height, caption)
+    lbx1 = WS::WSListBox.new(10,10,100,100)
+    lbx2 = WS::WSListBox.new(10,10,100,100)
+    self.client.add_control(lbx1, :lbx1)
+    self.client.add_control(lbx2, :lbx2)
+    lbl1 = WS::WSLabel.new(0, 0, 100, 16, "SuperClass : ")
+    lbl1.fore_color = C_BLACK
+    self.client.add_control(lbl1, :lbl1)
+    lbl2 = WS::WSLabel.new(0, 0, 200, 16)
+    lbl2.fore_color = C_BLACK
+    self.client.add_control(lbl2, :lbl2)
+    layout(:vbox) do
+      layout(:hbox) do
+        self.height = lbl1.height
+        self.resizable_height = false
+        add lbl1, false
+        add lbl2, false
+        layout
+      end
+      layout(:hbox) do
+        add lbx1, true, true
+        add lbx2, true, true
+      end
+    end
+
+    obj.class.instance_methods(false).each do |s|
+      lbx1.items << s
+    end
+    obj.instance_variables.each do |s|
+      lbx2.items << s
+    end
+  end
+end
+
+$ary = []
+$ary << WS::WSMenuItem.new("Browse it") do |obj|
+  tmp = WS::WSObjectBrowser.new(Input.mouse_pos_x, Input.mouse_pos_y, 400, 200, "ObjectBrowser : " + obj.parent.to_s, obj.parent)
+  tmp.client.lbl2.caption = obj.parent.class.superclass.to_s
+  WS.desktop.add_control(tmp)
+end
+
+module UseObjectBrowser
+  def initialize(*args)
+    super
+    self.menuitems = $ary
+  end
+end
+
+class WS::WSWindow::WSWindowClient
+  include UseObjectBrowser
+  include WS::PopupMenu
+end
+
+
+
 # TestWindow1
 w = WS::WSWindow.new(100, 100, 300, 100, "Test")
 b = WS::WSButton.new(10, 10, 100, 20)
@@ -118,6 +176,7 @@ end
 # extendでいつでもポップアップ機能を追加できる。menuitemsにWSMenuItemの配列をセットする。
 WS.desktop.extend WS::PopupMenu
 WS.desktop.menuitems = ary
+
 
 Window.loop do
   WS.update
