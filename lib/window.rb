@@ -35,6 +35,9 @@ module WS
       end
     end
 
+    class WSWindowClient < WSContainer
+    end
+
     attr_accessor :border_width # ウィンドウボーダーの幅
     include Resizable
 
@@ -55,7 +58,7 @@ module WS
       window_title.add_handler(:doubleclick, self, :on_maximize)
 
       # クライアント領域は単純なコンテナである
-      client = WSContainer.new(0, 0, sx - @border_width * 2, sy - @border_width * 2 - 16)
+      client = WSWindowClient.new(0, 0, sx - @border_width * 2, sy - @border_width * 2 - 16)
       add_control(client, :client)
 
       # オートレイアウトでコントロールの位置を決める
