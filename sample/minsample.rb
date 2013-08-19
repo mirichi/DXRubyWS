@@ -44,7 +44,6 @@ WS::desktop.add_control(w)
 class Test < WS::WSWindow
   def initialize
     super(100, 300, 300, 100, "LayoutTest")
-    self.image.bgcolor = [160,160,160]
 
     b1 = WS::WSButton.new(0, 0, 100, 20, "btn1")
     b2 = WS::WSButton.new(0, 0, 100, 20, "btn2")

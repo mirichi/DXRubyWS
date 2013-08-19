@@ -17,7 +17,7 @@ module WS
         # スライダーの高さが変更された場合に画像を再生成する
         if @old_height != @height
           self.image.dispose if self.image
-          self.image = Image.new(@width, @height, [160,160,160])
+          self.image = Image.new(@width, @height, [190,190,190])
                             .line(0,0,@width-1,0,[240,240,240])
                             .line(0,0,0,@height-1,[240,240,240])
                             .line(1,1,@width-1,1,[200,200,200])
@@ -48,7 +48,7 @@ module WS
       def initialize(tx, ty, width, height, caption = "Button")
         super(tx, ty, width, height)
         @image = {}
-        @image[false] = Image.new(width, height, [160,160,160])
+        @image[false] = Image.new(width, height, [190,190,190])
                        .line(0,0,width-1,0,[240,240,240])
                        .line(0,0,0,height-1,[240,240,240])
                        .line(1,1,width-1,1,[200,200,200])
@@ -57,7 +57,7 @@ module WS
                        .line(0,height-1,width-1,height-1,[80,80,80])
                        .line(width-2,1,width-2,height-2,[120,120,120])
                        .line(1,height-2,width-2,height-2,[120,120,120])
-        @image[true] = Image.new(width, height, [160,160,160])
+        @image[true] = Image.new(width, height, [190,190,190])
                        .line(0,0,width-1,0,[80,80,80])
                        .line(0,0,0,height-1,[80,80,80])
                        .line(1,1,width-1,1,[120,120,120])
@@ -101,7 +101,7 @@ module WS
 
     def initialize(tx, ty, width, height)
       super
-      self.image.bgcolor = [200, 200, 200]
+      self.image.bgcolor = [220, 220, 220]
       font = Font.new(12)
 
       slider = WSScrollBarSlider.new(0, 16, width, 16)

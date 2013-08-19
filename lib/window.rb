@@ -11,7 +11,7 @@ module WS
   
       def initialize(tx, ty, width, height, title="Title")
         super(tx, ty, width, height)
-        self.image.bgcolor = C_BLUE
+        self.image.bgcolor = [0, 0, 160]
   
         # タイトルバーのクロースボタン
         close_button = WSButton.new(0, 0, height-2, height-2, "X")
@@ -21,6 +21,8 @@ module WS
   
         # ウィンドウタイトル
         label = WSLabel.new(0, 0, width, height, title)
+        label.fore_color = C_WHITE
+        label.font = Font.new(14, nil, :weight=>true)
         add_control(label)
 
         # オートレイアウト
@@ -38,7 +40,7 @@ module WS
 
     def initialize(tx, ty, sx, sy, caption = "WindowTitle")
       super(tx, ty, sx, sy)
-      self.image.bgcolor = [160,160,160]
+      self.image.bgcolor = [190,190,190]
       @border_width = 2
 
       # ウィンドウタイトルはそれでひとつのコントロールを作る

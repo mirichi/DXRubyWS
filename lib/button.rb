@@ -11,6 +11,7 @@ module WS
       @image = {}
       @image_flag = false
       @caption = caption
+      @fore_color = C_BLACK
       resize(width, height)
     end
 
@@ -35,7 +36,7 @@ module WS
         @image[false].dispose
         @image[true].dispose
       end
-      @image[false] = Image.new(width, height, [160,160,160])
+      @image[false] = Image.new(width, height, [190,190,190])
                      .line(0,0,width-1,0,[240,240,240])
                      .line(0,0,0,height-1,[240,240,240])
                      .line(1,1,width-1,1,[200,200,200])
@@ -44,7 +45,7 @@ module WS
                      .line(0,height-1,width-1,height-1,[80,80,80])
                      .line(width-2,1,width-2,height-2,[120,120,120])
                      .line(1,height-2,width-2,height-2,[120,120,120])
-      @image[true] = Image.new(width, height, [160,160,160])
+      @image[true] = Image.new(width, height, [190,190,190])
                      .line(0,0,width-1,0,[80,80,80])
                      .line(0,0,0,height-1,[80,80,80])
                      .line(1,1,width-1,1,[120,120,120])
