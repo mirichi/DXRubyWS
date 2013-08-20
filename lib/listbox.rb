@@ -105,8 +105,10 @@ module WS
       # スクロールバーの描画が必要ない場合は描画しない
       if self.client.height.quo(@font.size) > @items.length
         self.scrollbar.visible = false
+        self.scrollbar.collision_enable = false
       else
         self.scrollbar.visible = true
+        self.scrollbar.collision_enable = true
       end
       super
     end
