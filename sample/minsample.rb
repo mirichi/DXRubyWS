@@ -40,23 +40,27 @@ class WS::WSObjectBrowser < WS::WSWindow
   end
 end
 
-$ary = []
-$ary << WS::WSMenuItem.new("Browse it") do |obj|
-  tmp = WS::WSObjectBrowser.new(Input.mouse_pos_x, Input.mouse_pos_y, 400, 200, "ObjectBrowser : " + obj.parent.to_s, obj.parent)
-  tmp.client.lbl2.caption = obj.parent.class.superclass.to_s
-  WS.desktop.add_control(tmp)
-end
-
 module UseObjectBrowser
+  @@ary = []
+  @@ary << WS::WSMenuItem.new("Browse it") do |obj|
+    obj = obj.parent if WS::WSWindow::WSWindowClient == obj.class
+    tmp = WS::WSObjectBrowser.new(Input.mouse_pos_x, Input.mouse_pos_y, 400, 200, "ObjectBrowser : " + obj.to_s, obj)
+    tmp.client.lbl2.caption = obj.class.superclass.to_s
+    WS.desktop.add_control(tmp)
+  end
   def initialize(*args)
     super
-    self.menuitems = $ary
+    self.menuitems = @@ary
   end
 end
 
 class WS::WSWindow::WSWindowClient
   include UseObjectBrowser
-  include WS::PopupMenu
+  include WS::UsePopupMenu
+end
+class WS::WSButton
+  include UseObjectBrowser
+  include WS::UsePopupMenu
 end
 
 
@@ -176,7 +180,7 @@ ary << WS::WSMenuItem.new("Exit") do
 end
 
 # extendでいつでもポップアップ機能を追加できる。menuitemsにWSMenuItemの配列をセットする。
-WS.desktop.extend WS::PopupMenu
+WS.desktop.extend WS::UsePopupMenu
 WS.desktop.menuitems = ary
 
 
