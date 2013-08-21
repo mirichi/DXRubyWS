@@ -35,17 +35,21 @@ module WS
     def update
       oldx, oldy = @hit_cursor.x, @hit_cursor.y
       @hit_cursor.x, @hit_cursor.y = Input.mouse_pos_x, Input.mouse_pos_y
+
+      if @capture_object
+        tx, ty = @capture_object.get_global_vertex
+        tmp = @capture_object
+      else
+        tx = ty = 0
+        tmp = self
+      end
   
       # マウスカーソルの移動処理
       if oldx != @hit_cursor.x or oldy != @hit_cursor.y
         # キャプチャされていたら@captureのメソッドを呼ぶ
         old_over_object = @over_object
-        if @capture_object
-          tx, ty = @capture_object.get_global_vertex
-          @over_object = @capture_object.on_mouse_move(@hit_cursor.x - tx, @hit_cursor.y - ty)
-        else
-          @over_object = self.on_mouse_move_internal(@hit_cursor.x, @hit_cursor.y)
-        end
+        @over_object = tmp.on_mouse_move_internal(@hit_cursor.x - tx, @hit_cursor.y - ty)
+
         if old_over_object != @over_object
           old_over_object.on_mouse_out if old_over_object
           @over_object.on_mouse_over
@@ -55,45 +59,25 @@ module WS
       # ボタン押した
       if Input.mouse_down?(M_LBUTTON) and @mouse_l_flag == false
         @mouse_l_flag = true
-        if @capture_object
-          tx, ty = @capture_object.get_global_vertex
-          @capture_object.on_mouse_down(@hit_cursor.x - tx, @hit_cursor.y - ty)
-        else
-          self.on_mouse_down_internal(@hit_cursor.x, @hit_cursor.y)
-        end
+        tmp.on_mouse_down_internal(@hit_cursor.x - tx, @hit_cursor.y - ty)
       end
   
-      # ボタン離した。キャプチャされてたら@captureのメソッドを呼ぶ
+      # ボタン離した
       if !Input.mouse_down?(M_LBUTTON) and @mouse_l_flag == true
         @mouse_l_flag = false
-        if @capture_object
-          tx, ty = @capture_object.get_global_vertex
-          @capture_object.on_mouse_up(@hit_cursor.x - tx, @hit_cursor.y - ty)
-        else
-          self.on_mouse_up_internal(@hit_cursor.x, @hit_cursor.y)
-        end
+        tmp.on_mouse_up_internal(@hit_cursor.x - tx, @hit_cursor.y - ty)
       end
 
       # 右ボタン押した
       if Input.mouse_down?(M_RBUTTON) and @mouse_r_flag == false
         @mouse_r_flag = true
-        if @capture_object
-          tx, ty = @capture_object.get_global_vertex
-          @capture_object.on_mouse_r_down(@hit_cursor.x - tx, @hit_cursor.y - ty)
-        else
-          self.on_mouse_r_down_internal(@hit_cursor.x, @hit_cursor.y)
-        end
+        tmp.on_mouse_r_down_internal(@hit_cursor.x - tx, @hit_cursor.y - ty)
       end
   
-      # 右ボタン離した。キャプチャされてたら@captureのメソッドを呼ぶ
+      # 右ボタン離した
       if !Input.mouse_down?(M_RBUTTON) and @mouse_r_flag == true
         @mouse_r_flag = false
-        if @capture_object
-          tx, ty = @capture_object.get_global_vertex
-          @capture_object.on_mouse_r_up(@hit_cursor.x - tx, @hit_cursor.y - ty)
-        else
-          self.on_mouse_r_up_internal(@hit_cursor.x, @hit_cursor.y)
-        end
+        tmp.on_mouse_r_up_internal(@hit_cursor.x - tx, @hit_cursor.y - ty)
       end
 
       super

@@ -82,7 +82,6 @@ module WS
     # マウスカーソルを動かしたときに呼ばれる内部処理
     def on_mouse_move_internal(tx, ty)
       self.on_mouse_move(tx, ty)
-      return self
     end
 
     # シグナル処理
@@ -197,52 +196,47 @@ module WS
 
     # マウスの左ボタンが押されたイベントを配下のコントロールに伝播させる
     def on_mouse_down_internal(tx, ty)
-      ctl = find_hit_object(tx, ty)
-      if ctl
-        ctl.on_mouse_down_internal(tx - ctl.x, ty - ctl.y)
-      else
-        super
+      if !WS.captured?(self) 
+        ctl = find_hit_object(tx, ty)
+        return ctl.on_mouse_down_internal(tx - ctl.x, ty - ctl.y) if ctl
       end
+      super
     end
 
     # マウスの左ボタンが離されたイベントを配下のコントロールに伝播させる
     def on_mouse_up_internal(tx, ty)
-      ctl = find_hit_object(tx, ty)
-      if ctl
-        ctl.on_mouse_up_internal(tx - ctl.x, ty - ctl.y)
-      else
-        super
+      if !WS.captured?(self) 
+        ctl = find_hit_object(tx, ty)
+        return ctl.on_mouse_up_internal(tx - ctl.x, ty - ctl.y) if ctl
       end
+      super
     end
 
     # マウスの右ボタンが押されたイベントを配下のコントロールに伝播させる
     def on_mouse_r_down_internal(tx, ty)
-      ctl = find_hit_object(tx, ty)
-      if ctl
-        ctl.on_mouse_r_down_internal(tx - ctl.x, ty - ctl.y)
-      else
-        super
+      if !WS.captured?(self) 
+        ctl = find_hit_object(tx, ty)
+        return ctl.on_mouse_r_down_internal(tx - ctl.x, ty - ctl.y) if ctl
       end
+      super
     end
 
     # マウスの右ボタンが離されたイベントを配下のコントロールに伝播させる
     def on_mouse_r_up_internal(tx, ty)
-      ctl = find_hit_object(tx, ty)
-      if ctl
-        ctl.on_mouse_r_up_internal(tx - ctl.x, ty - ctl.y)
-      else
-        super
+      if !WS.captured?(self) 
+        ctl = find_hit_object(tx, ty)
+        return ctl.on_mouse_r_up_internal(tx - ctl.x, ty - ctl.y) if ctl
       end
+      super
     end
 
     # マウスカーソルが動いたイベントを配下のコントロールに伝播させる
     def on_mouse_move_internal(tx, ty)
-      ctl = find_hit_object(tx, ty)
-      if ctl
-        ctl.on_mouse_move_internal(tx - ctl.x, ty - ctl.y)
-      else
-        super
+      if !WS.captured?(self) 
+        ctl = find_hit_object(tx, ty)
+        return ctl.on_mouse_move_internal(tx - ctl.x, ty - ctl.y) if ctl
       end
+      super
     end
 
     # オートレイアウト設定開始
