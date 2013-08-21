@@ -1,7 +1,7 @@
 require 'dxruby'
 require_relative '../lib/dxrubyws'
 
-Window.width, Window.height = 800, 600
+Window.width, Window.height = 1280, 720 # ワイド画面化
 
 # オブジェクトブラウザを作る実験
 class WS::WSObjectBrowser < WS::WSWindow
