@@ -2,7 +2,7 @@
 # るびまサンプルゲーム
 require 'dxruby'
 require_relative '../lib/dxrubyws'
-
+require_relative '../lib/standardgui'
 
 # 背景描画
 class Map
