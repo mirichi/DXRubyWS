@@ -1,4 +1,6 @@
-require_relative './module.rb'
+# coding: utf-8
+require_relative './button'
+require_relative './label'
 
 module WS
   # ウィンドウぽい動きを実現してみる

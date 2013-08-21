@@ -1,5 +1,4 @@
 # coding: utf-8
-require_relative './module.rb'
 
 module WS
   # メニューアイテム
@@ -7,9 +6,8 @@ module WS
     attr_accessor :str, :obj, :method
     @@select_bg_pixel = Image.new(1, 1, C_BLUE)
 
-    def initialize(str, obj=nil, method=nil, &b)
-      @str, @obj, @method = str, obj, method
-      @block = b
+    def initialize(str, obj=nil, method=nil, &block)
+      @str, @obj, @method, @block = str, obj, method, block
       @font = Font.new(12)
       super(0, 0, @font.get_width(str), @font.size)
       @select = false

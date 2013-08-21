@@ -1,13 +1,7 @@
+# coding: utf-8
 require 'dxruby'
 require_relative './core'
-require_relative './window'
-require_relative './button'
-require_relative './label'
-require_relative './image'
-require_relative './listbox'
-require_relative './scrollbar'
-require_relative './popupmenu'
-require_relative './menuitem'
+require_relative './module'
 
 # ウィンドウシステム
 module WS

@@ -1,5 +1,5 @@
 # coding: utf-8
-require_relative './module.rb'
+require_relative './menuitem'
 
 module WS
   # マウスの右ボタンを押したらポップアップメニューを表示する機能を追加するモジュール

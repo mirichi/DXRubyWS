@@ -1,5 +1,4 @@
 # coding: utf-8
-require_relative './module.rb'
 
 module WS
   # スクロールバークラス

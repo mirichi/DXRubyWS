@@ -1,5 +1,7 @@
+# coding: utf-8
 require 'dxruby'
 require_relative '../lib/dxrubyws'
+require_relative '../lib/standardgui'
 
 Window.width, Window.height = 1280, 720 # ワイド画面化
 

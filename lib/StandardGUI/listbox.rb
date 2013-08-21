@@ -1,5 +1,5 @@
 # coding: utf-8
-require_relative './module.rb'
+require_relative './scrollbar'
 
 module WS
 

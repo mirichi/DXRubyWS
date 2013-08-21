@@ -1,5 +1,5 @@
+# coding: utf-8
 require 'dxruby'
-require_relative './module.rb'
 
 module WS
   class WSImage < WSControl

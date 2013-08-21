@@ -1,5 +1,4 @@
-require 'dxruby'
-require_relative './module.rb'
+# coding: utf-8
 
 module WS
   class WSButton < WSControl

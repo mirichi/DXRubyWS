@@ -1,3 +1,5 @@
+# coding: utf-8
+
 module WS
   class WSLabel < WSControl
     attr_accessor :caption, :fore_color
