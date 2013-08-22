@@ -2,7 +2,6 @@
 # るびまサンプルゲーム
 require 'dxruby'
 require_relative '../lib/dxrubyws'
-require_relative '../lib/standardgui'
 
 # 背景描画
 class Map
@@ -569,6 +568,10 @@ end
 module WS
   # メニューウィンドウを簡単に実装できるかと思ったけどなんか長くなってしまった。
   # もうちょっと何か考えないとこれでは使えない。
+  class WSImage < WSControl
+    include Clickable
+    include MouseOver
+  end
   class WSMenu < WSContainer
     def initialize
       super(0, 0, Window.width, Window.height)
