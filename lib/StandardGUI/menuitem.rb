@@ -17,7 +17,7 @@ module WS
       if @obj
         @obj.__send__(@method)
       elsif @block
-        @block.call(self.parent.object)
+        @block.call(self.parent.parent.object)
       end
       super
     end

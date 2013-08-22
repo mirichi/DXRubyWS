@@ -58,11 +58,11 @@ end
 
 class WS::WSWindow::WSWindowClient
   include UseObjectBrowser
-  include WS::UsePopupMenu
+  include WS::UseRightClickMenu
 end
 class WS::WSButton
   include UseObjectBrowser
-  include WS::UsePopupMenu
+  include WS::UseRightClickMenu
 end
 
 
@@ -182,7 +182,7 @@ ary << WS::WSMenuItem.new("Exit") do
 end
 
 # extendでいつでもポップアップ機能を追加できる。menuitemsにWSMenuItemの配列をセットする。
-WS.desktop.extend WS::UsePopupMenu
+WS.desktop.extend WS::UseRightClickMenu
 WS.desktop.menuitems = ary
 
 

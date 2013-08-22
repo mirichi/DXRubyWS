@@ -2,19 +2,6 @@
 require_relative './menuitem'
 
 module WS
-  # マウスの右ボタンを押したらポップアップメニューを表示する機能を追加するモジュール
-  module UsePopupMenu
-    attr_accessor :menuitems
-    def on_mouse_r_down(tx, ty)
-      WS.desktop.remove_control(@popupmenu) if @popupmenu
-      tmpx, tmpy = self.get_global_vertex
-      @popupmenu = WSPopupMenu.new(tx + tmpx, ty + tmpy, @menuitems)
-      WS.desktop.add_control(@popupmenu)
-      @popupmenu.object = self
-      super
-    end
-  end
-
   # ポップアップメニュー
   class WSPopupMenu < WSContainer
     attr_accessor :object
@@ -35,40 +22,8 @@ module WS
           add_control(o)
         end
       end
-      WS.capture(self)
     end
 
-    # WSContainerでは配下オブジェクトの選択はinternalのメソッドで処理されるが、
-    # PopupMenuはマウスキャプチャするため直接マウスイベントが呼ばれる可能性があり、ここで処理する
-    def on_mouse_down(tx, ty)
-      ctl = find_hit_object(tx, ty)
-      ctl.on_mouse_down_internal(tx - ctl.x, ty - ctl.y) if ctl
-      self.parent.remove_control(self)
-      WS.capture(nil)
-    end
-
-    def on_mouse_r_down(tx, ty)
-      on_mouse_down(tx, ty)
-    end
-    
-    def on_mouse_r_up(tx, ty)
-      ctl = find_hit_object(tx, ty)
-      if ctl
-        ctl.on_mouse_down_internal(tx - ctl.x, ty - ctl.y)
-        self.parent.remove_control(self)
-        WS.capture(nil)
-      end
-    end
-    
-    def on_mouse_move(tx, ty)
-      ctl = find_hit_object(tx, ty)
-      if ctl
-        ctl.on_mouse_move_internal(tx - ctl.x, ty - ctl.y)
-      else
-        super
-      end
-    end
-    
     def draw
       # メニュー描画
       @menuitems.each_with_index do |s, i|
