@@ -4,7 +4,7 @@ require 'dxruby'
 module WS
   class WSImage < WSControl
     include Clickable
-    include MouseOver
+    include BasicMouseSignal
   end
 end
 

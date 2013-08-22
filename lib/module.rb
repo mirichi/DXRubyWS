@@ -6,6 +6,37 @@
 # ユーザレベルで作れないものはまったくない。
 
 module WS
+  module BasicMouseSignal
+    def on_mouse_down(tx, ty)
+      signal(:mouse_down, tx, ty)
+      super
+    end
+    def on_mouse_up(tx, ty)
+      signal(:mouse_up, tx, ty)
+      super
+    end
+    def on_mouse_move(tx, ty)
+      signal(:mouse_move, tx, ty)
+      super
+    end
+    def on_mouse_r_down(tx, ty)
+      signal(:mouse_r_down, tx, ty)
+      super
+    end
+    def on_mouse_r_up(tx, ty)
+      signal(:mouse_r_up, tx, ty)
+      super
+    end
+    def on_mouse_over
+      signal(:mouse_over)
+      super
+    end
+    def on_mouse_out
+      signal(:mouse_out)
+      super
+    end
+  end
+  
   # マウスボタンを押した瞬間にself#on_clickを呼び出し、:clickシグナルを発行する
   module Clickable
     def on_mouse_down(tx, ty)
@@ -77,19 +108,6 @@ module WS
 
     def on_mouse_move(tx, ty)
       signal(:drag_move, tx - @drag_old_x, ty - @drag_old_y) if @dragging_flag
-      super
-    end
-  end
-
-  # オブジェクトにマウスカーソルを乗せたときに:mouse_over、離れたときに:mouse_outシグナルを発行する
-  module MouseOver
-    def on_mouse_over
-      signal(:mouse_over)
-      super
-    end
-
-    def on_mouse_out
-      signal(:mouse_out)
       super
     end
   end
