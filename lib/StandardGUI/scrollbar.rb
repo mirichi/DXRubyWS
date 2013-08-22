@@ -118,8 +118,6 @@ module WS
       db.font = font
       add_control(db, :btn_down)
       db.add_handler(:click){signal(:btn_down)}
-      
-      add_handler(:click, self, :on_click)
 
       layout(:vbox) do
         add ub

@@ -6,23 +6,31 @@
 # ユーザレベルで作れないものはまったくない。
 
 module WS
-  # マウスボタンを押した瞬間に:clickシグナルを発行する
+  # マウスボタンを押した瞬間にself#on_clickを呼び出し、:clickシグナルを発行する
   module Clickable
     def on_mouse_down(tx, ty)
-      signal(:click, tx, ty)
+      on_click(self, tx, ty)
       super
+    end
+
+    def on_click(obj, tx, ty)
+      signal(:click, tx, ty)
     end
   end
 
-  # マウスの右ボタンを押した瞬間に:clickシグナルを発行する
+  # マウスの右ボタンを押した瞬間にself#on_r_clickを呼び出し、:rightclickシグナルを発行する
   module RightClickable
     def on_mouse_r_down(tx, ty)
-      signal(:rightclick, tx, ty)
+      on_r_click(self, tx, ty)
       super
+    end
+
+    def on_r_click(obj, tx, ty)
+      signal(:rightclick, tx, ty)
     end
   end
 
-  # Windowsのボタンのようにマウスボタンを離した瞬間に:clickシグナルを発行する
+  # Windowsのボタンのようにマウスボタンを離した瞬間にself#on_clickを呼び出し、:clickシグナルを発行する
   module ButtonClickable
     def on_mouse_down(tx, ty)
       WS.capture(self)
@@ -32,8 +40,12 @@ module WS
     def on_mouse_up(tx, ty)
       WS.capture(nil)
       @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
-      signal(:click, tx, ty) if @hit_cursor === self
+      on_click(self, tx, ty) if @hit_cursor === self
       super
+    end
+
+    def on_click(obj, tx, ty)
+      signal(:click, tx, ty)
     end
   end
 
@@ -197,7 +209,7 @@ module WS
     def on_mouse_down(tx, ty)
       if @doubleclickcount and @doubleclickcount > 0 and
          (@doubleclick_x - tx).abs < 5 and (@doubleclick_y - ty).abs < 5
-          signal(:doubleclick, tx, ty)
+          on_doubleclick(self, tx, ty)
       else
         @doubleclickcount = 30
         @doubleclick_x = tx
@@ -209,6 +221,10 @@ module WS
     def update
       @doubleclickcount -= 1 if @doubleclickcount and @doubleclickcount > 0
       super
+    end
+
+    def on_doubleclick(obj, tx, ty)
+      signal(:doubleclick, tx, ty)
     end
   end
 
@@ -224,7 +240,7 @@ module WS
       WS.capture(self)
       @downcount = 20
       super
-      signal(:click, tx, ty)
+      on_click(self, tx, ty)
     end
 
     def on_mouse_up(tx, ty)
@@ -244,10 +260,14 @@ module WS
         @downcount -= 1
         if @downcount == 0
           @downcount = 5
-          signal(:click, @old_tx, @old_ty)
+          on_click(self, @old_tx, @old_ty)
         end
       end
       super
+    end
+
+    def on_click(obj, tx, ty)
+      signal(:click, tx, ty)
     end
   end
 end
