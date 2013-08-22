@@ -109,7 +109,7 @@ WS::desktop.add_control(w)
 # LayoutTestWindow
 class Test < WS::WSWindow
   def initialize
-    super(100, 300, 300, 100, "LayoutTest")
+    super(100, 300, 300, 200, "LayoutTest")
 
     b1 = WS::WSButton.new(0, 0, 100, 20, "btn1")
     b2 = WS::WSButton.new(0, 0, 100, 20, "btn2")
