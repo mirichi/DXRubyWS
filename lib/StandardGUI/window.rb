@@ -46,7 +46,7 @@ module WS
     def initialize(tx, ty, sx, sy, caption = "WindowTitle")
       super(tx, ty, sx, sy)
       self.image.bgcolor = [190,190,190]
-      @border_width = 2
+      @border_width = 3
 
       # ウィンドウタイトルはそれでひとつのコントロールを作る
       # メニューやツールバー、ステータスバーもたぶんそうなる
