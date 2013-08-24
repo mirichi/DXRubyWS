@@ -87,8 +87,9 @@ module WS
     end
 
     # シグナル処理
-    # add_handlerで登録しておいたオブジェクト-メソッド名の組もしくはブロックを、signal実行時に呼び出す
+    # add_handlerで登録しておいたMethodオブジェクトもしくはブロックを、signal実行時に呼び出す
     # 一応、1つのシグナルに複数のハンドラを設定することができるようになっている。はず。
+    # callを呼ぶのでcallを持っていればそれが呼ばれる。
 
     # シグナルハンドラの登録
     def add_handler(signal, obj=nil, &block)
