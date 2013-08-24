@@ -1,9 +1,9 @@
 # coding: utf-8
 
-# Mix-in—p‚Ìƒ‚ƒWƒ…[ƒ‹
-# ‚¢‚¸‚êƒ‚ƒWƒ…[ƒ‹’PˆÊ‚É•ªŠ„‚·‚é‚©‚à‚µ‚ê‚È‚¢B
-# ‚Ç‚ê‚àŒ‹‹Çƒ}ƒEƒXƒCƒxƒ“ƒg‚ğE‚Á‚Ä”»’èEˆ—‚µ‚ÄƒVƒOƒiƒ‹“Š‚°‚é‚¾‚¯‚È‚Ì‚ÅA
-# ƒ†[ƒUƒŒƒxƒ‹‚Åì‚ê‚È‚¢‚à‚Ì‚Í‚Ü‚Á‚½‚­‚È‚¢B
+# Mix-inç”¨ã®ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«
+# ã„ãšã‚Œãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«å˜ä½ã«åˆ†å‰²ã™ã‚‹ã‹ã‚‚ã—ã‚Œãªã„ã€‚
+# ã©ã‚Œã‚‚çµå±€ãƒã‚¦ã‚¹ã‚¤ãƒ™ãƒ³ãƒˆã‚’æ‹¾ã£ã¦åˆ¤å®šãƒ»å‡¦ç†ã—ã¦ã‚·ã‚°ãƒŠãƒ«æŠ•ã’ã‚‹ã ã‘ãªã®ã§ã€
+# ãƒ¦ãƒ¼ã‚¶ãƒ¬ãƒ™ãƒ«ã§ä½œã‚Œãªã„ã‚‚ã®ã¯ã¾ã£ãŸããªã„ã€‚
 
 module WS
   module BasicMouseSignal
@@ -45,7 +45,7 @@ module WS
     end
   end
   
-  # Windows‚Ìƒ{ƒ^ƒ“‚Ì‚æ‚¤‚Éƒ}ƒEƒXƒ{ƒ^ƒ“‚ğ—£‚µ‚½uŠÔ‚Éself#on_click‚ğŒÄ‚Ño‚µA:clickƒVƒOƒiƒ‹‚ğ”­s‚·‚é
+  # Windowsã®ãƒœã‚¿ãƒ³ã®ã‚ˆã†ã«ãƒã‚¦ã‚¹ãƒœã‚¿ãƒ³ã‚’é›¢ã—ãŸç¬é–“ã«self#on_clickã‚’å‘¼ã³å‡ºã—ã€:clickã‚·ã‚°ãƒŠãƒ«ã‚’ç™ºè¡Œã™ã‚‹
   module ButtonClickable
     def on_mouse_down(tx, ty)
       WS.capture(self)
@@ -64,10 +64,10 @@ module WS
     end
   end
 
-  # ƒ}ƒEƒX‚Åƒhƒ‰ƒbƒO‚µ‚½‚Æ‚«‚É:drag_moveƒVƒOƒiƒ‹‚ğ”­s‚·‚é
-  # ‚Ü‚½Aƒ{ƒ^ƒ“‰Ÿ‚µ‚½‚ç:drag_startA—£‚µ‚½‚ç:drag_end‚ğ”­s‚·‚é
-  # :drag_moveƒVƒOƒiƒ‹‚Ìˆø”‚Í‘Š‘ÎÀ•W
-  # ƒCƒ“ƒXƒ^ƒ“ƒX•Ï”@dragging_flag‚ğg‚¤
+  # ãƒã‚¦ã‚¹ã§ãƒ‰ãƒ©ãƒƒã‚°ã—ãŸã¨ãã«:drag_moveã‚·ã‚°ãƒŠãƒ«ã‚’ç™ºè¡Œã™ã‚‹
+  # ã¾ãŸã€ãƒœã‚¿ãƒ³æŠ¼ã—ãŸã‚‰:drag_startã€é›¢ã—ãŸã‚‰:drag_endã‚’ç™ºè¡Œã™ã‚‹
+  # :drag_moveã‚·ã‚°ãƒŠãƒ«ã®å¼•æ•°ã¯ç›¸å¯¾åº§æ¨™
+  # ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹å¤‰æ•°@dragging_flagã‚’ä½¿ã†
   module Draggable
     def initialize(*args)
       super
@@ -96,11 +96,11 @@ module WS
     end
   end
 
-  # ƒIƒuƒWƒFƒNƒg‚Ìƒ{[ƒ_[‚ğ‚Â‚©‚ñ‚ÅƒTƒCƒY•ÏX‚µ‚½‚Æ‚«‚Éresizeƒƒ\ƒbƒh‚ğŒÄ‚ÔB
-  # ‚Ü‚½AƒTƒCƒY•ÏXŠJn‚Éresize_startAI—¹‚Éresize_endƒƒ\ƒbƒh‚ğŒÄ‚ÔB
-  # ‚»‚ê‚ç‚ğŒÄ‚ñ‚¾‚ ‚Æ‚Å“¯–¼‚ÌƒVƒOƒiƒ‹‚ğ”­s‚·‚éB
-  # ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ÌŒ©‚½–Ú‚ğ•ÏX‚·‚é‹@”\•t‚«B
-  # ƒCƒ“ƒXƒ^ƒ“ƒX•Ï”@resize_top/@resize_left/@resize_right/@resize_bottom‚ğg‚¤
+  # ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒœãƒ¼ãƒ€ãƒ¼ã‚’ã¤ã‹ã‚“ã§ã‚µã‚¤ã‚ºå¤‰æ›´ã—ãŸã¨ãã«resizeãƒ¡ã‚½ãƒƒãƒ‰ã‚’å‘¼ã¶ã€‚
+  # ã¾ãŸã€ã‚µã‚¤ã‚ºå¤‰æ›´é–‹å§‹æ™‚ã«resize_startã€çµ‚äº†æ™‚ã«resize_endãƒ¡ã‚½ãƒƒãƒ‰ã‚’å‘¼ã¶ã€‚
+  # ãã‚Œã‚‰ã‚’å‘¼ã‚“ã ã‚ã¨ã§åŒåã®ã‚·ã‚°ãƒŠãƒ«ã‚’ç™ºè¡Œã™ã‚‹ã€‚
+  # ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã®è¦‹ãŸç›®ã‚’å¤‰æ›´ã™ã‚‹æ©Ÿèƒ½ä»˜ãã€‚
+  # ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹å¤‰æ•°@resize_top/@resize_left/@resize_right/@resize_bottomã‚’ä½¿ã†
   module Resizable
     def on_mouse_down(tx, ty)
       if @resize_top or @resize_left or @resize_right or @resize_bottom
@@ -204,9 +204,9 @@ module WS
     end
   end
 
-  # ƒ_ƒuƒ‹ƒNƒŠƒbƒN‚µ‚½‚Æ‚«‚Ì2‰ñ–Ú‚Ìƒ{ƒ^ƒ“‰Ÿ‰º‚É:doubleclickƒVƒOƒiƒ‹‚ğ”­s‚·‚é
-  # ƒCƒ“ƒXƒ^ƒ“ƒX•Ï”@doubleclickcout/@doubleclick_x/@doubleclick_y‚ğg‚¤
-  # ƒ_ƒuƒ‹ƒNƒŠƒbƒN‚Ì—]—T‚Í30ƒtƒŒ[ƒ€/c‰¡5pixelˆÈ“à‚ÅŒÅ’è
+  # ãƒ€ãƒ–ãƒ«ã‚¯ãƒªãƒƒã‚¯ã—ãŸã¨ãã®2å›ç›®ã®ãƒœã‚¿ãƒ³æŠ¼ä¸‹æ™‚ã«:doubleclickã‚·ã‚°ãƒŠãƒ«ã‚’ç™ºè¡Œã™ã‚‹
+  # ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹å¤‰æ•°@doubleclickcout/@doubleclick_x/@doubleclick_yã‚’ä½¿ã†
+  # ãƒ€ãƒ–ãƒ«ã‚¯ãƒªãƒƒã‚¯ã®ä½™è£•ã¯30ãƒ•ãƒ¬ãƒ¼ãƒ /ç¸¦æ¨ª5pixelä»¥å†…ã§å›ºå®š
   module DoubleClickable
     def on_mouse_down(tx, ty)
       if @doubleclickcount and @doubleclickcount > 0 and
@@ -230,8 +230,8 @@ module WS
     end
   end
 
-  # ƒXƒNƒ[ƒ‹ƒo[‚Ìƒ{ƒ^ƒ“‚Ì‚æ‚¤‚ÉƒI[ƒgƒŠƒs[ƒg‚Å:clickƒVƒOƒiƒ‹‚ğ”­s‚µ‘±‚¯‚é
-  # ‚±‚ÌƒVƒOƒiƒ‹‚Íupdate‚É”­¶‚·‚é
+  # ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒãƒ¼ã®ãƒœã‚¿ãƒ³ã®ã‚ˆã†ã«ã‚ªãƒ¼ãƒˆãƒªãƒ”ãƒ¼ãƒˆã§:clickã‚·ã‚°ãƒŠãƒ«ã‚’ç™ºè¡Œã—ç¶šã‘ã‚‹
+  # ã“ã®ã‚·ã‚°ãƒŠãƒ«ã¯updateæ™‚ã«ç™ºç”Ÿã™ã‚‹
   module RepeatClickable
     def initialize(*args)
       super
