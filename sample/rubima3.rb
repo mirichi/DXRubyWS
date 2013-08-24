@@ -559,7 +559,7 @@ module WS
       super
       @mapdata = Map.class_variable_get(:@@map)
       @images = Map.class_variable_get(:@@images)
-      @posision = 0    # 描画の基点
+      @position = 0    # 描画の基点
 
       # マップの画像
       wsimage = WSImage.new(0, 0, 512, 480)
@@ -574,7 +574,7 @@ module WS
       client.add_control(sb, :scrollbar)
       sb.total = 30
       sb.unit_quantity = 1
-      sb.add_handler(:slide) {|obj, pos| @posision = pos}
+      sb.add_handler(:slide) {|obj, pos| @position = pos}
 
       # オートレイアウト
       layout(:hbox) do
@@ -600,21 +600,23 @@ module WS
       client.scrollbar.screen_length = client.height.quo(32)
 
       # マップ描画
-      client.wsimage.image.draw_tile(0, 0, @mapdata, @images, 0, @posision*32, 16, 30)
+      client.wsimage.image.draw_tile(0, 0, @mapdata, @images, 0, @position*32, 16, 30)
 
       # 描画枠の描画
-      y1 = ($map.y+$map.count)%960
-      y2 = ($map.y+$map.count+480)%960
-      client.wsimage.image.draw_line($myship.x/5, y1-@posision*32, $myship.x/5+360-1, y1-@posision*32, C_YELLOW)
-      client.wsimage.image.draw_line($myship.x/5, y2-@posision*32, $myship.x/5+360-1, y2-@posision*32, C_YELLOW)
+      x1 = $myship.x / 5
+      x2 = x1 + 360-1
+      y1 = ($map.y + $map.count      ) % 960 - @position * 32
+      y2 = ($map.y + $map.count + 480) % 960 - @position * 32
+      client.wsimage.image.draw_line(x1, y1, x2, y1, C_YELLOW)
+      client.wsimage.image.draw_line(x1, y2, x2, y2, C_YELLOW)
       if y1 < y2
-        client.wsimage.image.draw_line($myship.x/5, y1-@posision*32, $myship.x/5, y2-@posision*32, C_YELLOW)
-        client.wsimage.image.draw_line($myship.x/5+360-1, y1-@posision*32, $myship.x/5+360-1, y2-@posision*32, C_YELLOW)
+        client.wsimage.image.draw_line(x1, y1, x1, y2, C_YELLOW)
+        client.wsimage.image.draw_line(x2, y1, x2, y2, C_YELLOW)
       else
-        client.wsimage.image.draw_line($myship.x/5, 0-@posision*32, $myship.x/5, y2-@posision*32, C_YELLOW)
-        client.wsimage.image.draw_line($myship.x/5+360-1, 0-@posision*32, $myship.x/5+360-1, y2-@posision*32, C_YELLOW)
-        client.wsimage.image.draw_line($myship.x/5, y1-@posision*32, $myship.x/5, 960-1-@posision*32, C_YELLOW)
-        client.wsimage.image.draw_line($myship.x/5+360-1, y1-@posision*32, $myship.x/5+360-1, 960-1-@posision*32, C_YELLOW)
+        client.wsimage.image.draw_line(x1, 0, x1, y2, C_YELLOW)
+        client.wsimage.image.draw_line(x2, 0, x2, y2, C_YELLOW)
+        client.wsimage.image.draw_line(x1, y1, x1, 960-1, C_YELLOW)
+        client.wsimage.image.draw_line(x2, y1, x2, 960-1, C_YELLOW)
       end
         
       super
