@@ -154,7 +154,7 @@ module WS
 
     def slide(dy)
       @position += dy
-      @position = @position.clamp(0, @total - @screen_length)
+      @position = @position.clamp(0, (@total - @screen_length < 0 ? 0 : @total - @screen_length))
       signal(:slide, @position)
     end
 
