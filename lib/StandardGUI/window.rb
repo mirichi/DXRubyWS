@@ -117,5 +117,9 @@ module WS
       self.parent.childlen.push(self.parent.childlen.delete(self))
       super
     end
+    def on_mouse_r_down_internal(tx, ty)
+      self.parent.childlen.push(self.parent.childlen.delete(self))
+      super
+    end
   end
 end
