@@ -625,13 +625,10 @@ module WS
     attr_reader :select_number
     def initialize(*args)
       super
-      @image = Image.new(512, 960)
       @images = Map.class_variable_get(:@@images)
       client.extend Clickable
       client.add_handler(:click) do |obj, tx, ty|
-        x = tx / 32
-        y = ty / 32
-        @select_number = (x + y * (self.client.width / 32))
+        @select_number = (tx/32 + ty/32 * (self.client.width / 32))
       end
       @selected_image = Image.new(32,32).box(0,0,31,31,C_WHITE)
       @select_number = 0
