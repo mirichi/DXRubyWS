@@ -549,11 +549,11 @@ module WS
       @selector = nil
 
       # ゲーム画面のクライアント領域のクリックで:clickシグナルを発行する
-      self.client.extend Clickable
+      self.client.extend BasicMouseSignal
 
       # クリックされたら敵キャラとの判定を行って、クリックしたキャラを@selectedに格納
       # また、そのサイズのセレクタ画像(黄色の四角)を作って@selectorに格納
-      self.client.add_handler(:click) do |obj, tx, ty|
+      self.client.add_handler(:mouse_down) do |obj, tx, ty|
         @hit_cursor.x, @hit_cursor.y = tx+$myship.x/5, ty
         @selected = @hit_cursor.check($enemies)[0]
         if @selected
