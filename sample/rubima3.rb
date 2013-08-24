@@ -543,23 +543,27 @@ end
 module WS
   # ゲームのメインウィンドウ
   class GameWindow < WSWindow
-    attr_accessor :selected
-
     def draw
       self.client.image.draw(-$myship.x/5,0,$rt)
       super
     end
   end
 
-  # マップ編集
+  # マップ編集ウィンドウ
   class MapEditWindow < WSWindow
-    include Clickable
-
     def initialize(*args)
       super
       @mapdata = Map.class_variable_get(:@@map)
       @images = Map.class_variable_get(:@@images)
       @position = 0    # 描画の基点
+
+      # スクロールバー
+      sb = WSScrollBar.new(508, 0, 16, 700-16)
+      client.add_control(sb, :sb)
+      sb.total = 30        # 全体サイズが30
+      sb.unit_quantity = 1 # ボタンを押したときに1動く
+      sb.screen_length = client.height.quo(32) # 表示される範囲
+      sb.add_handler(:slide) {|obj, pos| @position = pos}
 
       # マップの画像
       wsimage = WSImage.new(0, 0, 512, 480)
@@ -567,14 +571,8 @@ module WS
       client.add_control(wsimage, :wsimage)
       wsimage.add_handler(:resize) do
         wsimage.image.resize(wsimage.width, wsimage.height)
+        sb.screen_length = client.height.quo(32)
       end
-
-      # スクロールバー
-      sb = WSScrollBar.new(508, 0, 16, 700-16)
-      client.add_control(sb, :scrollbar)
-      sb.total = 30
-      sb.unit_quantity = 1
-      sb.add_handler(:slide) {|obj, pos| @position = pos}
 
       # オートレイアウト
       layout(:hbox) do
@@ -585,7 +583,7 @@ module WS
       # クリック時の編集
       wsimage.add_handler(:mouse_down) do |obj, tx, ty|
         @lbutton = true
-        @mapdata[ty/32][tx/32] = WS.desktop.mappartswindow.select_number
+        @mapdata[ty / 32][tx / 32] = WS.desktop.mappartswindow.select_number
       end
       wsimage.add_handler(:mouse_up) do
         @lbutton = false
@@ -596,9 +594,6 @@ module WS
     end
 
     def draw
-      # スクロールバー調整
-      client.scrollbar.screen_length = client.height.quo(32)
-
       # マップ描画
       client.wsimage.image.draw_tile(0, 0, @mapdata, @images, 0, @position*32, 16, 30)
 
@@ -623,20 +618,23 @@ module WS
     end
   end
 
+  # マップパーツウィンドウ
   class MapPartsWindow < WSWindow
     attr_reader :select_number
+
     def initialize(*args)
       super
       @images = Map.class_variable_get(:@@images)
       client.extend Clickable
       client.add_handler(:click) do |obj, tx, ty|
-        @select_number = (tx/32 + ty/32 * (self.client.width / 32))
+        @select_number = (tx / 32 + ty / 32 * (self.client.width / 32))
       end
       @selected_image = Image.new(32,32).box(0,0,31,31,C_WHITE)
       @select_number = 0
     end
 
     def draw
+      # パーツ描画
       x = y = 0
       @images.each do |o|
         client.image.draw(x, y, o)
@@ -646,7 +644,10 @@ module WS
           y += 32
         end
       end
+
+      # セレクトボックス描画
       client.image.draw(@select_number % (client.width / 32) * 32, @select_number / (client.width / 32) * 32, @selected_image)
+
       super
     end
   end
@@ -677,11 +678,11 @@ $etc_objects << ($map=Map.new)  # 背景オブジェクト生成＆オブジェ�
 
 # ウィンドウシステムのWindowオブジェクト
 gamewindow = WS::GameWindow.new(50,100,360,480+16+6, "GameMainWindow")
-WS::desktop.add_control(gamewindow, :gamewindow)
+WS.desktop.add_control(gamewindow, :gamewindow)
 mapeditwindow = WS::MapEditWindow.new(420,10,528,700, "MapEditer")
-WS::desktop.add_control(mapeditwindow, :mapeditwindow)
+WS.desktop.add_control(mapeditwindow, :mapeditwindow)
 mappartswindow = WS::MapPartsWindow.new(960,10,294,342, "MapParts")
-WS::desktop.add_control(mappartswindow, :mappartswindow)
+WS.desktop.add_control(mappartswindow, :mappartswindow)
 
 # メインループ
 Window.loop do
