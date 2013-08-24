@@ -572,6 +572,8 @@ module WS
       # スクロールバー
       sb = WSScrollBar.new(508, 0, 16, 700-16)
       client.add_control(sb, :scrollbar)
+      sb.total = 30
+      sb.unit_quantity = 1
       sb.add_handler(:slide) {|obj, pos| @posision = pos}
 
       # オートレイアウト
@@ -589,21 +591,20 @@ module WS
         @lbutton = false
       end
       wsimage.add_handler(:mouse_move) do |obj, tx, ty|
-        x = tx / 32
-        y = ty / 32
-        @mapdata[y][x] = WS.desktop.mappartswindow.select_number if @lbutton
+        @mapdata[ty / 32][tx / 32] = WS.desktop.mappartswindow.select_number if @lbutton
       end
     end
 
     def draw
-      client.scrollbar.total = 30
-      client.scrollbar.screen_length = self.client.height.quo(32)
+      # スクロールバー調整
+      client.scrollbar.screen_length = client.height.quo(32)
 
+      # マップ描画
       client.wsimage.image.draw_tile(0, 0, @mapdata, @images, 0, @posision*32, 16, 30)
 
+      # 描画枠の描画
       y1 = ($map.y+$map.count)%960
       y2 = ($map.y+$map.count+480)%960
-
       client.wsimage.image.draw_line($myship.x/5, y1-@posision*32, $myship.x/5+360-1, y1-@posision*32, C_YELLOW)
       client.wsimage.image.draw_line($myship.x/5, y2-@posision*32, $myship.x/5+360-1, y2-@posision*32, C_YELLOW)
       if y1 < y2
