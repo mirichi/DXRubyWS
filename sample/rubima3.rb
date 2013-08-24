@@ -545,10 +545,9 @@ module WS
   class GameWindow < WSWindow
     attr_accessor :selected
 
-    # サイズ変更したら再描画する
-    def resize(*args)
-      super
+    def draw
       self.client.image.draw(-$myship.x/5,0,$rt)
+      super
     end
   end
 
@@ -558,34 +557,37 @@ module WS
 
     def initialize(*args)
       super
-      @image = Image.new(512, 960)
       @mapdata = Map.class_variable_get(:@@map)
       @images = Map.class_variable_get(:@@images)
       @posision = 0    # 描画の基点
-      
-      wsimage = WSImage.new(0, 0, 512, 960)
-      wsimage.image = RenderTarget.new(512, 960)
-      client.add_control(wsimage, :wsimage)
 
+      # マップの画像
+      wsimage = WSImage.new(0, 0, 512, 480)
+      wsimage.image = RenderTarget.new(512, 480)
+      client.add_control(wsimage, :wsimage)
+      wsimage.add_handler(:resize) do
+        wsimage.image.resize(wsimage.width, wsimage.height)
+      end
+
+      # スクロールバー
       sb = WSScrollBar.new(508, 0, 16, 700-16)
       client.add_control(sb, :scrollbar)
-
       sb.add_handler(:slide) {|obj, pos| @posision = pos}
+
+      # オートレイアウト
       layout(:hbox) do
-        add wsimage, true, false
+        add wsimage, true, true
         add sb, false, true
       end
 
+      # クリック時の編集
       wsimage.add_handler(:mouse_down) do |obj, tx, ty|
         @lbutton = true
-        x = tx / 32
-        y = ty / 32
-        @mapdata[y][x] = WS.desktop.mappartswindow.select_number
+        @mapdata[ty/32][tx/32] = WS.desktop.mappartswindow.select_number
       end
       wsimage.add_handler(:mouse_up) do
         @lbutton = false
       end
-
       wsimage.add_handler(:mouse_move) do |obj, tx, ty|
         x = tx / 32
         y = ty / 32
@@ -594,12 +596,26 @@ module WS
     end
 
     def draw
-      self.client.scrollbar.total = 30
-      self.client.scrollbar.screen_length = self.client.height.quo(32)
+      client.scrollbar.total = 30
+      client.scrollbar.screen_length = self.client.height.quo(32)
 
-      self.client.wsimage.image.draw_tile(0, 0, @mapdata, @images, 0, 0, 16, 30)
-      self.client.wsimage.y = -@posision*32
-      self.client.wsimage.image.draw_line(0, ($map.y+$map.count)%self.client.wsimage.height, self.client.width-1, ($map.y+$map.count)%self.client.wsimage.height, C_YELLOW)
+      client.wsimage.image.draw_tile(0, 0, @mapdata, @images, 0, @posision*32, 16, 30)
+
+      y1 = ($map.y+$map.count)%960
+      y2 = ($map.y+$map.count+480)%960
+
+      client.wsimage.image.draw_line($myship.x/5, y1-@posision*32, $myship.x/5+360-1, y1-@posision*32, C_YELLOW)
+      client.wsimage.image.draw_line($myship.x/5, y2-@posision*32, $myship.x/5+360-1, y2-@posision*32, C_YELLOW)
+      if y1 < y2
+        client.wsimage.image.draw_line($myship.x/5, y1-@posision*32, $myship.x/5, y2-@posision*32, C_YELLOW)
+        client.wsimage.image.draw_line($myship.x/5+360-1, y1-@posision*32, $myship.x/5+360-1, y2-@posision*32, C_YELLOW)
+      else
+        client.wsimage.image.draw_line($myship.x/5, 0-@posision*32, $myship.x/5, y2-@posision*32, C_YELLOW)
+        client.wsimage.image.draw_line($myship.x/5+360-1, 0-@posision*32, $myship.x/5+360-1, y2-@posision*32, C_YELLOW)
+        client.wsimage.image.draw_line($myship.x/5, y1-@posision*32, $myship.x/5, 960-1-@posision*32, C_YELLOW)
+        client.wsimage.image.draw_line($myship.x/5+360-1, y1-@posision*32, $myship.x/5+360-1, 960-1-@posision*32, C_YELLOW)
+      end
+        
       super
     end
   end
@@ -610,8 +626,8 @@ module WS
       super
       @image = Image.new(512, 960)
       @images = Map.class_variable_get(:@@images)
-      self.client.extend Clickable
-      self.client.add_handler(:click) do |obj, tx, ty|
+      client.extend Clickable
+      client.add_handler(:click) do |obj, tx, ty|
         x = tx / 32
         y = ty / 32
         @select_number = (x + y * (self.client.width / 32))
@@ -623,17 +639,16 @@ module WS
     def draw
       x = y = 0
       @images.each do |o|
-        self.client.image.draw(x, y, o)
+        client.image.draw(x, y, o)
         x += 32
         if x > self.client.width-32
           x = 0
           y += 32
         end
       end
-      self.client.image.draw(@select_number % (self.client.width / 32) * 32, @select_number / (self.client.width / 32) * 32, @selected_image)
+      client.image.draw(@select_number % (client.width / 32) * 32, @select_number / (client.width / 32) * 32, @selected_image)
       super
     end
-  
   end
 end
 
@@ -661,7 +676,7 @@ $etc_objects << $myship  # 自機をオブジェクト配列に追加
 $etc_objects << ($map=Map.new)  # 背景オブジェクト生成＆オブジェクト配列に追加
 
 # ウィンドウシステムのWindowオブジェクト
-gamewindow = WS::GameWindow.new(50,100,360,480, "GameMainWindow")
+gamewindow = WS::GameWindow.new(50,100,360,480+16+6, "GameMainWindow")
 WS::desktop.add_control(gamewindow, :gamewindow)
 mapeditwindow = WS::MapEditWindow.new(420,10,528,700, "MapEditer")
 WS::desktop.add_control(mapeditwindow, :mapeditwindow)
@@ -702,8 +717,6 @@ Window.loop do
   # オブジェクトを描画
   Sprite.draw([$etc_objects, $my_shots, $enemies, $enemy_shots])
 
-  # 描画先はウィンドウシステムのウィンドウオブジェクト
-  WS.desktop.gamewindow.client.image.draw(-$myship.x/5,0,$rt)
   WS.update
 
   # Esc キーで終了
