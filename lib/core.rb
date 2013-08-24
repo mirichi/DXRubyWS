@@ -91,25 +91,28 @@ module WS
     # 一応、1つのシグナルに複数のハンドラを設定することができるようになっている。はず。
 
     # シグナルハンドラの登録
-    def add_handler(signal, obj=nil, handler=nil, &block)
+    def add_handler(signal, obj=nil, &block)
       if obj
-        tmp = [obj, handler]
-      else
-        tmp = [block, :call]
+        if @signal.has_key?(signal)
+          @signal[signal] << obj
+        else
+          @signal[signal] = [obj]
+        end
       end
-
-      if @signal.has_key?(signal)
-        @signal[signal] << tmp
-      else
-        @signal[signal] = [tmp]
+      if block
+        if @signal.has_key?(signal)
+          @signal[signal] << block
+        else
+          @signal[signal] = [block]
+        end
       end
     end
 
     # シグナルの発行(=ハンドラの呼び出し)
     def signal(s, *args)
       if @signal.has_key?(s)
-        @signal[s].each do |tmp|
-          tmp[0].__send__(tmp[1], self, *args)
+        @signal[s].each do |obj|
+          obj.call(self, *args)
         end
       end
     end

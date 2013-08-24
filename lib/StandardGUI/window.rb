@@ -53,11 +53,11 @@ module WS
       window_title = WSWindowTitle.new(0, 0, sx - @border_width * 2, 16, caption)
       add_control(window_title)
       window_title.add_handler(:close) {self.parent.remove_control(self)}
-      window_title.add_handler(:drag_move, self, :on_drag_move)
+      window_title.add_handler(:drag_move, self.method(:on_drag_move))
 
       # タイトルバーのダブルクリックで最大化する
       @maximize_flag = false
-      window_title.add_handler(:doubleclick, self, :on_maximize)
+      window_title.add_handler(:doubleclick, self.method(:on_maximize))
 
       # クライアント領域は単純なコンテナである
       client = WSWindowClient.new(0, 0, sx - @border_width * 2, sy - @border_width * 2 - 16)
