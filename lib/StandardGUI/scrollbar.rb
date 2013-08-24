@@ -9,7 +9,10 @@ module WS
 
       def initialize(tx, ty, width, height)
         super
-        add_handler(:drag_move) {|obj, dx, dy| self.slide(dy)}
+        add_handler(:drag_move) do |obj, dx, dy|
+          self.y = (self.y + dy).clamp(16, @parent.height - 16 - @height)
+          signal(:slide, self.y)
+        end
       end
 
       def draw
@@ -29,12 +32,6 @@ module WS
         end
         @old_height = @height
         super
-      end
-
-      # ドラッグされた場合、はみ出さないように位置を補正して:slideシグナルを投げる
-      def slide(dy)
-        self.y = (self.y + dy).clamp(16, @parent.height - 16 - @height)
-        signal(:slide, self.y)
       end
     end
 
@@ -95,29 +92,42 @@ module WS
       end
     end
   
-    attr_accessor :screen_length, :item_length
+    attr_accessor :screen_length, :total, :unit_quantity, :position
     include RepeatClickable
 
     def initialize(tx, ty, width, height)
       super
       self.image.bgcolor = [220, 220, 220]
       font = Font.new(12)
+      @position = 0
 
       slider = WSScrollBarSlider.new(0, 16, width, 16)
-      slider.add_handler(:slide, self, :on_slide)
+      slider.add_handler(:slide) do |obj, ty|
+        @position = (@total - @screen_length) * ((ty - 16).quo(@height - 32 - slider.height))
+        signal(:slide, @position)
+      end
       add_control(slider, :slider)
 
       ub = WSRepeatButton.new(0, 0, width, 16, "▲")
       ub.fore_color = C_BLACK
       ub.font = font
       add_control(ub, :btn_up)
-      ub.add_handler(:click){signal(:btn_up)}
+      ub.add_handler(:click) do
+        pos = @position - @unit_quantity
+        pos = 0 if pos < 0
+        signal(:slide, @position)
+      end
 
       db = WSRepeatButton.new(0, 0, width, 16, "▼")
       db.fore_color = C_BLACK
       db.font = font
       add_control(db, :btn_down)
-      db.add_handler(:click){signal(:btn_down)}
+      db.add_handler(:click) do
+        max = @total - @screen_length
+        @position += @unit_quantity
+        @position = max if @position > max
+        signal(:slide, @position)
+      end
 
       layout(:vbox) do
         add ub
@@ -128,24 +138,22 @@ module WS
 
     # 描画時にスライダーのサイズを再計算する
     def draw
-      self.slider.height = (@item_length > 0 ? @screen_length / @item_length * (@height - 32) : 0)
+      self.slider.height = (@total > 0 ? @screen_length / @total * (@height - 32) : 0)
       self.slider.height = self.slider.height.clamp(8, @height - 32)
+      self.slider.y = (@height - 32 - slider.height) * (@position / (@total - @screen_length)) + 16
       super
-    end
-
-    def on_slide(obj, pos)
-      signal(:slide, (pos - 16).quo(height - 32 - slider.height))
-    end
-
-    def set_slider(p) # %
-      slider.y = (height - 32 - slider.height) * p + 16
     end
 
     def on_click(obj, tx, ty)
       if ty < self.slider.y
-        signal(:page_up)
+        @position -= @screen_length
+        @position = 0 if @position < 0
+        signal(:slide, @position)
       elsif ty >= self.slider.y + self.slider.height
-        signal(:page_down)
+        max = @total - @screen_length
+        @position += @screen_length
+        @position = max if @position > max
+        signal(:slide, @position)
       end
     end
   end

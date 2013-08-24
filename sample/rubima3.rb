@@ -554,7 +554,6 @@ module WS
 
   # マップ編集
   class MapEditWindow < WSWindow
-    attr_reader :pos
     include Clickable
 
     def initialize(*args)
@@ -562,7 +561,7 @@ module WS
       @image = Image.new(512, 960)
       @mapdata = Map.class_variable_get(:@@map)
       @images = Map.class_variable_get(:@@images)
-      @pos = 0    # 描画の基点
+      @posision = 0    # 描画の基点
       
       wsimage = WSImage.new(0, 0, 512, 960)
       wsimage.image = RenderTarget.new(512, 960)
@@ -571,38 +570,13 @@ module WS
       sb = WSScrollBar.new(508, 0, 16, 700-16)
       client.add_control(sb, :scrollbar)
 
-      sb.add_handler(:slide) {|obj, pos| @pos = pos * slide_range}
-      sb.add_handler(:btn_up) do # ▲ボタン
-        @pos -= 1
-        @pos = 0 if @pos < 0
-        sb.set_slider(@pos.quo(slide_range) )
-      end
-      sb.add_handler(:btn_down) do # ▼ボタン
-        max = slide_range
-        @pos += 1
-        @pos = max if @pos > max
-        sb.set_slider(@pos.quo(max) )
-      end
-      sb.add_handler(:page_up) do # スライダーの上の空き部分をクリック
-        @pos -= client.height / 32
-        @pos = 0 if @pos < 0
-        sb.set_slider(@pos.quo(slide_range) )
-      end
-      sb.add_handler(:page_down) do # スライダーの下の空き部分をクリック
-        max = slide_range
-        @pos += client.height / 32
-        @pos = max if @pos > max
-        sb.set_slider(@pos.quo(max) )
-      end
-
+      sb.add_handler(:slide) {|obj, pos| @posision = pos}
       layout(:hbox) do
         add wsimage, true, false
         add sb, false, true
       end
 
       wsimage.add_handler(:mouse_down) do |obj, tx, ty|
-        p wsimage.height
-        p wsimage.collision
         @lbutton = true
         x = tx / 32
         y = ty / 32
@@ -619,16 +593,12 @@ module WS
       end
     end
 
-    def slide_range
-      30 - client.height.quo(32)
-    end
-
     def draw
-      self.client.scrollbar.item_length = 30
+      self.client.scrollbar.total = 30
       self.client.scrollbar.screen_length = self.client.height.quo(32)
 
       self.client.wsimage.image.draw_tile(0, 0, @mapdata, @images, 0, 0, 16, 30)
-      self.client.wsimage.y = -@pos*32
+      self.client.wsimage.y = -@posision*32
       self.client.wsimage.image.draw_line(0, ($map.y+$map.count)%self.client.wsimage.height, self.client.width-1, ($map.y+$map.count)%self.client.wsimage.height, C_YELLOW)
       super
     end
