@@ -136,11 +136,19 @@ module WS
       end
     end
 
+    def resize(width, height)
+      super
+      @position = @position.clamp(0, (@total - @screen_length < 0 ? 0 : @total - @screen_length))
+      signal(:slide, @position)
+    end
+
     # 描画時にスライダーのサイズを再計算する
     def draw
-      self.slider.height = (@total > 0 ? @screen_length / @total * (@height - 32) : 0)
-      self.slider.height = self.slider.height.clamp(8, @height - 32)
-      self.slider.y = (@height - 32 - slider.height) * (@position / (@total - @screen_length)) + 16
+      if self.visible # DXRubyのバグ回避
+        self.slider.height = (@total > 0 ? @screen_length / @total * (@height - 32) : 0)
+        self.slider.height = self.slider.height.clamp(8, @height - 32)
+        self.slider.y = (@height - 32 - slider.height) * (@position / (@total - @screen_length)) + 16
+      end
       super
     end
 
