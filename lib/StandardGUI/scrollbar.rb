@@ -113,8 +113,8 @@ module WS
       ub.font = font
       add_control(ub, :btn_up)
       ub.add_handler(:click) do
-        pos = @position - @unit_quantity
-        pos = 0 if pos < 0
+        @position = @position - @unit_quantity
+        @position = 0 if @position < 0
         signal(:slide, @position)
       end
 
