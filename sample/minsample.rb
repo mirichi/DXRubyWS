@@ -19,6 +19,14 @@ class WS::WSObjectBrowser < WS::WSWindow
     lbl2 = WS::WSLabel.new(0, 0, 200, 16)
     lbl2.fore_color = C_BLACK
     self.client.add_control(lbl2, :lbl2)
+
+    obj.class.instance_methods(false).each do |s|
+      lbx1.items << s
+    end
+    obj.instance_variables.each do |s|
+      lbx2.items << s
+    end
+
     layout(:vbox) do
       layout(:hbox) do
         self.height = lbl1.height
@@ -31,13 +39,6 @@ class WS::WSObjectBrowser < WS::WSWindow
         add lbx1, true, true
         add lbx2, true, true
       end
-    end
-
-    obj.class.instance_methods(false).each do |s|
-      lbx1.items << s
-    end
-    obj.instance_variables.each do |s|
-      lbx2.items << s
     end
   end
 end
