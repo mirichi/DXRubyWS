@@ -583,13 +583,13 @@ module WS
       # クリック時の編集
       wsimage.add_handler(:mouse_down) do |obj, tx, ty|
         @lbutton = true
-        @mapdata[ty / 32][tx / 32] = WS.desktop.mappartswindow.select_number
+        @mapdata[(ty + @position * 32) / 32][tx / 32] = WS.desktop.mappartswindow.select_number
       end
       wsimage.add_handler(:mouse_up) do
         @lbutton = false
       end
       wsimage.add_handler(:mouse_move) do |obj, tx, ty|
-        @mapdata[ty / 32][tx / 32] = WS.desktop.mappartswindow.select_number if @lbutton
+        @mapdata[(ty + @position * 32) / 32][tx / 32] = WS.desktop.mappartswindow.select_number if @lbutton
       end
     end
 
@@ -677,12 +677,9 @@ $etc_objects << $myship  # 自機をオブジェクト配列に追加
 $etc_objects << ($map=Map.new)  # 背景オブジェクト生成＆オブジェクト配列に追加
 
 # ウィンドウシステムのWindowオブジェクト
-gamewindow = WS::GameWindow.new(50,100,360,480+16+6, "GameMainWindow")
-WS.desktop.add_control(gamewindow, :gamewindow)
-mapeditwindow = WS::MapEditWindow.new(420,10,528,700, "MapEditer")
-WS.desktop.add_control(mapeditwindow, :mapeditwindow)
-mappartswindow = WS::MapPartsWindow.new(960,10,294,342, "MapParts")
-WS.desktop.add_control(mappartswindow, :mappartswindow)
+WS.desktop.add_control(WS::GameWindow.new(50,100,360,480+16+6, "GameMainWindow"), :gamewindow)
+WS.desktop.add_control(WS::MapEditWindow.new(420,10,528,700, "MapEditer"), :mapeditwindow)
+WS.desktop.add_control(WS::MapPartsWindow.new(960,10,294,342, "MapParts"), :mappartswindow)
 
 # メインループ
 Window.loop do
