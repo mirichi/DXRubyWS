@@ -3,22 +3,19 @@
 module WS
   # メニューアイテム
   class WSMenuItem < WSControl
-    attr_accessor :str, :obj, :method
+    attr_accessor :str, :obj
     @@select_bg_pixel = Image.new(1, 1, C_BLUE)
 
-    def initialize(str, obj=nil, method=nil, &block)
-      @str, @obj, @method, @block = str, obj, method, block
+    def initialize(str, obj=nil, &block)
+      @str, @obj, @block = str, obj, block
       @font = Font.new(12)
       super(0, 0, @font.get_width(str), @font.size)
       @select = false
     end
 
     def on_mouse_down(tx, ty)
-      if @obj
-        @obj.__send__(@method)
-      elsif @block
-        @block.call(self.parent.parent.object)
-      end
+      @obj.call if @obj
+      @block.call(self.parent.parent.object) if @block
       super
     end
     
