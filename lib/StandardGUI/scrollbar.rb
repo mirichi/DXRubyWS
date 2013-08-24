@@ -152,6 +152,12 @@ module WS
       super
     end
 
+    def slide(dy)
+      @position += dy
+      @position = @position.clamp(0, @total - @screen_length)
+      signal(:slide, @position)
+    end
+
     def on_click(obj, tx, ty)
       if ty < self.slider.y
         @position -= @screen_length

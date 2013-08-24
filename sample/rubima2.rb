@@ -569,7 +569,6 @@ module WS
   # メニューウィンドウを簡単に実装できるかと思ったけどなんか長くなってしまった。
   # もうちょっと何か考えないとこれでは使えない。
   class WSImage < WSControl
-    include Clickable
     include BasicMouseSignal
   end
   class WSMenu < WSContainer
@@ -607,10 +606,10 @@ module WS
       wsimage.image = Image.new(200, 32).draw_font_ex(70, 0, "やだ", font, :edge=>true, :edge_color=>C_RED)
       add_control(wsimage, :mes3)
 
-      self.mes2.add_handler(:click){exit}
+      self.mes2.add_handler(:mouse_down){exit}
       self.mes2.add_handler(:mouse_over){self.sel2.visible = true}
       self.mes2.add_handler(:mouse_out){self.sel2.visible = false}
-      self.mes3.add_handler(:click){$menu_flag = false}
+      self.mes3.add_handler(:mouse_down){$menu_flag = false}
       self.mes3.add_handler(:mouse_over){self.sel3.visible = true}
       self.mes3.add_handler(:mouse_out){self.sel3.visible = false}
     end

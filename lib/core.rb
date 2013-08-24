@@ -43,7 +43,6 @@ module WS
 
     # マウスカーソルを動かしたときに呼ばれる
     def on_mouse_move(tx, ty)
-      return self
     end
 
     # コントロールにマウスカーソルが乗ったときに呼ばれる
@@ -52,6 +51,14 @@ module WS
 
     # コントロールからマウスカーソルが離れたときに呼ばれる
     def on_mouse_out
+    end
+
+    # マウスのホイールアップ
+    def on_mouse_wheel_up(tx, ty)
+    end
+    
+    # マウスのホイールダウン
+    def on_mouse_wheel_down(tx, ty)
     end
 
     # マウスイベント用の内部処理
@@ -84,6 +91,19 @@ module WS
     # マウスカーソルを動かしたときに呼ばれる内部処理
     def on_mouse_move_internal(tx, ty)
       self.on_mouse_move(tx, ty)
+      return self
+    end
+
+    # マウスのホイールアップで呼ばれる内部処理
+    def on_mouse_wheel_up_internal(tx, ty)
+      self.on_mouse_wheel_up(tx, ty)
+      return self
+    end
+    
+    # マウスのホイールダウンで呼ばれる内部処理
+    def on_mouse_wheel_down_internal(tx, ty)
+      self.on_mouse_wheel_down(tx, ty)
+      return self
     end
 
     # シグナル処理
@@ -241,6 +261,24 @@ module WS
       if !WS.captured?(self) 
         ctl = find_hit_object(tx, ty)
         return ctl.on_mouse_move_internal(tx - ctl.x, ty - ctl.y) if ctl
+      end
+      super
+    end
+
+    # マウスのホイールアップイベントを配下のコントロールに伝播させる
+    def on_mouse_wheel_up_internal(tx, ty)
+      if !WS.captured?(self) 
+        ctl = find_hit_object(tx, ty)
+        return ctl.on_mouse_wheel_up_internal(tx - ctl.x, ty - ctl.y) if ctl
+      end
+      super
+    end
+    
+    # マウスのホイールダウンイベントを配下のコントロールに伝播させる
+    def on_mouse_wheel_down_internal(tx, ty)
+      if !WS.captured?(self) 
+        ctl = find_hit_object(tx, ty)
+        return ctl.on_mouse_wheel_down_internal(tx - ctl.x, ty - ctl.y) if ctl
       end
       super
     end

@@ -35,32 +35,16 @@ module WS
       signal(:mouse_out)
       super
     end
+    def on_mouse_wheel_up(tx, ty)
+      signal(:mouse_wheel_up)
+      super
+    end
+    def on_mouse_wheel_down(tx, ty)
+      signal(:mouse_wheel_down)
+      super
+    end
   end
   
-  # マウスボタンを押した瞬間にself#on_clickを呼び出し、:clickシグナルを発行する
-  module Clickable
-    def on_mouse_down(tx, ty)
-      on_click(self, tx, ty)
-      super
-    end
-
-    def on_click(obj, tx, ty)
-      signal(:click, tx, ty)
-    end
-  end
-
-  # マウスの右ボタンを押した瞬間にself#on_r_clickを呼び出し、:rightclickシグナルを発行する
-  module RightClickable
-    def on_mouse_r_down(tx, ty)
-      on_r_click(self, tx, ty)
-      super
-    end
-
-    def on_r_click(obj, tx, ty)
-      signal(:rightclick, tx, ty)
-    end
-  end
-
   # Windowsのボタンのようにマウスボタンを離した瞬間にself#on_clickを呼び出し、:clickシグナルを発行する
   module ButtonClickable
     def on_mouse_down(tx, ty)

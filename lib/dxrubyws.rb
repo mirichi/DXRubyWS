@@ -18,6 +18,7 @@ module WS
       @mouse_r_flag = false
       @capture_object = nil
       @over_object = nil
+      @mouse_wheel = Input.mouse_wheel_pos
     end
 
     def add_control(obj, name=nil)
@@ -73,6 +74,15 @@ module WS
         @mouse_r_flag = false
         tmp.on_mouse_r_up_internal(@hit_cursor.x - tx, @hit_cursor.y - ty)
       end
+
+      # マウスホイール処理
+      wpos = Input.mouse_wheel_pos
+      if wpos > @mouse_wheel
+        tmp.on_mouse_wheel_up_internal(@hit_cursor.x - tx, @hit_cursor.y - ty)
+      elsif wpos < @mouse_wheel
+        tmp.on_mouse_wheel_down_internal(@hit_cursor.x - tx, @hit_cursor.y - ty)
+      end
+      @mouse_wheel = wpos
 
       super
     end

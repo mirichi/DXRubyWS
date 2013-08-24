@@ -574,6 +574,10 @@ module WS
         sb.screen_length = client.height.quo(32)
       end
 
+      # マウスホイール処理
+      wsimage.add_handler(:mouse_wheel_up){sb.slide(-3)}
+      wsimage.add_handler(:mouse_wheel_down){sb.slide(3)}
+
       # オートレイアウト
       layout(:hbox) do
         add wsimage, true, true
@@ -625,8 +629,8 @@ module WS
     def initialize(*args)
       super
       @images = Map.class_variable_get(:@@images)
-      client.extend Clickable
-      client.add_handler(:click) do |obj, tx, ty|
+      client.extend BasicMouseSignal
+      client.add_handler(:mouse_down) do |obj, tx, ty|
         @select_number = (tx / 32 + ty / 32 * (self.client.width / 32))
       end
       @selected_image = Image.new(32,32).box(0,0,31,31,C_WHITE)
