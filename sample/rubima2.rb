@@ -570,7 +570,7 @@ module WS
   # もうちょっと何か考えないとこれでは使えない。
   class WSImage < WSControl
     include Clickable
-    include MouseOver
+    include BasicMouseSignal
   end
   class WSMenu < WSContainer
     def initialize
