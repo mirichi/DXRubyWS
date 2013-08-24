@@ -43,6 +43,7 @@ module WS
 
     # マウスカーソルを動かしたときに呼ばれる
     def on_mouse_move(tx, ty)
+      self
     end
 
     # コントロールにマウスカーソルが乗ったときに呼ばれる
@@ -91,7 +92,6 @@ module WS
     # マウスカーソルを動かしたときに呼ばれる内部処理
     def on_mouse_move_internal(tx, ty)
       self.on_mouse_move(tx, ty)
-      return self
     end
 
     # マウスのホイールアップで呼ばれる内部処理
