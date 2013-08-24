@@ -65,6 +65,10 @@ class WS::WSButton
   include UseObjectBrowser
   include WS::UseRightClickMenu
 end
+class WS::WSImage
+  include UseObjectBrowser
+  include WS::UseRightClickMenu
+end
 
 
 
