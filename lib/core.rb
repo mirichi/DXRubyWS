@@ -27,18 +27,22 @@ module WS
 
     # マウスの左ボタンを押したときに呼ばれる
     def on_mouse_down(tx, ty)
+      self
     end
 
     # マウスの左ボタンを離したときに呼ばれる
     def on_mouse_up(tx, ty)
+      self
     end
 
     # マウスの右ボタンを押したときに呼ばれる
     def on_mouse_r_down(tx, ty)
+      self
     end
 
     # マウスの右ボタンを離したときに呼ばれる
     def on_mouse_r_up(tx, ty)
+      self
     end
 
     # マウスカーソルを動かしたときに呼ばれる
@@ -48,18 +52,22 @@ module WS
 
     # コントロールにマウスカーソルが乗ったときに呼ばれる
     def on_mouse_over
+      self
     end
 
     # コントロールからマウスカーソルが離れたときに呼ばれる
     def on_mouse_out
+      self
     end
 
     # マウスのホイールアップ
     def on_mouse_wheel_up(tx, ty)
+      self
     end
     
     # マウスのホイールダウン
     def on_mouse_wheel_down(tx, ty)
+      self
     end
 
     # マウスイベント用の内部処理
@@ -68,25 +76,21 @@ module WS
     # マウスの左ボタンを押したときに呼ばれる内部処理
     def on_mouse_down_internal(tx, ty)
       self.on_mouse_down(tx, ty)
-      return self
     end
 
     # マウスの左ボタンを離したときに呼ばれる内部処理
     def on_mouse_up_internal(tx, ty)
       self.on_mouse_up(tx, ty)
-      return self
     end
 
     # マウスの右ボタンを押したときに呼ばれる内部処理
     def on_mouse_r_down_internal(tx, ty)
       self.on_mouse_r_down(tx, ty)
-      return self
     end
 
     # マウスの右ボタンを離したときに呼ばれる内部処理
     def on_mouse_r_up_internal(tx, ty)
       self.on_mouse_r_up(tx, ty)
-      return self
     end
 
     # マウスカーソルを動かしたときに呼ばれる内部処理
@@ -97,13 +101,11 @@ module WS
     # マウスのホイールアップで呼ばれる内部処理
     def on_mouse_wheel_up_internal(tx, ty)
       self.on_mouse_wheel_up(tx, ty)
-      return self
     end
     
     # マウスのホイールダウンで呼ばれる内部処理
     def on_mouse_wheel_down_internal(tx, ty)
       self.on_mouse_wheel_down(tx, ty)
-      return self
     end
 
     # シグナル処理
