@@ -7,6 +7,7 @@ require_relative './module'
 module WS
   class WSDesktop < WSContainer
     attr_accessor :capture_object
+
     def initialize
       self.collision = [0, 0, Window.width - 1, Window.height - 1]
       @childlen = []
@@ -18,6 +19,7 @@ module WS
       @mouse_r_flag = false
       @capture_object = nil
       @over_object = nil
+      @cursor_x, @cursor_y = Input.mouse_pos_x, Input.mouse_pos_y
       @mouse_wheel = Input.mouse_wheel_pos
     end
 
@@ -28,22 +30,23 @@ module WS
     end
 
     def update
-      oldx, oldy = @hit_cursor.x, @hit_cursor.y
-      @hit_cursor.x, @hit_cursor.y = Input.mouse_pos_x, Input.mouse_pos_y
+      oldx, oldy = @cursor_x, @cursor_y
+      @cursor_x, @cursor_y = Input.mouse_pos_x, Input.mouse_pos_y
 
       if @capture_object
         tx, ty = @capture_object.get_global_vertex
+        tx, ty = @cursor_x - tx, @cursor_y - ty
         tmp = @capture_object
       else
-        tx = ty = 0
+        tx, ty = @cursor_x, @cursor_y
         tmp = self
       end
   
       # マウスカーソルの移動処理
-      if oldx != @hit_cursor.x or oldy != @hit_cursor.y
+      if oldx != @cursor_x or oldy != @cursor_y
         # キャプチャされていたら@captureのメソッドを呼ぶ
         old_over_object = @over_object
-        @over_object = tmp.mouse_event_dispach(:move, @hit_cursor.x - tx, @hit_cursor.y - ty)
+        @over_object = tmp.mouse_event_dispach(:move, tx, ty)
 
         if old_over_object != @over_object
           old_over_object.on_mouse_out if old_over_object
@@ -54,33 +57,33 @@ module WS
       # ボタン押した
       if Input.mouse_down?(M_LBUTTON) and @mouse_l_flag == false
         @mouse_l_flag = true
-        tmp.mouse_event_dispach(:down, @hit_cursor.x - tx, @hit_cursor.y - ty)
+        tmp.mouse_event_dispach(:down, tx, ty)
       end
   
       # ボタン離した
       if !Input.mouse_down?(M_LBUTTON) and @mouse_l_flag == true
         @mouse_l_flag = false
-        tmp.mouse_event_dispach(:up, @hit_cursor.x - tx, @hit_cursor.y - ty)
+        tmp.mouse_event_dispach(:up, tx, ty)
       end
 
       # 右ボタン押した
       if Input.mouse_down?(M_RBUTTON) and @mouse_r_flag == false
         @mouse_r_flag = true
-        tmp.mouse_event_dispach(:r_down, @hit_cursor.x - tx, @hit_cursor.y - ty)
+        tmp.mouse_event_dispach(:r_down, tx, ty)
       end
   
       # 右ボタン離した
       if !Input.mouse_down?(M_RBUTTON) and @mouse_r_flag == true
         @mouse_r_flag = false
-        tmp.mouse_event_dispach(:r_up, @hit_cursor.x - tx, @hit_cursor.y - ty)
+        tmp.mouse_event_dispach(:r_up, tx, ty)
       end
 
       # マウスホイール処理
       wpos = Input.mouse_wheel_pos
       if wpos > @mouse_wheel
-        tmp.mouse_event_dispach(:wheel_up, @hit_cursor.x - tx, @hit_cursor.y - ty)
+        tmp.mouse_event_dispach(:wheel_up, tx, ty)
       elsif wpos < @mouse_wheel
-        tmp.mouse_event_dispach(:wheel_down, @hit_cursor.x - tx, @hit_cursor.y - ty)
+        tmp.mouse_event_dispach(:wheel_down, tx, ty)
       end
       @mouse_wheel = wpos
 
