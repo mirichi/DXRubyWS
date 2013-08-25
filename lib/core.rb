@@ -99,6 +99,7 @@ module WS
           @signal[signal] = [block]
         end
       end
+      nil
     end
 
     # シグナルの発行(=ハンドラの呼び出し)
@@ -108,6 +109,7 @@ module WS
           obj.call(self, *args)
         end
       end
+      nil
     end
 
     # 絶対座標の算出
@@ -128,6 +130,7 @@ module WS
     def move(tx, ty)
       self.x, self.y = tx, ty
       signal(:move, tx, ty)
+      nil
     end
 
     # コントロールのリサイズ
@@ -135,6 +138,7 @@ module WS
       @width, @height = width, height
       self.collision = [0, 0, width - 1, height - 1]
       signal(:resize)
+      nil
     end
   end
 
@@ -159,7 +163,7 @@ module WS
       obj.target = self.image # 子コントロールの描画先は親のRenderTargetである
       obj.parent = self
       @childlen << obj
-      if name.class == Symbol
+      if name
         tmp = class << self;self;end
         tmp.class_eval do
           define_method(name) do
@@ -167,11 +171,19 @@ module WS
           end
         end
       end
+      obj
     end
 
     # コントロールの削除
-    def remove_control(obj)
+    def remove_control(obj, name=nil)
       @childlen.delete(obj)
+      if name
+        tmp = class << self;self;end
+        tmp.class_eval do
+          remove_method(name)
+        end
+      end
+      obj
     end
 
     # Sprite#update時に配下のコントロールにもupdateを投げる
