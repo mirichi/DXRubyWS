@@ -31,7 +31,7 @@ module WS
     # PopupMenuはマウスキャプチャするため配下のオブジェクトが呼ばれないのでここで自前で処理する
     def on_mouse_down(tx, ty)
       ctl = find_hit_object(tx, ty)
-      ctl.on_mouse_down_internal(tx - ctl.x, ty - ctl.y) if ctl
+      ctl.mouse_event_dispach(:down, tx - ctl.x, ty - ctl.y) if ctl
       self.parent.remove_control(self)
       WS.capture(nil)
     end
@@ -43,7 +43,7 @@ module WS
     def on_mouse_r_up(tx, ty)
       ctl = find_hit_object(tx, ty)
       if ctl
-        ctl.on_mouse_down_internal(tx - ctl.x, ty - ctl.y)
+        ctl.mouse_event_dispach(:down, tx - ctl.x, ty - ctl.y)
         self.parent.remove_control(self)
         WS.capture(nil)
       end
@@ -52,7 +52,7 @@ module WS
     def on_mouse_move(tx, ty)
       ctl = find_hit_object(tx, ty)
       if ctl
-        ctl.on_mouse_move_internal(tx - ctl.x, ty - ctl.y)
+        ctl.mouse_event_dispach(:move, tx - ctl.x, ty - ctl.y)
       else
         super
       end

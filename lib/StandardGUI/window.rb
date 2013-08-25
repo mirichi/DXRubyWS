@@ -113,12 +113,12 @@ module WS
     end
 
     # マウスのボタンが押されたときに手前に持ってくる処理(ちょっとアレな手)
-    def on_mouse_down_internal(tx, ty)
-      self.parent.childlen.push(self.parent.childlen.delete(self))
+    def mouse_event_dispach(event, tx, ty)
+      self.parent.childlen.push(self.parent.childlen.delete(self)) if event == :down or event == :r_down
       super
     end
-    def on_mouse_r_down_internal(tx, ty)
-      self.parent.childlen.push(self.parent.childlen.delete(self))
+    def mouse_event_dispach(event, tx, ty)
+      self.parent.childlen.push(self.parent.childlen.delete(self)) if event == :down or event == :r_down
       super
     end
   end

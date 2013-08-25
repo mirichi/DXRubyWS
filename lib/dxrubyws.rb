@@ -43,7 +43,7 @@ module WS
       if oldx != @hit_cursor.x or oldy != @hit_cursor.y
         # キャプチャされていたら@captureのメソッドを呼ぶ
         old_over_object = @over_object
-        @over_object = tmp.on_mouse_move_internal(@hit_cursor.x - tx, @hit_cursor.y - ty)
+        @over_object = tmp.mouse_event_dispach(:move, @hit_cursor.x - tx, @hit_cursor.y - ty)
 
         if old_over_object != @over_object
           old_over_object.on_mouse_out if old_over_object
@@ -54,33 +54,33 @@ module WS
       # ボタン押した
       if Input.mouse_down?(M_LBUTTON) and @mouse_l_flag == false
         @mouse_l_flag = true
-        tmp.on_mouse_down_internal(@hit_cursor.x - tx, @hit_cursor.y - ty)
+        tmp.mouse_event_dispach(:down, @hit_cursor.x - tx, @hit_cursor.y - ty)
       end
   
       # ボタン離した
       if !Input.mouse_down?(M_LBUTTON) and @mouse_l_flag == true
         @mouse_l_flag = false
-        tmp.on_mouse_up_internal(@hit_cursor.x - tx, @hit_cursor.y - ty)
+        tmp.mouse_event_dispach(:up, @hit_cursor.x - tx, @hit_cursor.y - ty)
       end
 
       # 右ボタン押した
       if Input.mouse_down?(M_RBUTTON) and @mouse_r_flag == false
         @mouse_r_flag = true
-        tmp.on_mouse_r_down_internal(@hit_cursor.x - tx, @hit_cursor.y - ty)
+        tmp.mouse_event_dispach(:r_down, @hit_cursor.x - tx, @hit_cursor.y - ty)
       end
   
       # 右ボタン離した
       if !Input.mouse_down?(M_RBUTTON) and @mouse_r_flag == true
         @mouse_r_flag = false
-        tmp.on_mouse_r_up_internal(@hit_cursor.x - tx, @hit_cursor.y - ty)
+        tmp.mouse_event_dispach(:r_up, @hit_cursor.x - tx, @hit_cursor.y - ty)
       end
 
       # マウスホイール処理
       wpos = Input.mouse_wheel_pos
       if wpos > @mouse_wheel
-        tmp.on_mouse_wheel_up_internal(@hit_cursor.x - tx, @hit_cursor.y - ty)
+        tmp.mouse_event_dispach(:wheel_up, @hit_cursor.x - tx, @hit_cursor.y - ty)
       elsif wpos < @mouse_wheel
-        tmp.on_mouse_wheel_down_internal(@hit_cursor.x - tx, @hit_cursor.y - ty)
+        tmp.mouse_event_dispach(:wheel_down, @hit_cursor.x - tx, @hit_cursor.y - ty)
       end
       @mouse_wheel = wpos
 

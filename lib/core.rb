@@ -74,40 +74,8 @@ module WS
 
     # マウスイベント用の内部処理
     # WSContainerとの協調に必要。特殊なパターンでない限り、ユーザが意識する必要はない。
-
-    # マウスの左ボタンを押したときに呼ばれる内部処理
-    def on_mouse_down_internal(tx, ty)
-      self.on_mouse_down(tx, ty)
-    end
-
-    # マウスの左ボタンを離したときに呼ばれる内部処理
-    def on_mouse_up_internal(tx, ty)
-      self.on_mouse_up(tx, ty)
-    end
-
-    # マウスの右ボタンを押したときに呼ばれる内部処理
-    def on_mouse_r_down_internal(tx, ty)
-      self.on_mouse_r_down(tx, ty)
-    end
-
-    # マウスの右ボタンを離したときに呼ばれる内部処理
-    def on_mouse_r_up_internal(tx, ty)
-      self.on_mouse_r_up(tx, ty)
-    end
-
-    # マウスカーソルを動かしたときに呼ばれる内部処理
-    def on_mouse_move_internal(tx, ty)
-      self.on_mouse_move(tx, ty)
-    end
-
-    # マウスのホイールアップで呼ばれる内部処理
-    def on_mouse_wheel_up_internal(tx, ty)
-      self.on_mouse_wheel_up(tx, ty)
-    end
-    
-    # マウスのホイールダウンで呼ばれる内部処理
-    def on_mouse_wheel_down_internal(tx, ty)
-      self.on_mouse_wheel_down(tx, ty)
+    def mouse_event_dispach(event, tx, ty)
+      self.__send__(("on_mouse_" + event.to_s).to_sym, tx, ty)
     end
 
     # シグナル処理
@@ -224,65 +192,10 @@ module WS
       @hit_cursor.check(@childlen.reverse)[0]
     end
 
-    # マウスの左ボタンが押されたイベントを配下のコントロールに伝播させる
-    def on_mouse_down_internal(tx, ty)
+    def mouse_event_dispach(event, tx, ty)
       if !WS.captured?(self) 
         ctl = find_hit_object(tx, ty)
-        return ctl.on_mouse_down_internal(tx - ctl.x, ty - ctl.y) if ctl
-      end
-      super
-    end
-
-    # マウスの左ボタンが離されたイベントを配下のコントロールに伝播させる
-    def on_mouse_up_internal(tx, ty)
-      if !WS.captured?(self) 
-        ctl = find_hit_object(tx, ty)
-        return ctl.on_mouse_up_internal(tx - ctl.x, ty - ctl.y) if ctl
-      end
-      super
-    end
-
-    # マウスの右ボタンが押されたイベントを配下のコントロールに伝播させる
-    def on_mouse_r_down_internal(tx, ty)
-      if !WS.captured?(self) 
-        ctl = find_hit_object(tx, ty)
-        return ctl.on_mouse_r_down_internal(tx - ctl.x, ty - ctl.y) if ctl
-      end
-      super
-    end
-
-    # マウスの右ボタンが離されたイベントを配下のコントロールに伝播させる
-    def on_mouse_r_up_internal(tx, ty)
-      if !WS.captured?(self) 
-        ctl = find_hit_object(tx, ty)
-        return ctl.on_mouse_r_up_internal(tx - ctl.x, ty - ctl.y) if ctl
-      end
-      super
-    end
-
-    # マウスカーソルが動いたイベントを配下のコントロールに伝播させる
-    def on_mouse_move_internal(tx, ty)
-      if !WS.captured?(self) 
-        ctl = find_hit_object(tx, ty)
-        return ctl.on_mouse_move_internal(tx - ctl.x, ty - ctl.y) if ctl
-      end
-      super
-    end
-
-    # マウスのホイールアップイベントを配下のコントロールに伝播させる
-    def on_mouse_wheel_up_internal(tx, ty)
-      if !WS.captured?(self) 
-        ctl = find_hit_object(tx, ty)
-        return ctl.on_mouse_wheel_up_internal(tx - ctl.x, ty - ctl.y) if ctl
-      end
-      super
-    end
-    
-    # マウスのホイールダウンイベントを配下のコントロールに伝播させる
-    def on_mouse_wheel_down_internal(tx, ty)
-      if !WS.captured?(self) 
-        ctl = find_hit_object(tx, ty)
-        return ctl.on_mouse_wheel_down_internal(tx - ctl.x, ty - ctl.y) if ctl
+        return ctl.mouse_event_dispach(event, tx - ctl.x, ty - ctl.y) if ctl
       end
       super
     end
