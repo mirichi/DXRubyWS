@@ -5,11 +5,13 @@ module WS
   # すべての基本、コントロールのクラス
   class WSControl < Sprite
     attr_accessor :parent, :font, :width, :height, :resizable_width, :resizable_height
+    attr_accessor :min_width, :min_height
     @@default_font = Font.new(16)
 
     def initialize(tx, ty, width, height)
       super(tx, ty)
       @width, @height = width, height
+      @min_width, @min_height = 16, 16
       self.collision = [0, 0, width - 1, height - 1]
       @signal = {}             # シグナルデータ
       @hit_cursor = Sprite.new # 衝突判定用スプライト
@@ -306,10 +308,12 @@ module WS
   class Layout
     attr_accessor :type, :x, :y, :width, :height, :resizable_width, :resizable_height, :obj
     attr_accessor :margin_left, :margin_right, :margin_top, :margin_bottom
+    attr_accessor :min_width, :min_height
 
     def initialize(type, obj, &b)
       @type, @obj = type, obj
       @width, @height = obj.width, obj.height
+      @min_width = @min_height = 16
       @x = @y = 0
       @margin_left = @margin_right = @margin_top = @margin_bottom = 0
       @resizable_width = @resizable_height = true
@@ -332,6 +336,7 @@ module WS
       @data.each do |o|
         @new_x, @new_y = o.x, o.y
         @new_width, @new_height = o.width, o.height
+        @new_min_width, @new_min_height = o.min_width, o.min_height
 
         yield o
 
@@ -361,6 +366,7 @@ module WS
       @data.each do |o|
         @new_x, @new_y = o.x, o.y
         @new_width, @new_height = o.width, o.height
+        @new_min_width, @new_min_height = o.min_width, o.min_height
 
         yield o
 
@@ -402,7 +408,8 @@ module WS
         when 0 # 均等
           # 座標調整
           adjust_x do |o|
-            point += (self.width - @margin_left - @margin_right - total) / (@data.size + 1) # オブジェクトの間隔を足す
+            tmp = (self.width - @margin_left - @margin_right - total) / (@data.size + 1) # オブジェクトの間隔を足す
+            point += (tmp > 0 ? tmp : 0)
             @new_x = point
             point += @new_width
           end
@@ -411,7 +418,11 @@ module WS
           # 座標調整
           adjust_x do |o|
             @new_x = point
-            @new_width = (self.width - @margin_left - @margin_right - total) / undef_size_count if o.resizable_width # 最大化するオブジェクトを最大化
+            if o.resizable_width # 最大化するオブジェクトを最大化
+              tmp = (self.width - @margin_left - @margin_right - total) / undef_size_count
+              tmp = @new_min_width if tmp < @new_min_width
+              @new_width = tmp
+            end
             point += @new_width
           end
         end
@@ -430,7 +441,8 @@ module WS
         when 0 # 均等
           # 座標調整
           adjust_y do |o|
-            point += (self.height - @margin_top - @margin_bottom - total) / (@data.size + 1) # オブジェクトの間隔を足す
+            tmp = (self.height - @margin_top - @margin_bottom - total) / (@data.size + 1) # オブジェクトの間隔を足す
+            point += (tmp > 0 ? tmp : 0)
             @new_y = point
             point += @new_height
           end
@@ -439,7 +451,11 @@ module WS
           # 座標調整
           adjust_y do |o|
             @new_y = point
-            @new_height = (self.height - @margin_top - @margin_bottom - total) / undef_size_count if o.resizable_height # 最大化するオブジェクトを最大化
+            if o.resizable_height # 最大化するオブジェクトを最大化
+              tmp = (self.height - @margin_top - @margin_bottom - total) / undef_size_count
+              tmp = @new_min_height if tmp < @new_min_height
+              @new_height = tmp
+            end
             point += @new_height
           end
         end
