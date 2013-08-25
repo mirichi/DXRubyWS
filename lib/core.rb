@@ -202,7 +202,7 @@ module WS
 
     # オートレイアウト設定開始
     def layout(type=nil, &b)
-      @layout = Layout.new(type, self, &b)
+      @layout = WSLayout.new(type, self, &b)
       @layout.auto_layout
     end
 
@@ -218,7 +218,7 @@ module WS
   end
 
   # オートレイアウト
-  class Layout
+  class WSLayout
     attr_accessor :type, :x, :y, :width, :height, :resizable_width, :resizable_height, :obj
     attr_accessor :margin_left, :margin_right, :margin_top, :margin_bottom
     attr_accessor :min_width, :min_height
@@ -235,7 +235,7 @@ module WS
     end
 
     def layout(type=nil, &b)
-      @data << Layout.new(type, self, &b)
+      @data << WSLayout.new(type, self, &b)
       self
     end
     
@@ -375,7 +375,7 @@ module WS
       end
 
       @data.each do |o|
-        o.auto_layout if Layout === o
+        o.auto_layout if WSLayout === o
       end
     end
 
