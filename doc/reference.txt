@@ -1,185 +1,185 @@
-DXRuby�p�E�B���h�E�V�X�e��DXRubyWS ���t�@�����X�}�j���A��
+DXRuby用ウィンドウシステムDXRubyWS リファレンスマニュアル
 
-���P�D�͂��߂�
+■１．はじめに
 
-DXRubyWS��DXRuby�p�Q�[���ɑg�ݍ��ނ��Ƃ�z�肵���C�x���g�h���u���̃E�B���h�E�V�X�e���t���[�����[�N�ł��B�Q�[���̃R�[�h�ƓƗ�������`�ŁA�}�E�X����Ȃǂ��g���K�[�ɂ����C�x���g�ɑΏ�����R�[�h���L�q���ADXRubyWS�V�X�e������Ăяo����邱�Ƃœ��삵�܂��B
-���̕�����DXRubyWS�̊�{�����̃N���X�E���W���[���̃��t�@�����X�}�j���A���ƂȂ�܂��B�W��GUI�ɂ��Ă͌��݊J�����łقƂ�ǌ`�ɂȂ��Ă��Ȃ��̂Ń}�j���A���������郌�x���ł͂���܂���B����������l�̓T���v���v���O������GUI�����̃\�[�X�𒭂߂Ă݂�Ƃ悢�ł��傤�B�W��GUI�͂ǂ��炩�Ƃ����ƃA�v������邽�߂̕��i�ł͂Ȃ��A���̂悤�ɏ����΂��̂悤�ɓ����Ƃ����T���v���I�ȈӖ������̂ق��������Ǝv���Ă��܂��B
+DXRubyWSはDXRuby用ゲームに組み込むことを想定したイベントドリブンのウィンドウシステムフレームワークです。ゲームのコードと独立した定義で、マウス操作などをトリガーにしたイベントに対処するコードを記述し、DXRubyWSシステムから呼び出されることで動作します。
+この文書はDXRubyWSの基本部分のクラス・モジュールのリファレンスマニュアルとなります。標準GUIについては現在開発中でほとんど形になっていないのでマニュアルを書けるレベルではありません。興味がある人はサンプルプログラムやGUI部分のソースを眺めてみるとよいでしょう。標準GUIはどちらかというとアプリを作るための部品ではなく、このように書けばこのように動くというサンプル的な意味合いのほうが強いと思っています。
 
-�ł��邱��
-�E�}�E�X�̈ړ��A�{�^������A�z�C�[������̊e��C�x���g���s
-�E�R���e�i�ƃR���g���[���ɂ��I�u�W�F�N�g�c���[(Composite�p�^�[���̂悤�Ȃ���)�ł�GUI�\�z
-�E�V�O�i���n���h���̓o�^�ƃV�O�i�����s�ɂ����s
-�E�R���e�i��̃R���g���[���̃T�C�Y�E�z�u�������I�ɒ�������I�[�g���C�A�E�g
-�E��{�I�ȃ}�E�X����ŃV�O�i���𔭍s���Ă����T�|�[�g���W���[���Q
+できること
+・マウスの移動、ボタン操作、ホイール操作の各種イベント発行
+・コンテナとコントロールによるオブジェクトツリー(Compositeパターンのようなもの)でのGUI構築
+・シグナルハンドラの登録とシグナル発行による実行
+・コンテナ上のコントロールのサイズ・配置を自動的に調整するオートレイアウト
+・基本的なマウス操作でシグナルを発行してくれるサポートモジュール群
 
-������J��
-�E�L�[�{�[�h���̓C�x���g
+いずれ開発
+・キーボード入力イベント
 
-�����ƊJ����
-�EGUI���i
+ずっと開発中
+・GUI部品
 
 
-���Q�Dmodule WS
+■２．module WS
 
-DXRubyWS�͂��ׂ�WS���W���[���̒��ɋL�q����Ă��܂��B���A�g�b�v���x����include���Ďg�����Ƃ͑z�肵�Ă��܂���B
-��{�����͑傫���킯�āAWS���W���[���AWSControl�N���X�AWSContainer�N���X�AWSDesktop�N���X�AWSLayout�N���X�A�T�|�[�g���W���[���Q�ɕ�����Ă��܂��B
-WS���W���[���͊e��N���X�E���W���[���̒�`���قƂ�ǂł����A6�̃��W���[�����\�b�h����`����Ă��܂��B�ł��悭�g���̂�WS.update��WS.desktop�ł��B
+DXRubyWSはすべてWSモジュールの中に記述されています。が、トップレベルでincludeして使うことは想定していません。
+基本部分は大きくわけて、WSモジュール、WSControlクラス、WSContainerクラス、WSDesktopクラス、WSLayoutクラス、サポートモジュール群に分かれています。
+WSモジュールは各種クラス・モジュールの定義がほとんどですが、6つのモジュールメソッドが定義されています。最もよく使うのはWS.updateとWS.desktopです。
 
 WS.update -> nil
- Window.loop�̒��ɂ��̌Ăяo�����������Ƃ�DXRubyWS�̂��ׂĂ����삵�܂��B
+ Window.loopの中にこの呼び出しを書くことでDXRubyWSのすべてが動作します。
 
 WS.desktop -> WSDesktop
- �X�N���[���S�̂̍Ŕw�ʂ�\��WSDesktop�I�u�W�F�N�g��Ԃ��܂��B�X�N���[����ɃE�B���h�E�Ȃǂ�z�u����Ƃ��ɂ͂��̃I�u�W�F�N�g�ɑ΂��ăR���g���[���̒ǉ����s���܂��B
+ スクリーン全体の最背面を表すWSDesktopオブジェクトを返します。スクリーン上にウィンドウなどを配置するときにはこのオブジェクトに対してコントロールの追加を行います。
 
 WS.capture(obj) -> obj
- �}�E�X�L���v�`�����܂��B�ʏ�}�E�X�C�x���g�̓}�E�X�J�[�\���̈ʒu�ɂ���I�u�W�F�N�g�ɑ΂��đ��M����܂����A���̃��\�b�h���Ăяo���ēo�^����Ƃ���ȍ~�̃C�x���g�͓o�^���ꂽ�I�u�W�F�N�g�ɑ΂��đ��M����܂��Bnil���w�肷��Ɖ������܂��B
+ マウスキャプチャします。通常マウスイベントはマウスカーソルの位置にあるオブジェクトに対して送信されますが、このメソッドを呼び出して登録するとそれ以降のイベントは登録されたオブジェクトに対して送信されます。nilを指定すると解除します。
 
 WS.captured?(obj) -> true/false
- �����œn���ꂽ�I�u�W�F�N�g���}�E�X�L���v�`������Ă���ꍇ��true��Ԃ��܂��B
+ 引数で渡されたオブジェクトがマウスキャプチャされている場合にtrueを返します。
 
 WS.default_z -> z (default 10000)
 WS.default_z=(z) -> z
- WS.desktop�ŕԂ����WSDesktop�I�u�W�F�N�g�́A�����`�悵�܂���BWS.desktop�ɑ΂��Ēǉ������R���g���[���̓X�N���[��(DXRuby�ł���Window)�ɒ��ڕ`�悳��܂��BSprite#target=nil(or Window)�Ƃ�����Ԃł��BDXRubyWS�O�ŕ`�悳�ꂽ�摜�Ƃ̕`��D�揇�ʂ��s���ɂȂ��Ă��܂��̂ŁA���̃��\�b�h��z�l�̃f�t�H���g��ݒ肵�܂��B�����l��10000�ƂȂ��Ă��܂��B���������̏ꍇ�ɂ�DXRubyWS�ŕ`�悳�ꂽ�摜����Ԏ�O�ɂ���ł��傤�B
+ WS.desktopで返されるWSDesktopオブジェクトは、何も描画しません。WS.desktopに対して追加したコントロールはスクリーン(DXRubyでいうWindow)に直接描画されます。Sprite#target=nil(or Window)とした状態です。DXRubyWS外で描画された画像との描画優先順位が不明になってしまうので、このメソッドでz値のデフォルトを設定します。初期値は10000となっています。たいがいの場合にはDXRubyWSで描画された画像が一番手前にくるでしょう。
 
 
-���R�Dclass WSControl < Sprite
+■３．class WSControl < Sprite
 
-���ׂẴR���g���[���̃x�[�X�N���X�ł��BDXRuby��Sprite���p�����Ă��܂��B���������R���g���[����WS.desktop��WSContainer�I�u�W�F�N�g�̂����ꂩ�ɓo�^����K�v������܂��BWSContainer�I�u�W�F�N�g��WSControl���p�����Ă���̂ŁA���ׂẴR���g���[����WS.desktop�𒸓_�Ƃ����I�u�W�F�N�g�c���[�̂ǂ����Ɉʒu���܂��B���̃c���[���ɑ��݂��Ȃ��R���g���[���ɂ̓}�E�X�C�x���g�͑��M����܂��񂵁A�`�������܂���B
-WSControl��Sprite���p�����Ă��܂����Aimage�ɂ̓f�t�H���g�ł͉����ݒ肳��܂���B��ʂɕ`�悷��摜�ɂ��Ă͎�����Image�I�u�W�F�N�g�𐶐����Đݒ肷��Ȃǂ��Ă��������B
+すべてのコントロールのベースクラスです。DXRubyのSpriteを継承しています。生成したコントロールはWS.desktopかWSContainerオブジェクトのいずれかに登録する必要があります。WSContainerオブジェクトもWSControlを継承しているので、すべてのコントロールはWS.desktopを頂点としたオブジェクトツリーのどこかに位置します。このツリー内に存在しないコントロールにはマウスイベントは送信されませんし、描画もされません。
+WSControlはSpriteを継承していますが、imageにはデフォルトでは何も設定されません。画面に描画する画像については自分でImageオブジェクトを生成して設定するなどしてください。
 
 WSControl.new(x, y, width, height) -> WSControl
- ���Wx/y�ƃR���g���[���̃T�C�Ywidth/height��n���AWSControl�I�u�W�F�N�g�𐶐����܂��B���W�͓o�^����WS.desktop��������WSContainer�I�u�W�F�N�g�̍����(0,0)�Ƃ������Έʒu�ŕ\���܂��B
- �����ɓn��width/height�̓C���X�^���X�ϐ�@width/@height�ɐݒ肳��AWSContol#width/height�ŎQ�Ƃł��܂��BSprite#collision�ɂ��ݒ肳��܂��̂ŁASprite#image�̉摜�T�C�Y�Ƃ͊֌W�Ȃ����̒l�Ń}�E�X�̔��肪����܂��B�摜�T�C�Y�Ŕ��肵�����ꍇ��collision=nil�Ƃ��Ă��������B
- WSControl���p�����ăN���X��������ꍇ�ɂ�initialize���ł�super�͈�ԍŏ��ɌĂԂ��Ƃ��I�X�X�����܂��B
+ 座標x/yとコントロールのサイズwidth/heightを渡し、WSControlオブジェクトを生成します。座標は登録するWS.desktopもしくはWSContainerオブジェクトの左上を(0,0)とした相対位置で表します。
+ 引数に渡すwidth/heightはインスタンス変数@width/@heightに設定され、WSContol#width/heightで参照できます。Sprite#collisionにも設定されますので、Sprite#imageの画像サイズとは関係なくこの値でマウスの判定がされます。画像サイズで判定したい場合はcollision=nilとしてください。
+ WSControlを継承してクラスを作った場合にはinitialize内でのsuperは一番最初に呼ぶことをオススメします。
 
-WSControl#on_mouse_down(x, y) -> self       # ���{�^��������
-WSControl#on_mouse_up(x, y) -> self         # ���{�^��������
-WSControl#on_mouse_r_down(x, y) -> self     # �E�{�^��������
-WSControl#on_mouse_r_up(x, y) -> self       # �E�{�^��������
-WSControl#on_mouse_move(x, y) -> self       # �J�[�\����������
-WSControl#on_mouse_over -> self             # �I�u�W�F�N�g�ɃJ�[�\���������
-WSControl#on_mouse_out -> self              # �I�u�W�F�N�g����J�[�\�������ꂽ
-WSControl#on_mouse_wheel_up(x, y) -> self   # �z�C�[������ɉ񂵂�
-WSControl#on_mouse_wheel_down(x, y) -> self # �z�C�[�������ɉ񂵂�
- ���ꂼ��A�}�E�X�C�x���g��������DXRubyWS�V�X�e������Ăяo����郁�\�b�h�ł��BWSControl���p�����ăN���X��������ꍇ�ɂ́A�������I�[�o�[���C�h���ď����������܂��Bsuper�͍Ō�ɌĂт܂��B�Ō�ɌĂׂȂ��ꍇ��self��Ԃ��悤�ɂ��Ă��������B
+WSControl#on_mouse_down(x, y) -> self       # 左ボタン押した
+WSControl#on_mouse_up(x, y) -> self         # 左ボタン離した
+WSControl#on_mouse_r_down(x, y) -> self     # 右ボタン押した
+WSControl#on_mouse_r_up(x, y) -> self       # 右ボタン離した
+WSControl#on_mouse_move(x, y) -> self       # カーソル動かした
+WSControl#on_mouse_over -> self             # オブジェクトにカーソルが乗った
+WSControl#on_mouse_out -> self              # オブジェクトからカーソルが離れた
+WSControl#on_mouse_wheel_up(x, y) -> self   # ホイールを上に回した
+WSControl#on_mouse_wheel_down(x, y) -> self # ホイールを下に回した
+ それぞれ、マウスイベント発生時にDXRubyWSシステムから呼び出されるメソッドです。WSControlを継承してクラスを作った場合には、これらをオーバーライドして処理を書きます。superは最後に呼びます。最後に呼べない場合はselfを返すようにしてください。
 
-WSControl#mouse_event_dispach(event, x, y) -> �C�x���g���󂯎�����I�u�W�F�N�g
- ���������Ɏg����C�x���g�`�d�p���\�b�h�ł��B��L�}�E�X�C�x���g���Ăяo���܂��B
+WSControl#mouse_event_dispach(event, x, y) -> イベントを受け取ったオブジェクト
+ 内部処理に使われるイベント伝播用メソッドです。上記マウスイベントを呼び出します。
 
 WSControl#add_handler(signal, obj=nil, &block) -> nil
- �V�O�i���n���h����ǉ����܂��Bsignal�ɂ̓V�O�i������\��Symbol�I�u�W�F�N�g��n���܂��B���̃I�u�W�F�N�g�Ŏw�肵���V�O�i�������������Ƃ��ɁAobj�Ŏw�肳�ꂽMethod�I�u�W�F�N�g�������̓u���b�N���Ăяo����܂��B�����w�肵���ꍇ�͗����Ăяo����܂��B�����V�O�i���ɕ����̃n���h����o�^���邱�Ƃ��ł��܂��B
- Method�I�u�W�F�N�g��Proc�I�u�W�F�N�g�����ǂ�call���\�b�h���Ăяo�����̂ŁAcall���\�b�h�����݂���I�u�W�F�N�g��obj�Ɏw�肷��Ƃ��ꂪ�Ăяo����܂��B
+ シグナルハンドラを追加します。signalにはシグナル名を表すSymbolオブジェクトを渡します。このオブジェクトで指定したシグナルが発生したときに、objで指定されたMethodオブジェクトもしくはブロックが呼び出されます。両方指定した場合は両方呼び出されます。同じシグナルに複数のハンドラを登録することができます。
+ MethodオブジェクトもProcオブジェクトも結局はcallメソッドが呼び出されるので、callメソッドが存在するオブジェクトをobjに指定するとそれが呼び出されます。
 
 WSControl#signal(s, *args) -> nil
- s�̓V�O�i������\��Symbol�I�u�W�F�N�g��n���A���̃V�O�i���𔭍s���܂��B�V�O�i���n���h���ɓo�^����Ă��邷�ׂẴI�u�W�F�N�g��call���\�b�h���Ăяo���܂��B
- �����̐��͎��R�ł����A�V�O�i���n���h���ɓn���������ɂ̓V�O�i���������Ƃ��đ�1������self���ǉ�����܂��B
+ sはシグナル名を表すSymbolオブジェクトを渡し、そのシグナルを発行します。シグナルハンドラに登録されているすべてのオブジェクトのcallメソッドを呼び出します。
+ 引数の数は自由ですが、シグナルハンドラに渡される引数にはシグナル発生元として第1引数にselfが追加されます。
 
 WSControl#get_global_vertex -> [x, y]
- �R���g���[���̃X�N���[����ł̍��W��Ԃ��܂��B
+ コントロールのスクリーン上での座標を返します。
 
 WSControl#move(x, y) -> nil
- self��x/y��ύX���܂��B�ύX���:move�V�O�i��������x,y�Ŕ��s���܂��B
+ selfのx/yを変更します。変更後に:moveシグナルを引数x,yで発行します。
 
 WSControl#resize(width, height) -> nil
- @width/@height��ύX���܂��BSprite#collision�������ɕύX���܂��B�ύX���:resize�V�O�i���𔭍s���܂��B�V�O�i���̈����ɃT�C�Y�͓n����܂��񂪁Aobj��width/height���ύX���ꂽ��Ȃ̂ŃV�O�i���n���h���ł͂���𗘗p�ł��܂��B
+ @width/@heightを変更します。Sprite#collisionも同時に変更します。変更後に:resizeシグナルを発行します。シグナルの引数にサイズは渡されませんが、objのwidth/heightが変更された後なのでシグナルハンドラではそれを利用できます。
 
-�v���p�e�B��
+プロパティ類
 attr_accessor :parent, :font, :width, :height, :resizable_width, :resizable_height
 attr_accessor :min_width, :min_height
- parent�͓o�^���ꂽ�e�̃I�u�W�F�N�g(WS.desktop��������WSContainer�I�u�W�F�N�g)���i�[����܂��B
- font�͉������Ȃ����Font.new(16)�ō��ꂽ�f�t�H���g�t�H���g���ݒ肳��܂��B
- width/height��new�œn���ꂽ�l���ݒ肳��܂��Bresize�ōX�V����܂��B
- resizable_width/height�̓I�[�g���C�A�E�g�@�\�Ŏ����X�V���邩�ǂ������i�[����܂��B�f�t�H���g��false�ł��B
- min_width/height�̓I�[�g���C�A�E�g�@�\�ŏk�������Œ�T�C�Y��ݒ肵�܂��B�f�t�H���g��16�ł��B
+ parentは登録された親のオブジェクト(WS.desktopもしくはWSContainerオブジェクト)が格納されます。
+ fontは何もしなければFont.new(16)で作られたデフォルトフォントが設定されます。
+ width/heightはnewで渡された値が設定されます。resizeで更新されます。
+ resizable_width/heightはオートレイアウト機能で自動更新するかどうかが格納されます。デフォルトはfalseです。
+ min_width/heightはオートレイアウト機能で縮小される最低サイズを設定します。デフォルトは16です。
 
 
-���S�Dclass WSContainer < WSControl
+■４．class WSContainer < WSControl
 
-�����̃R���g���[����z���Ɏ����Ƃ��ł���R���e�i�̃N���X�ł��BWSControl���p�����Ă��܂��BWSContainer��image��RenderTarget�I�u�W�F�N�g�𐶐����ĕێ����A�z���̃R���g���[���͂���RenderTarget�I�u�W�F�N�g��Sprite#target=�Ŏ����I�ɐݒ肳��܂��B�Ȃ̂ŁA�z���̃R���g���[���͊�{�I�ɐe�̃I�u�W�F�N�g�̊O���ɂ͕`��ł��܂���B
+複数のコントロールを配下に持つことができるコンテナのクラスです。WSControlを継承しています。WSContainerはimageにRenderTargetオブジェクトを生成して保持し、配下のコントロールはそのRenderTargetオブジェクトがSprite#target=で自動的に設定されます。なので、配下のコントロールは基本的に親のオブジェクトの外側には描画できません。
 
 WSContainer.new(x, y, width, height) -> WSContainer
- image��RenderTarget.new(width, height)�Ƃ���RenderTarget�I�u�W�F�N�g���ݒ肳��܂��B
+ imageにRenderTarget.new(width, height)としてRenderTargetオブジェクトが設定されます。
 
 WSContainer#add_control(obj, name=nil) -> obj
- self�̔z����obj��ǉ����܂��Bname��Symbol�I�u�W�F�N�g���w�肷���self�̓��ك��\�b�h�Ƃ���obj��Ԃ����\�b�hname��ǉ����܂��B
+ selfの配下にobjを追加します。nameにSymbolオブジェクトを指定するとselfの特異メソッドとしてobjを返すメソッドnameを追加します。
 
 WSContainer#remove_control(obj, name=nil) -> obj
- self�̔z����obj���폜���܂��Bname��Symbol�I�u�W�F�N�g���w�肷��Ƃ��̖��O�̓��ك��\�b�h���폜���܂��B
+ selfの配下のobjを削除します。nameにSymbolオブジェクトを指定するとその名前の特異メソッドも削除します。
 
 WSContainer#update
- �z���̃I�u�W�F�N�g��update���Ăяo���Ă���A���g��update���Ăт܂��B
+ 配下のオブジェクトのupdateを呼び出してから、自身のupdateを呼びます。
 
 WSContainer#draw
- �z���̃I�u�W�F�N�g��draw���Ăяo���Ă���A���g��draw���Ăт܂��B
+ 配下のオブジェクトのdrawを呼び出してから、自身のdrawを呼びます。
 
 WSContainer#find_hit_object(x, y) -> WSControl
- ���������Ɏg���܂��B�z���̃I�u�W�F�N�g�̂����A(x, y)�Ƀq�b�g����I�u�W�F�N�g��Ԃ��܂��B
+ 内部処理に使われます。配下のオブジェクトのうち、(x, y)にヒットするオブジェクトを返します。
 
-WSContainer#mouse_event_dispach(event, x, y) -> �C�x���g���󂯎�����I�u�W�F�N�g
- ���������Ɏg����C�x���g�`�d�p���\�b�h�ł��B�z���̃I�u�W�F�N�g�̂����Afind_hit_object���\�b�h���Ԃ����I�u�W�F�N�g�ɑ΂���event��]�����܂��B
+WSContainer#mouse_event_dispach(event, x, y) -> イベントを受け取ったオブジェクト
+ 内部処理に使われるイベント伝播用メソッドです。配下のオブジェクトのうち、find_hit_objectメソッドが返したオブジェクトに対してeventを転送します。
 
 WSContainer#layout(type=nil, &block)
- �I�[�g���C�A�E�g�w�胁�\�b�h�ł��Btype�ɂ�:hbox�A:vbox�̂����ꂩ���w�肵�܂��B���ꂼ�ꉡ���сA�c���т�\���܂��B
- block�ɂ̓I�[�g���C�A�E�g�̎w��R�[�h��n���܂��B���̃u���b�N�͐�������WSLayout�I�u�W�F�N�g��self�Ƃ��ČĂ΂�܂��B�ڍׂ�WSLayout�N���X���Q�Ƃ��Ă��������B
+ オートレイアウト指定メソッドです。typeには:hbox、:vboxのいずれかを指定します。それぞれ横並び、縦並びを表します。
+ blockにはオートレイアウトの指定コードを渡します。このブロックは生成したWSLayoutオブジェクトをselfとして呼ばれます。詳細はWSLayoutクラスを参照してください。
 
 WSContainer#resize(width, height)
- self��image�Ɋi�[����Ă���RenderTarget�I�u�W�F�N�g�����T�C�Y���A:resize�V�O�i���𔭍s���Ă���I�[�g���C�A�E�g�����s���܂��B
+ selfのimageに格納されているRenderTargetオブジェクトをリサイズし、:resizeシグナルを発行してからオートレイアウトを実行します。
 
-�v���p�e�B��
+プロパティ類
 attr_accessor :childlen
- �z���̃I�u�W�F�N�g���i�[����Ă���z��ł��B�i�[���ɕ`�悵�܂����A�}�E�X�̔���͋t���ɂȂ�܂��B
+ 配下のオブジェクトが格納されている配列です。格納順に描画しますが、マウスの判定は逆順になります。
 
 
-���T�Dclass WSDesktop < WSContainer
+■５．class WSDesktop < WSContainer
 
-�X�N���[���S�̂�\���f�X�N�g�b�v�I�u�W�F�N�g�ł��B�}�E�X�C�x���g�̔������ł��Brequire 'dxrubyws'�������_�Ő�������܂��BWS.desktop�ŎQ�Ƃł��܂��B���[�U��new���邱�Ƃ͑z�肵�Ă��܂���B
-���ʂȃ��\�b�h���`���Ă���킯�ł͂���܂��񂪁A���̃I�u�W�F�N�g��add_control�������݂̂̂��}�E�X�C�x���g���󂯎��A�`�������܂��B
-WS.update�̒��g��WS.desktop�ɑ΂���update��draw�̌Ăяo���ł��B
+スクリーン全体を表すデスクトップオブジェクトです。マウスイベントの発生元です。require 'dxrubyws'した時点で生成されます。WS.desktopで参照できます。ユーザがnewすることは想定していません。
+特別なメソッドを定義しているわけではありませんが、このオブジェクトにadd_controlしたもののみがマウスイベントを受け取り、描画もされます。
+WS.updateの中身はWS.desktopに対するupdateとdrawの呼び出しです。
 
 
-���U�Dclass WSLayout
+■６．class WSLayout
 
-�I�[�g���C�A�E�g�@�\�ł��BWSContainer�z���̃I�u�W�F�N�g�̈ʒu/�T�C�Y�������I�ɒ������܂��BW
-SContainer#layout�ɂ��C���X�^���X����������A����WSLayout�C���X�^���X��instance_eval�Ńu���b�N�����s����܂��B���������āAlayout���\�b�h�ɓn���u���b�N�̒��ł�WSLayout�N���X�̃C���X�^���X���\�b�h���ĂԂ��Ƃ��ł��܂��B
+オートレイアウト機能です。WSContainer配下のオブジェクトの位置/サイズを自動的に調整します。W
+SContainer#layoutによりインスタンスが生成され、そのWSLayoutインスタンスのinstance_evalでブロックが実行されます。したがって、layoutメソッドに渡すブロックの中ではWSLayoutクラスのインスタンスメソッドを呼ぶことができます。
 
 WSLayout.new(type=nil, obj, &b) -> WSLayout
- �ʏ킱��𒼐ڌĂԂ��Ƃ͂���܂���BWSContainer#layout��������WSLayout#layout����Ă΂�܂��B
+ 通常これを直接呼ぶことはありません。WSContainer#layoutもしくはWSLayout#layoutから呼ばれます。
 
 WSLayout#add(obj, resizable_width=nil, resizable_height=nil)
- �ʏ��layout���\�b�h�ɓn���u���b�N�̒��ŌĂсAobj�����C�A�E�g�ɓo�^����܂��B�o�^���ꂽ�I�u�W�F�N�g��layout���\�b�h�Ŏw�肳�ꂽtype�ɂ��������ďc�����ɕ��т܂��B
- resizable_width/height�̓I�u�W�F�N�g�����T�C�Y�\���ǂ������w�肵�܂��B���T�C�Y�\�ȏꍇ�A�I�[�g���C�A�E�g�ɂ��T�C�Y��ύX����܂��B�ŏ��T�C�Y��WSControl��min_width/height�Ŏw��ł��܂��B
+ 通常はlayoutメソッドに渡すブロックの中で呼び、objがレイアウトに登録されます。登録されたオブジェクトはlayoutメソッドで指定されたtypeにしたがって縦か横に並びます。
+ resizable_width/heightはオブジェクトがリサイズ可能かどうかを指定します。リサイズ可能な場合、オートレイアウトによりサイズを変更されます。最小サイズはWSControlのmin_width/heightで指定できます。
 
 WSLayout#layout(type=nil)
- type�ɂ�:hbox��������:vbox���w�肵�܂��B���ꂼ��add���ꂽ�I�u�W�F�N�g����(������E)���c(�ォ�牺)�ɕ��т܂��B
- �ȉ�:hbox�̐����ł����A:vbox�̏ꍇ�͏c��������ւ�邾���ł��Ƃ͓����ł��B
+ typeには:hboxもしくは:vboxを指定します。それぞれaddされたオブジェクトが横(左から右)か縦(上から下)に並びます。
+ 以下:hboxの説明ですが、:vboxの場合は縦横が入れ替わるだけであとは同じです。
 
- �������Ƀ��T�C�Y�\�ȃI�u�W�F�N�g��0�̏ꍇ�A���ׂẴI�u�W�F�N�g�͌��̃T�C�Y�̂܂܋ϓ��Ԋu�ŉ��ɕ��т܂��B
- �������Ƀ��T�C�Y�\�ȃI�u�W�F�N�g��1�̏ꍇ�A�J�c�J�c�ɋl�߂ă��T�C�Y�\�ȃI�u�W�F�N�g���ő�T�C�Y�ɂ��܂��B
- �������Ƀ��T�C�Y�\�ȃI�u�W�F�N�g��2�ȏ�̏ꍇ�A���T�C�Y�\�ȃI�u�W�F�N�g�����ׂē����T�C�Y�ɂ��Ă����ς��ɋl�߂܂��B
- �c�����Ƀ��T�C�Y�\�ȃI�u�W�F�N�g�͏c�����ɍő�T�C�Y�ɂȂ�܂��B���T�C�Y�s�\�Ȃ��̂͐^�񒆂ɒ�������܂��B
+ 横方向にリサイズ可能なオブジェクトが0個の場合、すべてのオブジェクトは元のサイズのまま均等間隔で横に並びます。
+ 横方向にリサイズ可能なオブジェクトが1個の場合、カツカツに詰めてリサイズ可能なオブジェクトを最大サイズにします。
+ 横方向にリサイズ可能なオブジェクトが2個以上の場合、リサイズ可能なオブジェクトをすべて同じサイズにしていっぱいに詰めます。
+ 縦方向にリサイズ可能なオブジェクトは縦方向に最大サイズになります。リサイズ不可能なものは真ん中に調整されます。
 
- type���ȗ������ꍇ�A���T�C�Y/�ʒu�����͂���܂���Btype���ȗ����Ē��g������ۂ�layout���\�b�h�̓X�y�[�X�����p�I�u�W�F�N�g�Ƃ��ċ@�\���܂��B
+ typeを省略した場合、リサイズ/位置調整はされません。typeを省略して中身も空っぽなlayoutメソッドはスペース調整用オブジェクトとして機能します。
 
-�v���p�e�B��
+プロパティ類
 attr_accessor :type, :x, :y, :width, :height, :resizable_width, :resizable_height, :obj
 attr_accessor :margin_left, :margin_right, :margin_top, :margin_bottom
 attr_accessor :min_width, :min_height
 
-type/x/y/width/height/resizable_width/resizable_height/min_width/min_height�͏�L�Ő��������Ƃ���ł��B
-obj�͓��������p�ŁA��ʂ�WSLayout�I�u�W�F�N�g���i�[����܂��B
-margin_left/right/top/bottom�̓��C�A�E�g�̂��ꂼ�ꍶ�E�㉺�̃}�[�W���ŁA�s�N�Z���ŕ\�����܂��B�w�肵���X�y�[�X���m�ۂ���܂��B
+type/x/y/width/height/resizable_width/resizable_height/min_width/min_heightは上記で説明したとおりです。
+objは内部処理用で、上位のWSLayoutオブジェクトが格納されます。
+margin_left/right/top/bottomはレイアウトのそれぞれ左右上下のマージンで、ピクセルで表現します。指定したスペースが確保されます。
 
 
-���V�D�T�|�[�g���W���[��
+■７．サポートモジュール
 
-�}�E�X�C�x���g���󂯎��A�Ȃ�炩�̔�����s���ăV�O�i���𔭍s���郂�W���[���Q�ł��B���̂ɂ���ăV�O�i���𔭍s����ȊO�̂��Ƃ����܂��B
-WSControl/WSContainer���p�������N���X��include���邩�A���������I�u�W�F�N�g��extend���Ďg���܂��B
-���Ă����̂ŏڍׂ̓\�[�X����уR�����g�����Ă��������Bmodule.rb�ł��B
+マウスイベントを受け取り、なんらかの判定を行ってシグナルを発行するモジュール群です。ものによってシグナルを発行する以外のこともします。
+WSControl/WSContainerを継承したクラスにincludeするか、生成したオブジェクトにextendして使います。
+疲れてきたので詳細はソースおよびコメントを見てください。module.rbです。
 
 
-���W�D�����܂�
+■８．おしまい
 
-���̕����̓��t�@�����X�}�j���A���ł��̂ŁA��̓I�ȗ��p���@�Ȃǂ͋����Ă��炸�A��������������ł͂悭�킩��Ȃ��Ƃ������z�ɂȂ�񂶂�Ȃ����Ǝv���܂��B
-����A�A�[�L�e�N�`���}�j���A����`���[�g���A���������Ă������ƍl���Ă���܂��B
-���ɂȂ邩�킩��܂��񂪂��҂����������B
+この文書はリファレンスマニュアルですので、具体的な利用方法などは挙げておらず、これを見ただけではよくわからないという感想になるんじゃないかと思います。
+今後、アーキテクチャマニュアルやチュートリアルを書いていこうと考えております。
+いつになるかわかりませんがお待ちください。
 
