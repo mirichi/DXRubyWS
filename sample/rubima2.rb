@@ -569,7 +569,6 @@ module WS
   # メニューウィンドウを簡単に実装できるかと思ったけどなんか長くなってしまった。
   # もうちょっと何か考えないとこれでは使えない。
   class WSImage < WSControl
-    include BasicMouseSignal
   end
   class WSMenu < WSContainer
     def initialize

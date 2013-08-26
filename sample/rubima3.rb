@@ -629,7 +629,6 @@ module WS
     def initialize(*args)
       super
       @images = Map.class_variable_get(:@@images)
-      client.extend BasicMouseSignal
       client.add_handler(:mouse_down) do |obj, tx, ty|
         @select_number = (tx / 32 + ty / 32 * (self.client.width / 32))
       end

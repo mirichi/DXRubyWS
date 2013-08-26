@@ -548,9 +548,6 @@ module WS
       @selected = nil
       @selector = nil
 
-      # ゲーム画面のクライアント領域のクリックで:clickシグナルを発行する
-      self.client.extend BasicMouseSignal
-
       # クリックされたら敵キャラとの判定を行って、クリックしたキャラを@selectedに格納
       # また、そのサイズのセレクタ画像(黄色の四角)を作って@selectorに格納
       self.client.add_handler(:mouse_down) do |obj, tx, ty|

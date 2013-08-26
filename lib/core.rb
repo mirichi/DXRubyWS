@@ -29,46 +29,55 @@ module WS
 
     # マウスの左ボタンを押したときに呼ばれる
     def on_mouse_down(tx, ty)
+      signal(:mouse_down, tx, ty)
       self
     end
 
     # マウスの左ボタンを離したときに呼ばれる
     def on_mouse_up(tx, ty)
+      signal(:mouse_up, tx, ty)
       self
     end
 
     # マウスの右ボタンを押したときに呼ばれる
     def on_mouse_r_down(tx, ty)
+      signal(:mouse_r_down, tx, ty)
       self
     end
 
     # マウスの右ボタンを離したときに呼ばれる
     def on_mouse_r_up(tx, ty)
+      signal(:mouse_r_up, tx, ty)
       self
     end
 
     # マウスカーソルを動かしたときに呼ばれる
     def on_mouse_move(tx, ty)
+      signal(:mouse_move, tx, ty)
       self
     end
 
     # コントロールにマウスカーソルが乗ったときに呼ばれる
     def on_mouse_over
+      signal(:mouse_over)
       self
     end
 
     # コントロールからマウスカーソルが離れたときに呼ばれる
     def on_mouse_out
+      signal(:mouse_out)
       self
     end
 
     # マウスのホイールアップ
     def on_mouse_wheel_up(tx, ty)
+      signal(:mouse_wheel_up)
       self
     end
     
     # マウスのホイールダウン
     def on_mouse_wheel_down(tx, ty)
+      signal(:mouse_wheel_down)
       self
     end
 
@@ -222,6 +231,7 @@ module WS
     def resize(width, height)
       self.image.resize(width, height)
       super
+      signal(:resize)
       if @layout
         @layout.width, @layout.height = width, height
         @layout.auto_layout

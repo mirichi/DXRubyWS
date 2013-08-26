@@ -6,45 +6,6 @@
 # ユーザレベルで作れないものはまったくない。
 
 module WS
-  module BasicMouseSignal
-    def on_mouse_down(tx, ty)
-      signal(:mouse_down, tx, ty)
-      super
-    end
-    def on_mouse_up(tx, ty)
-      signal(:mouse_up, tx, ty)
-      super
-    end
-    def on_mouse_move(tx, ty)
-      signal(:mouse_move, tx, ty)
-      super
-    end
-    def on_mouse_r_down(tx, ty)
-      signal(:mouse_r_down, tx, ty)
-      super
-    end
-    def on_mouse_r_up(tx, ty)
-      signal(:mouse_r_up, tx, ty)
-      super
-    end
-    def on_mouse_over
-      signal(:mouse_over)
-      super
-    end
-    def on_mouse_out
-      signal(:mouse_out)
-      super
-    end
-    def on_mouse_wheel_up(tx, ty)
-      signal(:mouse_wheel_up)
-      super
-    end
-    def on_mouse_wheel_down(tx, ty)
-      signal(:mouse_wheel_down)
-      super
-    end
-  end
-  
   # Windowsのボタンのようにマウスボタンを離した瞬間にself#on_clickを呼び出し、:clickシグナルを発行する
   module ButtonClickable
     def on_mouse_down(tx, ty)

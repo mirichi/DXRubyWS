@@ -3,7 +3,6 @@ require 'dxruby'
 
 module WS
   class WSImage < WSControl
-    include BasicMouseSignal
   end
 end
 
