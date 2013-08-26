@@ -139,8 +139,7 @@ WS.updateの中身はWS.desktopに対するupdateとdrawの呼び出しです。
 
 ■６．class WSLayout
 
-オートレイアウト機能です。WSContainer配下のオブジェクトの位置/サイズを自動的に調整します。W
-SContainer#layoutによりインスタンスが生成され、そのWSLayoutインスタンスのinstance_evalでブロックが実行されます。したがって、layoutメソッドに渡すブロックの中ではWSLayoutクラスのインスタンスメソッドを呼ぶことができます。
+オートレイアウト機能です。WSContainer配下のオブジェクトの位置/サイズを自動的に調整します。WSContainer#layoutによりインスタンスが生成され、そのWSLayoutインスタンスのinstance_evalでブロックが実行されます。したがって、layoutメソッドに渡すブロックの中ではWSLayoutクラスのインスタンスメソッドを呼ぶことができます。
 
 WSLayout.new(type=nil, obj, &b) -> WSLayout
  通常これを直接呼ぶことはありません。WSContainer#layoutもしくはWSLayout#layoutから呼ばれます。
