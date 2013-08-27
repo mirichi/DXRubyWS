@@ -140,32 +140,39 @@ WS.updateの中身はWS.desktopに対するupdateとdrawの呼び出しです。
 
 ■６．class WSLayout
 
-オートレイアウト機能です。WSContainer配下のオブジェクトの位置/サイズを自動的に調整します。WSContainer#layoutによりインスタンスが生成され、そのWSLayoutインスタンスのinstance_evalでブロックが実行されます。したがって、layoutメソッドに渡すブロックの中ではWSLayoutクラスのインスタンスメソッドを呼ぶことができます。
+オートレイアウト機能です。WSContainer配下のコントロールの位置/サイズを自動的に調整します。WSContainer#layoutによりインスタンスが生成され、そのWSLayoutインスタンスのinstance_evalでブロックが実行されます。したがって、layoutメソッドに渡すブロックの中ではWSLayoutクラスのインスタンスメソッドを呼ぶことができます。
 
 WSLayout.new(type=nil, obj, &b) -> WSLayout
  通常これを直接呼ぶことはありません。WSContainer#layoutもしくはWSLayout#layoutから呼ばれます。
 
 WSLayout#add(obj, resizable_width=nil, resizable_height=nil)
- 通常はlayoutメソッドに渡すブロックの中で呼び、objがレイアウトに登録されます。登録されたオブジェクトはlayoutメソッドで指定されたtypeにしたがって縦か横に並びます。
- resizable_width/heightはオブジェクトがリサイズ可能かどうかを指定します。リサイズ可能な場合、オートレイアウトによりサイズを変更されます。最小サイズはWSControlのmin_width/heightで指定できます。
+ 通常はlayoutメソッドに渡すブロックの中で呼び、objがレイアウトに登録されます。登録されたコントロールはlayoutメソッドで指定されたtypeにしたがって縦か横に並びます。
+ resizable_width/heightはコントロールがリサイズ可能かどうかを指定します。リサイズ可能な場合、オートレイアウトによりサイズを変更されます。最小サイズはWSControlのmin_width/heightで指定できます。
 
 WSLayout#layout(type=nil)
- typeには:hboxもしくは:vboxを指定します。それぞれaddされたオブジェクトが横(左から右)か縦(上から下)に並びます。
+ typeには:hboxもしくは:vboxを指定します。それぞれaddされたコントロールが横(左から右)か縦(上から下)に並びます。
  以下:hboxの説明ですが、:vboxの場合は縦横が入れ替わるだけであとは同じです。
 
- 横方向にリサイズ可能なオブジェクトが0個の場合、すべてのオブジェクトは元のサイズのまま均等間隔で横に並びます。
- 横方向にリサイズ可能なオブジェクトが1個の場合、カツカツに詰めてリサイズ可能なオブジェクトを最大サイズにします。
- 横方向にリサイズ可能なオブジェクトが2個以上の場合、リサイズ可能なオブジェクトをすべて同じサイズにしていっぱいに詰めます。
- 縦方向にリサイズ可能なオブジェクトは縦方向に最大サイズになります。リサイズ不可能なものは真ん中に調整されます。
+ 横方向にリサイズ可能なコントロールが0個の場合、すべてのコントロールは元のサイズのまま均等間隔で横に並びます。
+ 横方向にリサイズ可能なコントロールが1個の場合、カツカツに詰めてリサイズ可能なコントロールを最大サイズにします。
+ 横方向にリサイズ可能なコントロールが2個以上の場合、リサイズ可能なコントロールをすべて同じサイズにしていっぱいに詰めます。
+ 縦方向にリサイズ可能なコントロールは縦方向に最大サイズになります。リサイズ不可能なものは真ん中に位置調整されます。
 
- typeを省略した場合、リサイズ/位置調整はされません。typeを省略して中身も空っぽなlayoutメソッドはスペース調整用オブジェクトとして機能します。
+ typeを省略した場合、登録したコントロールのリサイズ/位置調整はされません。typeを省略して中身も空っぽなlayoutメソッドはスペース調整用コントロールとして機能します。
+ 例：
+ layout(:hbox) do
+   add button1
+   layout
+   add button2
+ end
+ とすると、button1は左端、button2は右端に配置されます。
 
 プロパティ類
 attr_accessor :type, :x, :y, :width, :height, :resizable_width, :resizable_height, :obj
 attr_accessor :margin_left, :margin_right, :margin_top, :margin_bottom
 attr_accessor :min_width, :min_height
 
-type/x/y/width/height/resizable_width/resizable_height/min_width/min_heightは上記で説明したとおりです。
+type/x/y/width/height/resizable_width/resizable_height/min_width/min_heightは上記で説明したとおりです。これらの設定はWSLayoutオブジェクトにも存在し機能しますので、self.xx=という形でブロック内に記述するとそのように設定されます。
 objは内部処理用で、上位のWSLayoutオブジェクトが格納されます。
 margin_left/right/top/bottomはレイアウトのそれぞれ左右上下のマージンで、ピクセルで表現します。指定したスペースが確保されます。
 
@@ -179,7 +186,6 @@ WSControl/WSContainerを継承したクラスにincludeするか、生成した�
 
 ■８．おしまい
 
-この文書はリファレンスマニュアルですので、具体的な利用方法などは挙げておらず、これを見ただけではよくわからないという感想になるんじゃないかと思います。
+この文書はリファレンスマニュアルですので、具体的な利用方法などは挙げておらず、これを見ただけではよくわからないという感想になるんじゃないかと思います。標準GUIがサンプルになりますので参考にどうぞ。
 今後、アーキテクチャマニュアルやチュートリアルを書いていこうと考えております。
 いつになるかわかりませんがお待ちください。
-
