@@ -1,0 +1,125 @@
+DXRuby用ウィンドウシステムDXRubyWS チュートリアル01 コントロールとシグナル編
+
+■１．はじめに
+
+DXRubyWSはフレームワークなので、リファレンスを読んだだけでは理解するのは難しいのではないかと思います。どんなものなのかを体験するためのチュートリアルを整備してみます。
+ここで紹介するコードはDXRubyWSのトップディレクトリにファイルを置くことを想定しています。libとかsampleとかのファイルのあるディレクトリです。他のディレクトリにファイルを作る場合はrequireのパスを場所にあわせて修正してください。
+
+
+■２．最も簡単なコード
+
+---
+require_relative './lib/dxrubyws'
+
+Window.loop do
+  WS.update
+end
+---
+dxrubyws.rbの中でDXRubyをrequireするのでrequire 'dxruby'は書かなくても動きます。書いても問題はありません。このコードではWindow.loop内にWS.updateのみを書いています。実行すると画面には何も出ませんし、何も起きません。
+DXRubyWSではrequireすると最初に画面全体を覆うサイズのWSDesktopクラスのオブジェクトが生成されます。このオブジェクトはWS.updateで動作し、マウスにも反応しているのですが、これ自体は画面に何も描画しないし、マウスの反応時のコードも書かれていないので、結果として何も実行されていないように見えます。
+WS.desktopと書けばこのオブジェクトを参照することができます。
+
+
+■３．マウスに反応させる
+
+---
+require_relative './lib/dxrubyws'
+
+font = Font.new(32)
+WS.desktop.add_handler(:mouse_down) do
+  Window.draw_font(0, 0, "click!", font)
+end
+
+Window.loop do
+  WS.update
+end
+---
+
+WS.desktopは上記で説明したWSDesktopオブジェクトです。デスクトップに対してadd_handlerメソッドでシグナルハンドラを登録します。
+シグナルとはDXRubyWSでサポートされる汎用のイベントのことで、ユーザで自由に発行することができます。シグナルを発行するオブジェクトに対して、事前にシグナルハンドラを指定しておけば、シグナル発行時にシグナルハンドラが実行されます。
+今回の例だと:mouse_downシグナルが発行された場合に画面にclick!という文字を描画しようとしています。:mouse_downシグナルはDXRubyWSのすべてのコントロールが発行する基本シグナルのひとつで、マウスの左ボタンが離された状態から押された状態に遷移した瞬間に発行されます。WS.desktopもコントロールのひとつなので:mouse_downシグナルを発行します。
+画面のどこをクリックしても"click!"の文字が左上に描画されるはずです。描画時間が1フレームしかないのでちょっと文字が見にくいかもしれません。
+
+
+■４．コントロールを作る
+
+---
+require_relative './lib/dxrubyws'
+
+control = WS::WSControl.new(200, 100, 100, 100)
+control.image = Image.new(100, 100, C_WHITE)
+WS.desktop.add_control(control)
+
+Window.loop do
+  WS.update
+end
+---
+
+WSControlクラスはDXRubyWSのコントロールを表す基本クラスです。このクラスはSpriteを継承していますので、座標や画像を保持したり描画したりする機能を持っています。WSControl.newの引数は座標とサイズで、このようにして生成したオブジェクトをWS.desktopのadd_controlメソッドで登録します。
+また、WSControlオブジェクトは画像データを持っていないのでimageにImageオブジェクトを設定しています。いつもの豆腐です。
+WS.desktopに登録されたコントロールはWS.updateでいろいろ処理された後、画面に描画されます。
+
+
+■５．コントロールをマウスで動かす
+
+---
+require_relative './lib/dxrubyws'
+
+control = WS::WSControl.new(200, 100, 100, 100)
+control.image = Image.new(100, 100, C_WHITE)
+
+control.extend WS::Draggable
+control.add_handler(:drag_move) do |obj, dx, dy|
+  control.x += dx
+  control.y += dy
+end
+
+WS.desktop.add_control(control)
+
+Window.loop do
+  WS.update
+end
+---
+
+DXRubyWSではマウスの移動、ボタンを押す/離す、ホイール回すなどの基本動作をマウスイベントとして実装しています。マウスイベントの実態はコントロールのメソッド呼び出しなのですが、呼び出されるメソッドはWSControlに定義されていて、中身にシグナル発行のコードが入っているので、そのおかげで基本シグナルが使えるようになっています。
+基本シグナル以外の動作をさせようと思うとマウスイベントのメソッドをオーバーライドして自分で判定する必要があるのですが、よく使いそうなものはサポートモジュールとして定義されています。今回はサポートモジュールのひとつ、Draggableを使いました。他のものも含めてlib/module.rbにありますのでコメントを参考にするとよいでしょう。
+Draggableモジュールは左ボタンでのドラッグを検出し、ドラッグ開始で:drag_start、ドラッグ操作で:drag_move、ボタンを離すと:drag_endシグナルが発行されます。このうち:drag_moveは引数に座標の移動分が渡されてきますので、それを使って豆腐の座標を更新します。
+
+
+■６．ドラッガブル豆腐クラスを作ってみる
+
+---
+require_relative './lib/dxrubyws'
+
+module WS
+  class DraggableTofu < WSControl
+    include Draggable
+
+    def initialize(x, y, width, height)
+      super
+      self.image = Image.new(width, height, C_WHITE)
+      self.add_handler(:drag_move, self.method(:on_drag_move))
+    end
+
+    def on_drag_move(obj, dx, dy)
+      self.x += dx
+      self.y += dy
+    end
+  end
+end
+
+tofu = WS::DraggableTofu.new(200, 100, 100, 100)
+WS.desktop.add_control(tofu)
+
+Window.loop do
+  WS.update
+end
+---
+
+豆腐コントロールをクラスとして定義してみました。add_handlerでのハンドラ登録で、前回はブロック構文を使ったのですが、今回はメソッドオブジェクトを渡してon_drag_moveメソッドを呼ぶようにしています。どちらでもかまいません。
+
+
+■７．おしまい
+
+とりあえずコントロールとシグナルについて基本的なことを並べてみました。とはいえさすがに今回の内容だけではたいしたものは作れませんので、次回はコントロールをまとめるためのコンテナについて記述する予定です。
+
