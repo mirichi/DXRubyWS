@@ -49,7 +49,7 @@ WSControlはSpriteを継承していますが、imageにはデフォルトでは
 
 WSControl.new(x, y, width, height) -> WSControl
  座標x/yとコントロールのサイズwidth/heightを渡し、WSControlオブジェクトを生成します。座標は登録するWS.desktopもしくはWSContainerオブジェクトの左上を(0,0)とした相対位置で表します。
- 引数に渡すwidth/heightはインスタンス変数@width/@heightに設定され、WSContol#width/heightで参照できます。Sprite#collisionにも設定されますので、Sprite#imageの画像サイズとは関係なくこの値でマウスの判定がされます。画像サイズで判定したい場合はcollision=nilとしてください。
+ 引数に渡すwidth/heightはインスタンス変数@width/@heightに設定され、WSControl#width/heightで参照できます。Sprite#collisionにも設定されますので、Sprite#imageの画像サイズとは関係なくこの値でマウスの判定がされます。画像サイズで判定したい場合はcollision=nilとしてください。
  WSControlを継承してクラスを作った場合にはinitialize内でのsuperは一番最初に呼ぶことをオススメします。
 
 WSControl#on_mouse_down(x, y) -> self       # 左ボタン押した
