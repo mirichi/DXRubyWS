@@ -1,12 +1,12 @@
-DXRuby�p�E�B���h�E�V�X�e��DXRubyWS �`���[�g���A��01 �R���g���[���ƃV�O�i����
+DXRuby用ウィンドウシステムDXRubyWS チュートリアル01 コントロールとシグナル編
 
-���P�D�͂��߂�
+■１．はじめに
 
-DXRubyWS�̓t���[�����[�N�Ȃ̂ŁA���t�@�����X��ǂ񂾂����ł͗�������͓̂���̂ł͂Ȃ����Ǝv���܂��B�ǂ�Ȃ��̂Ȃ̂���̌����邽�߂̃`���[�g���A���𐮔����Ă݂܂��B
-�����ŏЉ��R�[�h��DXRubyWS�̃g�b�v�f�B���N�g���Ƀt�@�C����u�����Ƃ�z�肵�Ă��܂��Blib�Ƃ�sample�Ƃ��̃t�@�C���̂���f�B���N�g���ł��B���̃f�B���N�g���Ƀt�@�C�������ꍇ��require�̃p�X���ꏊ�ɂ��킹�ďC�����Ă��������B
+DXRubyWSはフレームワークなので、リファレンスを読んだだけでは理解するのは難しいのではないかと思います。どんなものなのかを体験するためのチュートリアルを整備してみます。
+ここで紹介するコードはDXRubyWSのトップディレクトリにファイルを置くことを想定しています。libとかsampleとかのファイルのあるディレクトリです。他のディレクトリにファイルを作る場合はrequireのパスを場所にあわせて修正してください。
 
 
-���Q�D�ł��ȒP�ȃR�[�h
+■２．最も簡単なコード
 
 ---
 require_relative './lib/dxrubyws'
@@ -15,12 +15,12 @@ Window.loop do
   WS.update
 end
 ---
-dxrubyws.rb�̒���DXRuby��require����̂�require 'dxruby'�͏����Ȃ��Ă������܂��B�����Ă����͂���܂���B���̃R�[�h�ł�Window.loop����WS.update�݂̂������Ă��܂��B���s����Ɖ�ʂɂ͉����o�܂��񂵁A�����N���܂���B
-DXRubyWS�ł�require����ƍŏ��ɉ�ʑS�̂𕢂��T�C�Y��WSDesktop�N���X�̃I�u�W�F�N�g����������܂��B���̃I�u�W�F�N�g��WS.update�œ��삵�A�}�E�X�ɂ��������Ă���̂ł����A���ꎩ�͉̂�ʂɉ����`�悵�Ȃ����A�}�E�X�̔������̃R�[�h��������Ă��Ȃ��̂ŁA���ʂƂ��ĉ������s����Ă��Ȃ��悤�Ɍ����܂��B
-WS.desktop�Ə����΂��̃I�u�W�F�N�g���Q�Ƃ��邱�Ƃ��ł��܂��B
+dxrubyws.rbの中でDXRubyをrequireするのでrequire 'dxruby'は書かなくても動きます。書いても問題はありません。このコードではWindow.loop内にWS.updateのみを書いています。実行すると画面には何も出ませんし、何も起きません。
+DXRubyWSではrequireすると最初に画面全体を覆うサイズのWSDesktopクラスのオブジェクトが生成されます。このオブジェクトはWS.updateで動作し、マウスにも反応しているのですが、これ自体は画面に何も描画しないし、マウスの反応時のコードも書かれていないので、結果として何も実行されていないように見えます。
+WS.desktopと書けばこのオブジェクトを参照することができます。
 
 
-���R�D�}�E�X�ɔ���������
+■３．マウスに反応させる
 
 ---
 require_relative './lib/dxrubyws'
@@ -35,13 +35,13 @@ Window.loop do
 end
 ---
 
-WS.desktop�͏�L�Ő�������WSDesktop�I�u�W�F�N�g�ł��B�f�X�N�g�b�v�ɑ΂���add_handler���\�b�h�ŃV�O�i���n���h����o�^���܂��B
-�V�O�i���Ƃ�DXRubyWS�ŃT�|�[�g�����ėp�̃C�x���g�̂��ƂŁA���[�U�Ŏ��R�ɔ��s���邱�Ƃ��ł��܂��B�V�O�i���𔭍s����I�u�W�F�N�g�ɑ΂��āA���O�ɃV�O�i���n���h�����w�肵�Ă����΁A�V�O�i�����s���ɃV�O�i���n���h�������s����܂��B
-����̗Ⴞ��:mouse_down�V�O�i�������s���ꂽ�ꍇ�ɉ�ʂ�click!�Ƃ���������`�悵�悤�Ƃ��Ă��܂��B:mouse_down�V�O�i����DXRubyWS�̂��ׂẴR���g���[�������s�����{�V�O�i���̂ЂƂŁA�}�E�X�̍��{�^���������ꂽ��Ԃ��牟���ꂽ��ԂɑJ�ڂ����u�Ԃɔ��s����܂��BWS.desktop���R���g���[���̂ЂƂȂ̂�:mouse_down�V�O�i���𔭍s���܂��B
-��ʂ̂ǂ����N���b�N���Ă�"click!"�̕���������ɕ`�悳���͂��ł��B�`�掞�Ԃ�1�t���[�������Ȃ��̂ł�����ƕ��������ɂ�����������܂���B
+WS.desktopは上記で説明したWSDesktopオブジェクトです。デスクトップに対してadd_handlerメソッドでシグナルハンドラを登録します。
+シグナルとはDXRubyWSでサポートされる汎用のイベントのことで、ユーザで自由に発行することができます。シグナルを発行するオブジェクトに対して、事前にシグナルハンドラを指定しておけば、シグナル発行時にシグナルハンドラが実行されます。
+今回の例だと:mouse_downシグナルが発行された場合に画面にclick!という文字を描画しようとしています。:mouse_downシグナルはDXRubyWSのすべてのコントロールが発行する基本シグナルのひとつで、マウスの左ボタンが離された状態から押された状態に遷移した瞬間に発行されます。WS.desktopもコントロールのひとつなので:mouse_downシグナルを発行します。
+画面のどこをクリックしても"click!"の文字が左上に描画されるはずです。描画時間が1フレームしかないのでちょっと文字が見にくいかもしれません。
 
 
-���S�D�R���g���[�������
+■４．コントロールを作る
 
 ---
 require_relative './lib/dxrubyws'
@@ -55,12 +55,12 @@ Window.loop do
 end
 ---
 
-WSControl�N���X��DXRubyWS�̃R���g���[����\����{�N���X�ł��B���̃N���X��Sprite���p�����Ă��܂��̂ŁA���W��摜��ێ�������`�悵���肷��@�\�������Ă��܂��BWSControl.new�̈����͍��W�ƃT�C�Y�ŁA���̂悤�ɂ��Đ��������I�u�W�F�N�g��WS.desktop��add_control���\�b�h�œo�^���܂��B
-�܂��AWSControl�I�u�W�F�N�g�͉摜�f�[�^�������Ă��Ȃ��̂�image��Image�I�u�W�F�N�g��ݒ肵�Ă��܂��B�����̓����ł��B
-WS.desktop�ɓo�^���ꂽ�R���g���[����WS.update�ł��낢�돈�����ꂽ��A��ʂɕ`�悳��܂��B
+WSControlクラスはDXRubyWSのコントロールを表す基本クラスです。このクラスはSpriteを継承していますので、座標や画像を保持したり描画したりする機能を持っています。WSControl.newの引数は座標とサイズで、このようにして生成したオブジェクトをWS.desktopのadd_controlメソッドで登録します。
+また、WSControlオブジェクトは画像データを持っていないのでimageにImageオブジェクトを設定しています。いつもの豆腐です。
+WS.desktopに登録されたコントロールはWS.updateでいろいろ処理された後、画面に描画されます。
 
 
-���T�D�R���g���[�����}�E�X�œ�����
+■５．コントロールをマウスで動かす
 
 ---
 require_relative './lib/dxrubyws'
@@ -81,12 +81,12 @@ Window.loop do
 end
 ---
 
-DXRubyWS�ł̓}�E�X�̈ړ��A�{�^��������/�����A�z�C�[���񂷂Ȃǂ̊�{������}�E�X�C�x���g�Ƃ��Ď������Ă��܂��B�}�E�X�C�x���g�̎��Ԃ̓R���g���[���̃��\�b�h�Ăяo���Ȃ̂ł����A�Ăяo����郁�\�b�h��WSControl�ɒ�`����Ă��āA���g�ɃV�O�i�����s�̃R�[�h�������Ă���̂ŁA���̂������Ŋ�{�V�O�i�����g����悤�ɂȂ��Ă��܂��B
-��{�V�O�i���ȊO�̓���������悤�Ǝv���ƃ}�E�X�C�x���g�̃��\�b�h���I�[�o�[���C�h���Ď����Ŕ��肷��K�v������̂ł����A�悭�g�������Ȃ��̂̓T�|�[�g���W���[���Ƃ��Ē�`����Ă��܂��B����̓T�|�[�g���W���[���̂ЂƂADraggable���g���܂����B���̂��̂��܂߂�lib/module.rb�ɂ���܂��̂ŃR�����g���Q�l�ɂ���Ƃ悢�ł��傤�B
-Draggable���W���[���͍��{�^���ł̃h���b�O�����o���A�h���b�O�J�n��:drag_start�A�h���b�O�����:drag_move�A�{�^���𗣂���:drag_end�V�O�i�������s����܂��B���̂���:drag_move�͈����ɍ��W�̈ړ������n����Ă��܂��̂ŁA������g���ē����̍��W���X�V���܂��B
+DXRubyWSではマウスの移動、ボタンを押す/離す、ホイール回すなどの基本動作をマウスイベントとして実装しています。マウスイベントの実態はコントロールのメソッド呼び出しなのですが、呼び出されるメソッドはWSControlに定義されていて、中身にシグナル発行のコードが入っているので、そのおかげで基本シグナルが使えるようになっています。
+基本シグナル以外の動作をさせようと思うとマウスイベントのメソッドをオーバーライドして自分で判定する必要があるのですが、よく使いそうなものはサポートモジュールとして定義されています。今回はサポートモジュールのひとつ、Draggableを使いました。他のものも含めてlib/module.rbにありますのでコメントを参考にするとよいでしょう。
+Draggableモジュールは左ボタンでのドラッグを検出し、ドラッグ開始で:drag_start、ドラッグ操作で:drag_move、ボタンを離すと:drag_endシグナルが発行されます。このうち:drag_moveは引数に座標の移動分が渡されてきますので、それを使って豆腐の座標を更新します。
 
 
-���U�D�h���b�K�u�������N���X������Ă݂�
+■６．ドラッガブル豆腐クラスを作ってみる
 
 ---
 require_relative './lib/dxrubyws'
@@ -116,10 +116,10 @@ Window.loop do
 end
 ---
 
-�����R���g���[�����N���X�Ƃ��Ē�`���Ă݂܂����Badd_handler�ł̃n���h���o�^�ŁA�O��̓u���b�N�\�����g�����̂ł����A����̓��\�b�h�I�u�W�F�N�g��n����on_drag_move���\�b�h���ĂԂ悤�ɂ��Ă��܂��B�ǂ���ł����܂��܂���B
+豆腐コントロールをクラスとして定義してみました。add_handlerでのハンドラ登録で、前回はブロック構文を使ったのですが、今回はメソッドオブジェクトを渡してon_drag_moveメソッドを呼ぶようにしています。どちらでもかまいません。
 
 
-���V�D�����܂�
+■７．おしまい
 
-�Ƃ肠�����R���g���[���ƃV�O�i���ɂ��Ċ�{�I�Ȃ��Ƃ���ׂĂ݂܂����B�Ƃ͂����������ɍ���̓��e�����ł͂����������͍̂��܂���̂ŁA����̓R���g���[�����܂Ƃ߂邽�߂̃R���e�i�ɂ��ċL�q����\��ł��B
+とりあえずコントロールとシグナルについて基本的なことを並べてみました。とはいえさすがに今回の内容だけではたいしたものは作れませんので、次回はコントロールをまとめるためのコンテナについて記述する予定です。
 
