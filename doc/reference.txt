@@ -62,6 +62,7 @@ WSControl#on_mouse_out -> self              # オブジェクトからカーソ�
 WSControl#on_mouse_wheel_up(x, y) -> self   # ホイールを上に回した
 WSControl#on_mouse_wheel_down(x, y) -> self # ホイールを下に回した
  それぞれ、マウスイベント発生時にDXRubyWSシステムから呼び出されるメソッドです。WSControlを継承してクラスを作った場合には、これらをオーバーライドして処理を書きます。superは最後に呼びます。最後に呼べない場合はselfを返すようにしてください。
+ これらのメソッドはそれぞれon_を省いた名称のシグナルを発行します。
 
 WSControl#mouse_event_dispach(event, x, y) -> イベントを受け取ったオブジェクト
  内部処理に使われるイベント伝播用メソッドです。上記マウスイベントを呼び出します。
