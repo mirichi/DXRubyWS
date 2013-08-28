@@ -14,12 +14,12 @@ module WS
       resize(width, height)
     end
 
-    def on_mouse_down(tx, ty)
+    def on_mouse_push(tx, ty)
       @image_flag = true
       super
     end
 
-    def on_mouse_up(tx, ty)
+    def on_mouse_release(tx, ty)
       @image_flag = false
       super
     end

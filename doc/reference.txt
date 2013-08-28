@@ -52,10 +52,10 @@ WSControl.new(x, y, width, height) -> WSControl
  引数に渡すwidth/heightはインスタンス変数@width/@heightに設定され、WSControl#width/heightで参照できます。Sprite#collisionにも設定されますので、Sprite#imageの画像サイズとは関係なくこの値でマウスの判定がされます。画像サイズで判定したい場合はcollision=nilとしてください。
  WSControlを継承してクラスを作った場合にはinitialize内でのsuperは一番最初に呼ぶことをオススメします。
 
-WSControl#on_mouse_down(x, y) -> self       # 左ボタン押した
-WSControl#on_mouse_up(x, y) -> self         # 左ボタン離した
-WSControl#on_mouse_r_down(x, y) -> self     # 右ボタン押した
-WSControl#on_mouse_r_up(x, y) -> self       # 右ボタン離した
+WSControl#on_mouse_push(x, y) -> self       # 左ボタン押した
+WSControl#on_mouse_release(x, y) -> self    # 左ボタン離した
+WSControl#on_mouse_r_push(x, y) -> self     # 右ボタン押した
+WSControl#on_mouse_r_release(x, y) -> self  # 右ボタン離した
 WSControl#on_mouse_move(x, y) -> self       # カーソル動かした
 WSControl#on_mouse_over -> self             # オブジェクトにカーソルが乗った
 WSControl#on_mouse_out -> self              # オブジェクトからカーソルが離れた

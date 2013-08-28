@@ -13,7 +13,7 @@ module WS
       @select = false
     end
 
-    def on_mouse_down(tx, ty)
+    def on_mouse_push(tx, ty)
       @obj.call if @obj
       @block.call(self.parent.parent.object) if @block
       super

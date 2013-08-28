@@ -57,25 +57,25 @@ module WS
       # ボタン押した
       if Input.mouse_down?(M_LBUTTON) and @mouse_l_flag == false
         @mouse_l_flag = true
-        tmp.mouse_event_dispach(:down, tx, ty)
+        tmp.mouse_event_dispach(:push, tx, ty)
       end
   
       # ボタン離した
       if !Input.mouse_down?(M_LBUTTON) and @mouse_l_flag == true
         @mouse_l_flag = false
-        tmp.mouse_event_dispach(:up, tx, ty)
+        tmp.mouse_event_dispach(:release, tx, ty)
       end
 
       # 右ボタン押した
       if Input.mouse_down?(M_RBUTTON) and @mouse_r_flag == false
         @mouse_r_flag = true
-        tmp.mouse_event_dispach(:r_down, tx, ty)
+        tmp.mouse_event_dispach(:r_push, tx, ty)
       end
   
       # 右ボタン離した
       if !Input.mouse_down?(M_RBUTTON) and @mouse_r_flag == true
         @mouse_r_flag = false
-        tmp.mouse_event_dispach(:r_up, tx, ty)
+        tmp.mouse_event_dispach(:r_release, tx, ty)
       end
 
       # マウスホイール処理

@@ -87,8 +87,8 @@ i = WS::WSImage.new(200, 30, 30, 30)
 i.image = image1
 i.add_handler(:mouse_over){|obj|obj.image = image2}
 i.add_handler(:mouse_out){|obj|obj.image = image1}
-i.add_handler(:mouse_down){|obj|obj.image = image3}
-i.add_handler(:mouse_r_down){|obj|obj.image = image4}
+i.add_handler(:mouse_push){|obj|obj.image = image3}
+i.add_handler(:mouse_r_push){|obj|obj.image = image4}
 w.client.add_control(i)
 
 WS.desktop.add_control(w)

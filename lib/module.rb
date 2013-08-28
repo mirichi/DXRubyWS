@@ -8,12 +8,12 @@
 module WS
   # Windowsのボタンのようにマウスボタンを離した瞬間にself#on_clickを呼び出し、:clickシグナルを発行する
   module ButtonClickable
-    def on_mouse_down(tx, ty)
+    def on_mouse_push(tx, ty)
       WS.capture(self)
       super
     end
 
-    def on_mouse_up(tx, ty)
+    def on_mouse_release(tx, ty)
       WS.capture(nil)
       @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
       on_click(self, tx, ty) if @hit_cursor === self
@@ -35,7 +35,7 @@ module WS
       @dragging_flag = false
     end
 
-    def on_mouse_down(tx, ty)
+    def on_mouse_push(tx, ty)
       @dragging_flag = true
       WS.capture(self)
       @drag_old_x = tx
@@ -44,7 +44,7 @@ module WS
       super
     end
 
-    def on_mouse_up(tx, ty)
+    def on_mouse_release(tx, ty)
       @dragging_flag = false
       WS.capture(nil)
       signal(:drag_end)
@@ -63,7 +63,7 @@ module WS
   # マウスカーソルの見た目を変更する機能付き。
   # インスタンス変数@resize_top/@resize_left/@resize_right/@resize_bottomを使う
   module Resizable
-    def on_mouse_down(tx, ty)
+    def on_mouse_push(tx, ty)
       if @resize_top or @resize_left or @resize_right or @resize_bottom
         WS.capture(self)
         @drag_old_x = tx
@@ -74,7 +74,7 @@ module WS
       super
     end
 
-    def on_mouse_up(tx, ty)
+    def on_mouse_release(tx, ty)
       WS.capture(nil)
       Input.set_cursor(IDC_ARROW)
       resize_end
@@ -169,7 +169,7 @@ module WS
   # インスタンス変数@doubleclickcout/@doubleclick_x/@doubleclick_yを使う
   # ダブルクリックの余裕は30フレーム/縦横5pixel以内で固定
   module DoubleClickable
-    def on_mouse_down(tx, ty)
+    def on_mouse_push(tx, ty)
       if @doubleclickcount and @doubleclickcount > 0 and
          (@doubleclick_x - tx).abs < 5 and (@doubleclick_y - ty).abs < 5
           on_doubleclick(self, tx, ty)
@@ -198,7 +198,7 @@ module WS
       super
       @downcount = 0
     end
-    def on_mouse_down(tx, ty)
+    def on_mouse_push(tx, ty)
       @old_tx, @old_ty = tx, ty
       WS.capture(self)
       @downcount = 20
@@ -206,7 +206,7 @@ module WS
       on_click(self, tx, ty)
     end
 
-    def on_mouse_up(tx, ty)
+    def on_mouse_release(tx, ty)
       WS.capture(nil)
       @downcount = 0
       super

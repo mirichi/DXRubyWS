@@ -26,7 +26,7 @@ WS.desktopと書けばこのオブジェクトを参照することができま�
 require_relative './lib/dxrubyws'
 
 font = Font.new(32)
-WS.desktop.add_handler(:mouse_down) do
+WS.desktop.add_handler(:mouse_push) do
   Window.draw_font(0, 0, "click!", font)
 end
 
@@ -37,7 +37,7 @@ end
 
 WS.desktopは上記で説明したWSDesktopオブジェクトです。デスクトップに対してadd_handlerメソッドでシグナルハンドラを登録します。
 シグナルとはDXRubyWSでサポートされる汎用のイベントのことで、ユーザで自由に発行することができます。シグナルを発行するオブジェクトに対して、事前にシグナルハンドラを指定しておけば、シグナル発行時にシグナルハンドラが実行されます。
-今回の例だと:mouse_downシグナルが発行された場合に画面にclick!という文字を描画しようとしています。:mouse_downシグナルはDXRubyWSのすべてのコントロールが発行する基本シグナルのひとつで、マウスの左ボタンが離された状態から押された状態に遷移した瞬間に発行されます。WS.desktopもコントロールのひとつなので:mouse_downシグナルを発行します。
+今回の例だと:mouse_pushシグナルが発行された場合に画面にclick!という文字を描画しようとしています。:mouse_pushシグナルはDXRubyWSのすべてのコントロールが発行する基本シグナルのひとつで、マウスの左ボタンが離された状態から押された状態に遷移した瞬間に発行されます。WS.desktopもコントロールのひとつなので:mouse_pushシグナルを発行します。
 画面のどこをクリックしても"click!"の文字が左上に描画されるはずです。描画時間が1フレームしかないのでちょっと文字が見にくいかもしれません。
 
 

@@ -5,7 +5,7 @@ module WS
   # マウスの右ボタンを押したらポップアップメニューを表示する機能を追加するモジュール
   module UseRightClickMenu
     attr_accessor :menuitems
-    def on_mouse_r_down(tx, ty)
+    def on_mouse_r_push(tx, ty)
       WS.desktop.remove_control(@rightclickmenu) if @rightclickmenu
       tmpx, tmpy = self.get_global_vertex
       @rightclickmenu = WSRightClickMenu.new(tx + tmpx, ty + tmpy, @menuitems)
@@ -29,21 +29,21 @@ module WS
 
     # WSContainerでは配下オブジェクトの選択はinternalのメソッドで処理されるが、
     # PopupMenuはマウスキャプチャするため配下のオブジェクトが呼ばれないのでここで自前で処理する
-    def on_mouse_down(tx, ty)
+    def on_mouse_push(tx, ty)
       ctl = find_hit_object(tx, ty)
-      ctl.mouse_event_dispach(:down, tx - ctl.x, ty - ctl.y) if ctl
+      ctl.mouse_event_dispach(:push, tx - ctl.x, ty - ctl.y) if ctl
       self.parent.remove_control(self)
       WS.capture(nil)
     end
 
-    def on_mouse_r_down(tx, ty)
-      on_mouse_down(tx, ty)
+    def on_mouse_r_push(tx, ty)
+      on_mouse_push(tx, ty)
     end
     
-    def on_mouse_r_up(tx, ty)
+    def on_mouse_r_release(tx, ty)
       ctl = find_hit_object(tx, ty)
       if ctl
-        ctl.mouse_event_dispach(:down, tx - ctl.x, ty - ctl.y)
+        ctl.mouse_event_dispach(:push, tx - ctl.x, ty - ctl.y)
         self.parent.remove_control(self)
         WS.capture(nil)
       end

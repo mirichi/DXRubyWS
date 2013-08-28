@@ -605,10 +605,10 @@ module WS
       wsimage.image = Image.new(200, 32).draw_font_ex(70, 0, "やだ", font, :edge=>true, :edge_color=>C_RED)
       add_control(wsimage, :mes3)
 
-      self.mes2.add_handler(:mouse_down){exit}
+      self.mes2.add_handler(:mouse_push){exit}
       self.mes2.add_handler(:mouse_over){self.sel2.visible = true}
       self.mes2.add_handler(:mouse_out){self.sel2.visible = false}
-      self.mes3.add_handler(:mouse_down){$menu_flag = false}
+      self.mes3.add_handler(:mouse_push){$menu_flag = false}
       self.mes3.add_handler(:mouse_over){self.sel3.visible = true}
       self.mes3.add_handler(:mouse_out){self.sel3.visible = false}
     end

@@ -28,26 +28,26 @@ module WS
     # シグナルを受けるだけでよくなる。
 
     # マウスの左ボタンを押したときに呼ばれる
-    def on_mouse_down(tx, ty)
-      signal(:mouse_down, tx, ty)
+    def on_mouse_push(tx, ty)
+      signal(:mouse_push, tx, ty)
       self
     end
 
     # マウスの左ボタンを離したときに呼ばれる
-    def on_mouse_up(tx, ty)
-      signal(:mouse_up, tx, ty)
+    def on_mouse_release(tx, ty)
+      signal(:mouse_release, tx, ty)
       self
     end
 
     # マウスの右ボタンを押したときに呼ばれる
-    def on_mouse_r_down(tx, ty)
-      signal(:mouse_r_down, tx, ty)
+    def on_mouse_r_push(tx, ty)
+      signal(:mouse_r_push, tx, ty)
       self
     end
 
     # マウスの右ボタンを離したときに呼ばれる
-    def on_mouse_r_up(tx, ty)
-      signal(:mouse_r_up, tx, ty)
+    def on_mouse_r_release(tx, ty)
+      signal(:mouse_r_release, tx, ty)
       self
     end
 

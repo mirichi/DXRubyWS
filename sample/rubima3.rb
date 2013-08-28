@@ -585,11 +585,11 @@ module WS
       end
 
       # クリック時の編集
-      wsimage.add_handler(:mouse_down) do |obj, tx, ty|
+      wsimage.add_handler(:mouse_push) do |obj, tx, ty|
         @lbutton = true
         @mapdata[(ty + @position * 32) / 32][tx / 32] = WS.desktop.mappartswindow.select_number
       end
-      wsimage.add_handler(:mouse_up) do
+      wsimage.add_handler(:mouse_release) do
         @lbutton = false
       end
       wsimage.add_handler(:mouse_move) do |obj, tx, ty|
@@ -629,7 +629,7 @@ module WS
     def initialize(*args)
       super
       @images = Map.class_variable_get(:@@images)
-      client.add_handler(:mouse_down) do |obj, tx, ty|
+      client.add_handler(:mouse_push) do |obj, tx, ty|
         @select_number = (tx / 32 + ty / 32 * (self.client.width / 32))
       end
       @selected_image = Image.new(32,32).box(0,0,31,31,C_WHITE)
