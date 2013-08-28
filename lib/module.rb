@@ -7,16 +7,34 @@
 
 module WS
   # Windowsのボタンのようにマウスボタンを離した瞬間にself#on_clickを呼び出し、:clickシグナルを発行する
+  # @image_flagがtrueのときにボタンは押した状態の絵を描画すること。
   module ButtonClickable
+    def initialize(*args)
+      super
+      @image_flag = false
+    end
+
     def on_mouse_push(tx, ty)
       WS.capture(self)
+      @image_flag = true
       super
     end
 
     def on_mouse_release(tx, ty)
-      WS.capture(nil)
       @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
-      on_click(self, tx, ty) if @hit_cursor === self
+      @image_flag = false
+      if @hit_cursor === self and WS.captured?(self)
+        on_click(self, tx, ty)
+      end
+      WS.capture(nil)
+      super
+    end
+
+    def on_mouse_move(tx, ty)
+      @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
+      if WS.captured?(self)
+        @image_flag = @hit_cursor === self
+      end
       super
     end
 

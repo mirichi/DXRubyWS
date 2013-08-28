@@ -41,19 +41,7 @@ module WS
         tx, ty = @cursor_x, @cursor_y
         tmp = self
       end
-  
-      # マウスカーソルの移動処理
-      if oldx != @cursor_x or oldy != @cursor_y
-        # キャプチャされていたら@captureのメソッドを呼ぶ
-        old_over_object = @over_object
-        @over_object = tmp.mouse_event_dispach(:mouse_move, tx, ty)
 
-        if old_over_object != @over_object
-          old_over_object.on_mouse_out if old_over_object
-          @over_object.on_mouse_over
-        end
-      end
-  
       # ボタン押した
       if Input.mouse_down?(M_LBUTTON) and @mouse_l_flag == false
         @mouse_l_flag = true
@@ -86,6 +74,18 @@ module WS
         tmp.mouse_event_dispach(:mouse_wheel_down, tx, ty)
       end
       @mouse_wheel = wpos
+
+      # マウスカーソルの移動処理
+      if oldx != @cursor_x or oldy != @cursor_y
+        # キャプチャされていたら@captureのメソッドを呼ぶ
+        old_over_object = @over_object
+        @over_object = tmp.mouse_event_dispach(:mouse_move, tx, ty)
+
+        if old_over_object != @over_object
+          old_over_object.on_mouse_out if old_over_object
+          @over_object.on_mouse_over
+        end
+      end
 
       super
     end

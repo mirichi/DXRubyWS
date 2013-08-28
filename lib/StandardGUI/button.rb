@@ -8,52 +8,48 @@ module WS
     def initialize(tx, ty, width, height, caption = "Button")
       super(tx, ty, width, height)
       @image = {}
-      @image_flag = false
       @caption = caption
       @fore_color = C_BLACK
-      resize(width, height)
+
+      # 画像を作成する
+      set_image
     end
 
-    def on_mouse_push(tx, ty)
-      @image_flag = true
-      super
-    end
-
-    def on_mouse_release(tx, ty)
-      @image_flag = false
-      super
-    end
-
-    def on_mouse_move(tx, ty)
-      @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
-      @image_flag = (WS.captured?(self) and @hit_cursor === self)
-      super
-    end
-
+    # オートレイアウトなどでサイズが変更されたときに呼ばれる
     def resize(width, height)
+      super
+
+      # 画像を再作成する前にdisposeする
       if @image.has_key?(true)
         @image[false].dispose
         @image[true].dispose
       end
-      @image[false] = Image.new(width, height, [190,190,190])
-                     .line(0,0,width-1,0,[240,240,240])
-                     .line(0,0,0,height-1,[240,240,240])
-                     .line(1,1,width-1,1,[200,200,200])
-                     .line(1,1,1,height-1,[200,200,200])
-                     .line(width-1,0,width-1,height-1,[80,80,80])
-                     .line(0,height-1,width-1,height-1,[80,80,80])
-                     .line(width-2,1,width-2,height-2,[120,120,120])
-                     .line(1,height-2,width-2,height-2,[120,120,120])
-      @image[true] = Image.new(width, height, [190,190,190])
-                     .line(0,0,width-1,0,[80,80,80])
-                     .line(0,0,0,height-1,[80,80,80])
-                     .line(1,1,width-1,1,[120,120,120])
-                     .line(1,1,1,height-1,[120,120,120])
-                     .line(width-1,0,width-1,height-1,[200,200,200])
-                     .line(0,height-1,width-1,height-1,[200,200,200])
-                     .line(width-2,1,width-2,height-2,[240,240,240])
-                     .line(1,height-2,width-2,height-2,[240,240,240])
-      super
+
+      # 画像を作成する
+      set_image
+    end
+
+    # set_imageで@image[true](押された絵)と@image[false](通常の絵)を設定する。
+    # オーバーライドしてこのメソッドを再定義することでボタンの絵を変更することができる。
+    def set_image
+      @image[false] = Image.new(@width, @height, [190,190,190])
+                     .line(0,0,@width-1,0,[240,240,240])
+                     .line(0,0,0,@height-1,[240,240,240])
+                     .line(1,1,@width-1,1,[200,200,200])
+                     .line(1,1,1,@height-1,[200,200,200])
+                     .line(@width-1,0,@width-1,@height-1,[80,80,80])
+                     .line(0,@height-1,@width-1,@height-1,[80,80,80])
+                     .line(@width-2,1,@width-2,@height-2,[120,120,120])
+                     .line(1,@height-2,@width-2,@height-2,[120,120,120])
+      @image[true] = Image.new(@width, @height, [190,190,190])
+                     .line(0,0,@width-1,0,[80,80,80])
+                     .line(0,0,0,@height-1,[80,80,80])
+                     .line(1,1,@width-1,1,[120,120,120])
+                     .line(1,1,1,@height-1,[120,120,120])
+                     .line(@width-1,0,@width-1,@height-1,[200,200,200])
+                     .line(0,@height-1,@width-1,@height-1,[200,200,200])
+                     .line(@width-2,1,@width-2,@height-2,[240,240,240])
+                     .line(1,@height-2,@width-2,@height-2,[240,240,240])
     end
 
     def draw
