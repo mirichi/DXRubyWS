@@ -84,7 +84,7 @@ module WS
     # マウスイベント用の内部処理
     # WSContainerとの協調に必要。特殊なパターンでない限り、ユーザが意識する必要はない。
     def mouse_event_dispach(event, tx, ty)
-      self.__send__(("on_mouse_" + event.to_s).to_sym, tx, ty)
+      self.__send__(("on_" + event.to_s).to_sym, tx, ty)
     end
 
     # シグナル処理

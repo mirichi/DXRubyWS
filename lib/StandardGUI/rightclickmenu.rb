@@ -31,7 +31,7 @@ module WS
     # PopupMenuはマウスキャプチャするため配下のオブジェクトが呼ばれないのでここで自前で処理する
     def on_mouse_push(tx, ty)
       ctl = find_hit_object(tx, ty)
-      ctl.mouse_event_dispach(:push, tx - ctl.x, ty - ctl.y) if ctl
+      ctl.mouse_event_dispach(:mouse_push, tx - ctl.x, ty - ctl.y) if ctl
       self.parent.remove_control(self)
       WS.capture(nil)
     end
@@ -43,7 +43,7 @@ module WS
     def on_mouse_r_release(tx, ty)
       ctl = find_hit_object(tx, ty)
       if ctl
-        ctl.mouse_event_dispach(:push, tx - ctl.x, ty - ctl.y)
+        ctl.mouse_event_dispach(:mouse_push, tx - ctl.x, ty - ctl.y)
         self.parent.remove_control(self)
         WS.capture(nil)
       end
@@ -52,7 +52,7 @@ module WS
     def on_mouse_move(tx, ty)
       ctl = find_hit_object(tx, ty)
       if ctl
-        ctl.mouse_event_dispach(:move, tx - ctl.x, ty - ctl.y)
+        ctl.mouse_event_dispach(:mouse_move, tx - ctl.x, ty - ctl.y)
       else
         super
       end
