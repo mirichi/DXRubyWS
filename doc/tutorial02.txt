@@ -1,0 +1,106 @@
+DXRuby用ウィンドウシステムDXRubyWS チュートリアル02 標準GUI体験編
+
+■１．はじめに
+
+地味なコントロールを作って動かしてもあんまり面白くないので、標準GUIを使ってみましょう。標準GUIは簡単にGUIを構築できるように基本的なそれっぽいものを実装してみる実験であり、本格的なものではありませんが、雰囲気を感じるにはよいでしょう。また、開発中であるため仕様変更も発生しますし、このチュートリアルの更新が追いつかない場合もありますので、動かなかったらごめんなさい。
+なお、ここで紹介するコードはDXRubyWSのトップディレクトリにファイルを置くことを想定しています。libとかsampleとかのファイルのあるディレクトリです。他のディレクトリにファイルを作る場合はrequireのパスを場所にあわせて修正してください。
+
+
+■２．最も簡単なコード
+
+---
+require_relative './lib/dxrubyws'
+require_relative './lib/standardgui'
+
+WS.desktop.add_control(WS::WSWindow.new(100,100,300,200,"TutorialWindow"))
+
+Window.loop do
+  WS.update
+end
+---
+WSモジュール内に定義されたWSWindowというクラスが、標準GUIの基本になるウィンドウのクラスです。引数はx/y/width/height/captionを渡します。このウィンドウはタイトルバーをマウスで掴んで動かしたり、外枠を掴んでサイズを変えたり、右上のクローズボタンを押して閉じたりすることができます。
+
+
+■３．ボタンを配置してみる
+
+---
+require_relative './lib/dxrubyws'
+require_relative './lib/standardgui'
+
+window = WS::WSWindow.new(100,100,300,200,"TutorialWindow")
+WS.desktop.add_control(window)
+
+button = WS::WSButton.new(10,10,100,20,"TutorialButton")
+window.client.add_control(button)
+
+Window.loop do
+  WS.update
+end
+---
+
+WSWindowオブジェクトのクライアント領域にWSButtonオブジェクトをadd_controlしています。WSWindowオブジェクトはコンテナの集合体で、タイトルバーとクライアント領域に分かれていて、ユーザがコントロールを配置するのはクライアント領域のほうです。クライアント領域はWSWindow#clientでアクセスすることができます。
+add_controlを持つのはコンテナをあらわすWSContainerクラスのオブジェクトで、WSContainerはWSControlを継承しています。WS.desktopのクラスであるWSDesktopもWSContainerを継承していてコンテナであるので、add_controlでコントロールを登録することができます。チュートリアル01で作ったドラッガブル豆腐クラスはWSControlを継承していたので、add_controlメソッドは持っておらず、配下にオブジェクトを配置することはできません。
+
+
+■４．ボタンに反応する
+
+---
+require_relative './lib/dxrubyws'
+require_relative './lib/standardgui'
+
+window = WS::WSWindow.new(100,100,300,200,"TutorialWindow")
+WS.desktop.add_control(window)
+
+button = WS::WSButton.new(10,10,100,20,"TutorialButton")
+window.client.add_control(button)
+
+button.add_handler(:click) do
+  button.x += 10
+  button.y += 10
+end
+
+Window.loop do
+  WS.update
+end
+---
+
+WSButtonはGUIのボタンですので、Windowsのボタンのような動作をします。具体的にはボタンオブジェクト上でマウスの左ボタンを押して、そのままボタンオブジェクト上でマウスの左ボタンを離したタイミングで、:clickシグナルを発行します。:clickシグナルのハンドラを登録して、ボタンを押したらちょっと移動するようにしてみました。このあたりはチュートリアル01でやったのと同じような感じですね。
+
+
+■５．TutorialWindowクラスを作ってみる
+
+---
+require_relative './lib/dxrubyws'
+require_relative './lib/standardgui'
+
+module WS
+  class TutorialWindow < WSWindow
+    def initialize(*args)
+      super
+      button = WS::WSButton.new(10,10,100,20,"TutorialButton")
+      client.add_control(button, :btn)
+      button.add_handler(:click, self.method(:on_click))
+    end
+
+    def on_click(obj, tx, ty)
+      client.btn.x += 10
+      client.btn.y += 10
+    end
+  end
+end
+
+window = WS::TutorialWindow.new(100,100,300,200,"TutorialWindow")
+WS.desktop.add_control(window)
+
+Window.loop do
+  WS.update
+end
+---
+
+チュートリアル01のときと同様に、TutorialWindowをクラスにしてみました。WSWindowを継承し、initializeの中でボタンを生成し、クライアント領域に追加します。add_controlの第2引数は登録したオブジェクトの名前を表し、登録先のオブジェクトに同名のアクセサメソッドを追加してくれます。そのおかげでon_clickメソッドの中でbtnとしてボタンオブジェクトにアクセスすることができています。別にインスタンス変数を作って格納してもぜんぜん構いませんが、クラス外からアクセスしたい場合に便利です。
+
+
+■６．おしまい
+
+標準GUIを使ってアプリ的なものを作る場合は、WSWindowを継承してこのようなクラスを定義していくというのが基本的な流れになると思います。現状ではウィンドウをデザインしようと思うととても面倒なのですが、コントロールの配置をデザインするツールなどもDXRubyWS自身でわりと簡単に作れるようになるかもしれません。
+次回の予定は未定です。コンテナを自分で作ってみようの巻か、オートレイアウトしてみるの巻になる予感がします。
