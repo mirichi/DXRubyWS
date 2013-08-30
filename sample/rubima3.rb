@@ -558,7 +558,7 @@ module WS
       @position = 0    # 描画の基点
 
       # スクロールバー
-      sb = WSScrollBar.new(508, 0, 16, 700-16)
+      sb = WSVScrollBar.new(508, 0, 16, 700-16)
       client.add_control(sb, :sb)
       sb.total = 30        # 全体サイズが30
       sb.unit_quantity = 1 # ボタンを押したときに1動く
@@ -579,7 +579,7 @@ module WS
       wsimage.add_handler(:mouse_wheel_down){sb.slide(3)}
 
       # オートレイアウト
-      layout(:hbox) do
+      client.layout(:hbox) do
         add wsimage, true, true
         add sb, false, true
       end
