@@ -1,9 +1,8 @@
 # coding: utf-8
 
 module WS
-  class WSButton < WSControl
+  class WSButtonBase < WSControl
     attr_accessor :caption, :fore_color
-    include ButtonClickable
 
     def initialize(tx, ty, width, height, caption = "Button")
       super(tx, ty, width, height)
@@ -61,4 +60,15 @@ module WS
                             @caption, @font, :color=>@fore_color)
     end
   end
+
+  # 普通のボタン
+  class WSButton < WSButtonBase
+    include ButtonClickable # 普通のクリック用モジュール
+  end
+
+  # 押しっぱなしでリピートするボタンクラス
+  class WSRepeatButton < WSButtonBase
+    include RepeatClickable # リピートクリック用モジュール
+  end
+
 end

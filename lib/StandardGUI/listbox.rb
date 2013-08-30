@@ -34,7 +34,7 @@ module WS
       end
 
       # スクロールバー作成
-      sb = WSScrollBar.new(0, 0, 16, height - 4)
+      sb = WSVScrollBar.new(0, 0, 16, height - 4)
       add_control(sb, :sb)
       sb.add_handler(:slide) {|obj, pos| @position = pos}
       sb.total = @items.length

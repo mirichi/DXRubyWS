@@ -43,6 +43,54 @@ module WS
     end
   end
 
+  # スクロールバーのボタンのようにオートリピートで:clickシグナルを発行し続ける
+  # このシグナルはupdate時に発生する
+  module RepeatClickable
+    def initialize(*args)
+      super
+      @downcount = 0
+      @image_flag = false
+    end
+    def on_mouse_push(tx, ty)
+      @old_tx, @old_ty = tx, ty
+      WS.capture(self)
+      @downcount = 20
+      @image_flag = true
+      super
+      on_click(self, tx, ty)
+    end
+
+    def on_mouse_release(tx, ty)
+      @image_flag = false
+      WS.capture(nil)
+      @downcount = 0
+      super
+    end
+
+    def on_mouse_move(tx, ty)
+      @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
+      if WS.captured?(self)
+        @image_flag = @hit_cursor === self
+      end
+      super
+    end
+
+    def update
+      if @downcount > 0
+        @downcount -= 1
+        if @downcount == 0
+          @downcount = 5
+          on_click(self, @old_tx, @old_ty)
+        end
+      end
+      super
+    end
+
+    def on_click(obj, tx, ty)
+      signal(:click, tx, ty)
+    end
+  end
+
   # マウスでドラッグしたときに:drag_moveシグナルを発行する
   # また、ボタン押したら:drag_start、離したら:drag_endを発行する
   # :drag_moveシグナルの引数は相対座標
@@ -206,49 +254,6 @@ module WS
 
     def on_doubleclick(obj, tx, ty)
       signal(:doubleclick, tx, ty)
-    end
-  end
-
-  # スクロールバーのボタンのようにオートリピートで:clickシグナルを発行し続ける
-  # このシグナルはupdate時に発生する
-  module RepeatClickable
-    def initialize(*args)
-      super
-      @downcount = 0
-    end
-    def on_mouse_push(tx, ty)
-      @old_tx, @old_ty = tx, ty
-      WS.capture(self)
-      @downcount = 20
-      super
-      on_click(self, tx, ty)
-    end
-
-    def on_mouse_release(tx, ty)
-      WS.capture(nil)
-      @downcount = 0
-      super
-    end
-
-    def on_mouse_move(tx, ty)
-      @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
-      @image_flag = (WS.captured?(self) and @hit_cursor === self)
-      super
-    end
-
-    def update
-      if @downcount > 0
-        @downcount -= 1
-        if @downcount == 0
-          @downcount = 5
-          on_click(self, @old_tx, @old_ty)
-        end
-      end
-      super
-    end
-
-    def on_click(obj, tx, ty)
-      signal(:click, tx, ty)
     end
   end
 end

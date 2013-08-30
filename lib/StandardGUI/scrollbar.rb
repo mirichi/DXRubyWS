@@ -2,9 +2,9 @@
 
 module WS
   # スクロールバークラス
-  class WSScrollBar < WSContainer
+  class WSVScrollBar < WSContainer
     # スクロールバーのスライダークラス
-    class WSScrollBarSlider < WSControl
+    class WSVScrollBarSlider < WSControl
       include Draggable
 
       def initialize(tx, ty, width, height)
@@ -35,63 +35,6 @@ module WS
       end
     end
 
-    # 押しっぱなしでリピートするボタンクラス
-    class WSRepeatButton < WSControl
-      attr_accessor :caption, :fore_color
-      include RepeatClickable # リピートクリック用モジュール
-                              # 普通のボタンと違うのはここだけ。コードが無駄なのでなんとかならんかな。
-  
-      def initialize(tx, ty, width, height, caption = "Button")
-        super(tx, ty, width, height)
-        @image = {}
-        @image[false] = Image.new(width, height, [190,190,190])
-                       .line(0,0,width-1,0,[240,240,240])
-                       .line(0,0,0,height-1,[240,240,240])
-                       .line(1,1,width-1,1,[200,200,200])
-                       .line(1,1,1,height-1,[200,200,200])
-                       .line(width-1,0,width-1,height-1,[80,80,80])
-                       .line(0,height-1,width-1,height-1,[80,80,80])
-                       .line(width-2,1,width-2,height-2,[120,120,120])
-                       .line(1,height-2,width-2,height-2,[120,120,120])
-        @image[true] = Image.new(width, height, [190,190,190])
-                       .line(0,0,width-1,0,[80,80,80])
-                       .line(0,0,0,height-1,[80,80,80])
-                       .line(1,1,width-1,1,[120,120,120])
-                       .line(1,1,1,height-1,[120,120,120])
-                       .line(width-1,0,width-1,height-1,[200,200,200])
-                       .line(0,height-1,width-1,height-1,[200,200,200])
-                       .line(width-2,1,width-2,height-2,[240,240,240])
-                       .line(1,height-2,width-2,height-2,[240,240,240])
-        @image_flag = false
-        @caption = caption
-      end
-
-      def on_mouse_push(tx, ty)
-        @image_flag = true
-        super
-      end
-  
-      def on_mouse_release(tx, ty)
-        @image_flag = false
-        super
-      end
-  
-      def on_mouse_move(tx, ty)
-        @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
-        @image_flag = (WS.captured?(self) and @hit_cursor === self)
-        super
-      end
-  
-      def draw
-        self.image = @image[@image_flag]
-        super
-        width = @font.get_width(@caption)
-        self.target.draw_font(self.image.width / 2 - width / 2 + self.x + (@image_flag ? 1 : 0),
-                              self.image.height / 2 - @font.size / 2 + self.y + (@image_flag ? 1 : 0),
-                              @caption, @font, :color=>@fore_color)
-      end
-    end
-  
     attr_accessor :screen_length, :total, :unit_quantity, :position
     include RepeatClickable
 
@@ -101,7 +44,7 @@ module WS
       font = Font.new(12)
       @position = 0
 
-      slider = WSScrollBarSlider.new(0, 16, width, 16)
+      slider = WSVScrollBarSlider.new(0, 16, width, 16)
       slider.add_handler(:slide) do |obj, ty|
         @position = (@total - @screen_length) * ((ty - 16).quo(@height - 32 - slider.height))
         signal(:slide, @position)
