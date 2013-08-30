@@ -27,7 +27,7 @@ class WS::WSObjectBrowser < WS::WSWindow
       lbx2.items << s
     end
 
-    layout(:vbox) do
+    client.layout(:vbox) do
       layout(:hbox) do
         self.height = lbl1.height
         self.resizable_height = false
@@ -103,7 +103,7 @@ lbl.caption = lbx.items[lbx.cursor].to_s
 lbx.add_handler(:select){|obj, cursor| lbl.caption = obj.items[cursor].to_s}
 w.client.add_control(lbl)
 
-w.layout(:vbox) do
+w.client.layout(:vbox) do
   add lbl, true
   add lbx, true, true
 end
@@ -152,7 +152,7 @@ class Test < WS::WSWindow
     # self.をつけないとローカル変数への代入とみなされてしまうらしい。
 
     # addメソッドの第2、第3引数でそれぞれresizable_width/resizable_heightを指定できるようにした。
-    layout(:vbox) do
+    client.layout(:vbox) do
       self.margin_top = 10
       self.margin_bottom = 10
       layout(:hbox) do

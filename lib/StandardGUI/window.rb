@@ -70,12 +70,6 @@ module WS
         add window_title, true
         add client, true, true
       end
-
-      # ↑ではWSWindow自身のlayoutを呼びたいので呼んだあとに特異メソッドを定義して上書きする
-      # 外部からWSWindow#layoutしたときはクライアント領域のレイアウト設定になるように。
-      def self.layout(type=nil, &b)
-        self.client.layout(type, &b)
-      end
     end
 
     def draw
