@@ -4,9 +4,11 @@ require_relative './scrollbar'
 module WS
   # リストビュークラス
   class WSListView < WSContainer
+    # リストビューのタイトル部分のクラス
     class WSListViewTitle < WSContainer
       attr_reader :titles
       attr_accessor :position
+
       def initialize(tx, ty, width, height, titles)
         super(tx, ty, width, height)
         self.image.bgcolor = [190,190,190]
@@ -44,18 +46,21 @@ module WS
 
         super
       end
-  
+
+      # 以下、セパレータドラッグ処理
       def on_mouse_push(tx, ty)
         total = 0
-        # セパレータの判定用Sprite生成
         @titles.size.times do |i|
           total += @titles[i][1]
-          s = Sprite.new(total - 2, 0)
+
+          # セパレータの判定用Sprite生成
+          s = Sprite.new(total - 2 - @position, 0)
           s.collision = [0, 0, 3, 15]
 
           # 判定
           @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
           if @hit_cursor === s
+            # ドラッグ開始
             @dragging_number = i
             @drag_old_x = tx
             WS.capture(self)
@@ -73,7 +78,6 @@ module WS
       end
   
       def on_mouse_out
-#        WS.capture(nil)
         Input.set_cursor(IDC_ARROW)
         super
       end
@@ -84,7 +88,9 @@ module WS
         flag = false
         @titles.size.times do |i|
           total += @titles[i][1]
-          s = Sprite.new(total - 2, 0)
+
+          # セパレータの判定用Sprite生成
+          s = Sprite.new(total - 2 - @position, 0)
           s.collision = [0, 0, 4, 15]
 
           # 判定
@@ -98,6 +104,7 @@ module WS
           Input.set_cursor(IDC_ARROW)
         end
 
+        # ドラッグ中処理
         if @dragging_number
           tmp = @titles[@dragging_number][1] + tx - @drag_old_x
           tmp = 0 if tmp < 0
@@ -109,7 +116,6 @@ module WS
     end
 
     # リストビュー内のクライアント領域クラス
-    # マウスボタンに反応する必要がある。
     class WSListViewClient < WSContainer
       include DoubleClickable
       def initialize(*args)
@@ -201,7 +207,7 @@ module WS
       vsb.total = @items.length
       hsb.total = title.titles.inject(0){|total, o| total += o[1]}
 
-      # スクロールバーの描画が必要ない場合は描画しない
+      # スクロールバーの描画が必要ない場合は描画しない(つくりかけ)
      if client.height.quo(@font.size) >= @items.length
         if vsb.visible
           vsb.visible = false
@@ -250,8 +256,8 @@ module WS
 
     def draw
       set_scrollbar
+
       # リスト描画
-      
       total = title.titles.inject(0){|t, o| t += o[1]}
       @items.each_with_index do |item, i|
         if @cursor != i
