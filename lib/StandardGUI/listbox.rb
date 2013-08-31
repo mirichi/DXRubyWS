@@ -58,11 +58,34 @@ module WS
       sb.total = @items.length
       super
       @cursor_image.dispose if @cursor_image
-      @cursor_image = Image.new(client.width, @font.size, C_BLACK)
+      @cursor_image = Image.new(width, @font.size, C_BLACK)
       sb.screen_length = client.height.quo(@font.size)
     end
 
+    def set_scrollbar
+      sb.total = @items.length
+
+      # スクロールバーの描画が必要ない場合は描画しない
+     if client.height.quo(@font.size) >= @items.length
+        sb.visible = false
+        sb.collision_enable = false
+        layout(:hbox) do
+          self.margin_left = self.margin_top = self.margin_right = self.margin_bottom = 2
+          add obj.client, true, true
+        end
+      else
+        sb.visible = true
+        sb.collision_enable = true
+        layout(:hbox) do
+          self.margin_left = self.margin_top = self.margin_right = self.margin_bottom = 2
+          add obj.client, true, true
+          add obj.sb, false, true
+        end
+      end
+    end
+
     def draw
+      set_scrollbar
       # リスト描画
       @items.each_with_index do |s, i|
         if @cursor != i
@@ -82,17 +105,6 @@ module WS
       self.image.draw_line(0,@height-1,@width-1,@height-1,[240,240,240])
       self.image.draw_line(@width-2,1,@width-2,@height-2,[200,200,200])
       self.image.draw_line(1,@height-2,@width-2,@height-2,[200,200,200])
-
-      sb.total = @items.length
-
-      # スクロールバーの描画が必要ない場合は描画しない
-#      if client.height.quo(@font.size) >= @items.length
-#        sb.visible = false
-#        sb.collision_enable = false
-#      else
-#        sb.visible = true
-#        sb.collision_enable = true
-#      end
       super
     end
   end
