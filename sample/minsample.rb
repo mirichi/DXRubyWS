@@ -110,6 +110,21 @@ end
 
 WS::desktop.add_control(w)
 
+# ListViewTestWindow
+w = WS::WSWindow.new(600, 100, 300, 200, "ListViewTest")
+titles = [["instance_variable", 100], ["class", 150], ["to_s", 200]]
+lv = WS::WSListView.new(50, 30, 100, 160, titles)
+w.instance_variables.each do |i|
+  lv.items << [i, w.instance_variable_get(i).class, w.instance_variable_get(i)]
+end
+w.client.add_control(lv)
+
+w.client.layout(:vbox) do
+  add lv, true, true
+end
+
+WS::desktop.add_control(w)
+
 # LayoutTestWindow
 class Test < WS::WSWindow
   def initialize

@@ -223,7 +223,7 @@ module WS
 
     # オートレイアウト設定開始
     def layout(type=nil, &b)
-      @layout = WSLayout.new(type, self, &b)
+      @layout = WSLayout.new(type, self, self, &b)
       @layout.auto_layout
     end
 
@@ -241,13 +241,13 @@ module WS
 
   # オートレイアウト
   class WSLayout
-    attr_accessor :type, :x, :y, :width, :height, :resizable_width, :resizable_height, :obj
+    attr_accessor :type, :x, :y, :width, :height, :resizable_width, :resizable_height, :obj, :parent
     attr_accessor :margin_left, :margin_right, :margin_top, :margin_bottom
     attr_accessor :min_width, :min_height
 
-    def initialize(type, obj, &b)
+    def initialize(type, obj, parent, &b)
       @type, @obj = type, obj
-      @width, @height = obj.width, obj.height
+      @width, @height = parent.width, parent.height
       @min_width = @min_height = 16
       @x = @y = 0
       @margin_left = @margin_right = @margin_top = @margin_bottom = 0
@@ -257,7 +257,7 @@ module WS
     end
 
     def layout(type=nil, &b)
-      @data << WSLayout.new(type, self, &b)
+      @data << WSLayout.new(type, @obj, self, &b)
       self
     end
     
