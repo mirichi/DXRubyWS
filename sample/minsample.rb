@@ -74,8 +74,8 @@ end
 
 # TestWindow1
 w = WS::WSWindow.new(100, 100, 300, 100, "Test")
-b = WS::WSButton.new(10, 10, 100, 20)
-l = WS::WSLabel.new(10, 50, 100, 20)
+b = WS::WSButton.new(10, 10, 100, 20, "button")
+l = WS::WSLabel.new(10, 50, 100, 20, "label")
 w.client.add_control(b)
 w.client.add_control(l)
 
