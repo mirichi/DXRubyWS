@@ -112,6 +112,10 @@ module WS
     # マウスボタンに反応する必要がある。
     class WSListViewClient < WSContainer
       include DoubleClickable
+      def initialize(*args)
+        super
+        self.image.bgcolor = C_WHITE
+      end
     end
 
     attr_reader :items, :cursor
@@ -119,7 +123,7 @@ module WS
 
     def initialize(tx, ty, width, height, titles)
       super(tx, ty, width, height)
-      self.image.bgcolor = C_WHITE
+      self.image.bgcolor = [190,190,190]
       @font = Font.new(12)
       @items = [] # リストの中身
       @vposition = @hposition = 0    # 描画の基点
