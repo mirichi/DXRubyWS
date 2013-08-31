@@ -221,7 +221,7 @@ module WS
         self.slider.width = (@total > 0 ? @screen_length.quo(@total) * (@width - 32) : 0)
         self.slider.width = self.slider.width.clamp(8, @width - 32)
         if @total > @screen_length
-          self.slider.x = (@width - 32 - slider.width) * (@position / (@total - @screen_length)) + 16
+          self.slider.x = (@width - 32 - slider.width) * (@position.quo((@total - @screen_length))) + 16
         else
           self.slider.x = 16
         end
