@@ -261,7 +261,7 @@ module WS
       end
       tx = 0
       title.titles.size.times do |x|
-        client.image.draw(tx, 0, @client_tmp_rt[x])
+        client.image.draw(tx - @hposition, 0, @client_tmp_rt[x])
         tx += title.titles[x][1]
       end
 
