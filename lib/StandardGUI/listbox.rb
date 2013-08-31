@@ -67,19 +67,23 @@ module WS
 
       # スクロールバーの描画が必要ない場合は描画しない
      if client.height.quo(@font.size) >= @items.length
-        sb.visible = false
-        sb.collision_enable = false
-        layout(:hbox) do
-          self.margin_left = self.margin_top = self.margin_right = self.margin_bottom = 2
-          add obj.client, true, true
+        if sb.visible
+          sb.visible = false
+          sb.collision_enable = false
+          layout(:hbox) do
+            self.margin_left = self.margin_top = self.margin_right = self.margin_bottom = 2
+            add obj.client, true, true
+          end
         end
       else
-        sb.visible = true
-        sb.collision_enable = true
-        layout(:hbox) do
-          self.margin_left = self.margin_top = self.margin_right = self.margin_bottom = 2
-          add obj.client, true, true
-          add obj.sb, false, true
+        unless sb.visible
+          sb.visible = true
+          sb.collision_enable = true
+          layout(:hbox) do
+            self.margin_left = self.margin_top = self.margin_right = self.margin_bottom = 2
+            add obj.client, true, true
+            add obj.sb, false, true
+          end
         end
       end
     end
