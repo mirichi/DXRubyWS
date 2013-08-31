@@ -4,7 +4,7 @@ module WS
   class WSButtonBase < WSControl
     attr_accessor :caption, :fore_color
 
-    def initialize(tx, ty, width, height, caption = "Button")
+    def initialize(tx, ty, width, height, caption = "")
       super(tx, ty, width, height)
       @image = {}
       @caption = caption

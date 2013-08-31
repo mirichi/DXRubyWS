@@ -5,18 +5,31 @@ require_relative './label'
 module WS
   # ウィンドウぽい動きを実現してみる
   class WSWindow < WSContainer
+   class WSWindowCloseButton < WSButton
+     def set_image
+       super
+       @image[true].line(4, 4, @width-5, @height-5, C_BLACK)
+                   .line(5, 4, @width-4, @height-5, C_BLACK)
+                   .line(@width-5, 4, 4, @height-5, C_BLACK)
+                   .line(@width-4, 4, 5, @height-5, C_BLACK)
+       @image[false].line(4-1, 4-1, @width-5-1, @height-5-1, C_BLACK)
+                    .line(5-1, 4-1, @width-4-1, @height-5-1, C_BLACK)
+                    .line(@width-5-1, 4-1, 4-1, @height-5-1, C_BLACK)
+                    .line(@width-4-1, 4-1, 5-1, @height-5-1, C_BLACK)
+     end
+   end
     
     # ウィンドウのタイトルバー用クラス
     class WSWindowTitle < WSContainer
       include Draggable       # ウィンドウのドラッグ用
       include DoubleClickable # 最大化用
   
-      def initialize(tx, ty, width, height, title="Title")
+      def initialize(tx, ty, width, height, title="")
         super(tx, ty, width, height)
         self.image.bgcolor = [0, 0, 160]
   
         # タイトルバーのクロースボタン
-        close_button = WSButton.new(0, 0, height-2, height-2, "X")
+        close_button = WSWindowCloseButton.new(0, 0, height-2, height-2, "")
         close_button.fore_color = C_BLACK
         add_control(close_button)
         close_button.add_handler(:click) {signal(:close)}

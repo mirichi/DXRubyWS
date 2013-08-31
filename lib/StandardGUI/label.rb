@@ -3,7 +3,7 @@
 module WS
   class WSLabel < WSControl
     attr_accessor :caption, :fore_color
-    def initialize(tx, ty, width, height, caption = "Label")
+    def initialize(tx, ty, width, height, caption = "")
       super(tx, ty, width, height)
       self.collision_enable = false
       @caption = caption
