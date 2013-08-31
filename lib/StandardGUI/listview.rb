@@ -13,6 +13,7 @@ module WS
         @font = Font.new(12)
         @titles = titles
         @position = 0
+        @dragging_number = nil
       end
 
       def draw
@@ -41,6 +42,68 @@ module WS
           tx += title[1]
         end
 
+        super
+      end
+  
+      def on_mouse_push(tx, ty)
+        total = 0
+        # セパレータの判定用Sprite生成
+        @titles.size.times do |i|
+          total += @titles[i][1]
+          s = Sprite.new(total - 2, 0)
+          s.collision = [0, 0, 3, 15]
+
+          # 判定
+          @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
+          if @hit_cursor === s
+            @dragging_number = i
+            @drag_old_x = tx
+            WS.capture(self)
+          end
+        end
+        super
+      end
+
+      def on_mouse_release(tx, ty)
+        @dragging_number = nil
+        @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
+        WS.capture(nil)
+        Input.set_cursor(IDC_ARROW) unless self === @hit_cursor
+        super
+      end
+  
+      def on_mouse_out
+#        WS.capture(nil)
+        Input.set_cursor(IDC_ARROW)
+        super
+      end
+
+      def on_mouse_move(tx, ty)
+        @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
+        total = 0
+        flag = false
+        @titles.size.times do |i|
+          total += @titles[i][1]
+          s = Sprite.new(total - 2, 0)
+          s.collision = [0, 0, 4, 15]
+
+          # 判定
+          if @hit_cursor === s
+            Input.set_cursor(IDC_SIZEWE)
+            flag = true
+            break
+          end
+        end
+        if !flag and @dragging_number == nil
+          Input.set_cursor(IDC_ARROW)
+        end
+
+        if @dragging_number
+          tmp = @titles[@dragging_number][1] + tx - @drag_old_x
+          tmp = 0 if tmp < 0
+          @titles[@dragging_number][1] = tmp
+          @drag_old_x = tx if tmp > 0
+        end
         super
       end
     end
