@@ -150,7 +150,7 @@ module WS
         end
       end
 
-      # スクロールバー作成
+      # 縦スクロールバー作成
       vsb = WSVScrollBar.new(0, 0, 16, height - 4)
       add_control(vsb, :vsb)
       vsb.add_handler(:slide) {|obj, pos| @vposition = pos}
@@ -158,38 +158,19 @@ module WS
       vsb.screen_length = client.height.quo(@font.size)
       vsb.unit_quantity = 1
 
-      # スクロールバー作成
+      # 横スクロールバー作成
       hsb = WSHScrollBar.new(0, 0, width - 4, 16)
       add_control(hsb, :hsb)
-      hsb.add_handler(:slide) {|obj, pos| @hposition = pos; title.position = pos}
+      hsb.add_handler(:slide) {|obj, pos| @hposition = title.position = pos}
       hsb.total = client.width
       hsb.screen_length = client.width # 暫定
-      hsb.unit_quantity = 1
+      hsb.unit_quantity = 10
 
       # マウスホイール処理
       client.add_handler(:mouse_wheel_up){vsb.slide(-3)}
       client.add_handler(:mouse_wheel_down){vsb.slide(3)}
 
-      # オートレイアウト
-      layout(:vbox) do
-        self.margin_left = self.margin_top = self.margin_right = self.margin_bottom = 2
-        layout(:hbox) do
-          layout(:vbox) do
-            add title, true, false
-            add client, true, true
-          end
-          add vsb, false, true
-        end
-        layout(:hbox) do
-          self.resizable_height = false
-          self.height = 16
-          add hsb, true, false
-          layout do
-            self.width = self.height = 16
-            self.resizable_width = self.resizable_height = false
-          end
-        end
-      end
+      set_scrollbar
     end
 
     # resize時にカーソル位置の反転画像を再生成する
