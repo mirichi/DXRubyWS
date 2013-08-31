@@ -86,13 +86,13 @@ module WS
       sb.total = @items.length
 
       # スクロールバーの描画が必要ない場合は描画しない
-      if client.height.quo(@font.size) >= @items.length
-        sb.visible = false
-        sb.collision_enable = false
-      else
-        sb.visible = true
-        sb.collision_enable = true
-      end
+#      if client.height.quo(@font.size) >= @items.length
+#        sb.visible = false
+#        sb.collision_enable = false
+#      else
+#        sb.visible = true
+#        sb.collision_enable = true
+#      end
       super
     end
   end

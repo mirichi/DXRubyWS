@@ -46,7 +46,11 @@ module WS
 
       slider = WSVScrollBarSlider.new(0, 16, width, 16)
       slider.add_handler(:slide) do |obj, ty|
-        @position = (@total - @screen_length) * ((ty - 16).quo(@height - 32 - slider.height))
+        if @height - 32 - slider.height == 0
+          @position = 0
+        else
+          @position = (@total - @screen_length) * ((ty - 16).quo(@height - 32 - slider.height))
+        end
         signal(:slide, @position)
       end
       add_control(slider, :slider)
@@ -67,9 +71,11 @@ module WS
       add_control(db, :btn_down)
       db.add_handler(:click) do
         max = @total - @screen_length
-        @position += @unit_quantity
-        @position = max if @position > max
-        signal(:slide, @position)
+        if max >= 0
+          @position += @unit_quantity
+          @position = max if @position > max
+          signal(:slide, @position)
+        end
       end
 
       layout(:vbox) do
@@ -88,9 +94,13 @@ module WS
     # 描画時にスライダーのサイズを再計算する
     def draw
       if self.visible # DXRubyのバグ回避
-        self.slider.height = (@total > 0 ? @screen_length / @total * (@height - 32) : 0)
+        self.slider.height = (@total > 0 ? @screen_length.quo(@total) * (@height - 32) : 0)
         self.slider.height = self.slider.height.clamp(8, @height - 32)
-        self.slider.y = (@height - 32 - slider.height) * (@position / (@total - @screen_length)) + 16
+        if @total > @screen_length
+          self.slider.y = (@height - 32 - slider.height) * (@position / (@total - @screen_length)) + 16
+        else
+          self.slider.y = 16
+        end
       end
       super
     end
@@ -159,8 +169,12 @@ module WS
       @position = 0
 
       slider = WSHScrollBarSlider.new(16, 0, 16, height)
-      slider.add_handler(:slide) do |obj, ty|
-        @position = (@total - @screen_length) * ((tx - 16).quo(@width - 32 - slider.width))
+      slider.add_handler(:slide) do |obj, tx|
+        if @width - 32 - slider.width == 0
+          @position = 0
+        else
+          @position = (@total - @screen_length) * ((tx - 16).quo(@width - 32 - slider.width))
+        end
         signal(:slide, @position)
       end
       add_control(slider, :slider)
@@ -181,9 +195,11 @@ module WS
       add_control(rb, :btn_right)
       rb.add_handler(:click) do
         max = @total - @screen_length
-        @position += @unit_quantity
-        @position = max if @position > max
-        signal(:slide, @position)
+        if max >= 0
+          @position += @unit_quantity
+          @position = max if @position > max
+          signal(:slide, @position)
+        end
       end
 
       layout(:hbox) do
@@ -202,9 +218,13 @@ module WS
     # 描画時にスライダーのサイズを再計算する
     def draw
       if self.visible # DXRubyのバグ回避
-        self.slider.width = (@total > 0 ? @screen_length / @total * (@width - 32) : 0)
+        self.slider.width = (@total > 0 ? @screen_length.quo(@total) * (@width - 32) : 0)
         self.slider.width = self.slider.width.clamp(8, @width - 32)
-        self.slider.x = (@width - 32 - slider.width) * (@position / (@total - @screen_length)) + 16
+        if @total > @screen_length
+          self.slider.x = (@width - 32 - slider.width) * (@position / (@total - @screen_length)) + 16
+        else
+          self.slider.x = 16
+        end
       end
       super
     end
