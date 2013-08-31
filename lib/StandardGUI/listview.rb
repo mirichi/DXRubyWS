@@ -55,7 +55,7 @@ module WS
 
           # セパレータの判定用Sprite生成
           s = Sprite.new(total - 2 - @position, 0)
-          s.collision = [0, 0, 3, 15]
+          s.collision = [0, 0, 4, 15]
 
           # 判定
           @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
@@ -107,9 +107,10 @@ module WS
         # ドラッグ中処理
         if @dragging_number
           tmp = @titles[@dragging_number][1] + tx - @drag_old_x
-          tmp = 0 if tmp < 0
+          tmp = 1 if tmp < 1
           @titles[@dragging_number][1] = tmp
-          @drag_old_x = tx if tmp > 0
+          @drag_old_x = tx if tmp > 1
+          signal(:title_resize)
         end
         super
       end
@@ -138,6 +139,9 @@ module WS
       # タイトル作成
       title = WSListViewTitle.new(0, 0, width - 4 - 16, 16, titles)
       add_control(title, :title)
+      title.add_handler(:title_resize) do
+        @client_tmp_rt.each_with_index{|rt, i|rt.resize(title.titles[i][1], client.height)}
+      end
 
       # クライアント領域作成
       client = WSListViewClient.new(0, 16, width - 4 - 16, height - 4 - 16)
@@ -149,6 +153,9 @@ module WS
           signal(:select, @cursor) # 項目がクリックされたら:selectシグナル発行
         end
       end
+
+      # 文字描画領域
+      @client_tmp_rt = titles.map {|t|RenderTarget.new(t[1], client.height)}
 
       # 縦スクロールバー作成
       vsb = WSVScrollBar.new(0, 0, 16, height - 4)
@@ -182,6 +189,7 @@ module WS
       @cursor_image = Image.new(hsb.total, @font.size, C_BLACK)
       vsb.screen_length = client.height.quo(@font.size)
       hsb.screen_length = client.width
+      @client_tmp_rt.each_with_index{|rt, i|rt.resize(title.titles[i][1], client.height)}
     end
 
     def set_scrollbar
@@ -247,11 +255,14 @@ module WS
           client.image.draw(0 - @hposition, (i - @vposition) * @font.size, @cursor_image)
           color = C_WHITE
         end
-        tx = 0
         item.each_with_index do |s, x|
-          client.image.draw_font(2 + tx - @hposition, (i - @vposition) * @font.size, s.to_s, @font, :color=>color)
-          tx += title.titles[x][1]
+          @client_tmp_rt[x].draw_font(2, (i - @vposition) * @font.size, s.to_s, @font, :color=>color)
         end
+      end
+      tx = 0
+      title.titles.size.times do |x|
+        client.image.draw(tx, 0, @client_tmp_rt[x])
+        tx += title.titles[x][1]
       end
 
       # ボーダーライン
