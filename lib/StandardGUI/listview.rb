@@ -161,17 +161,17 @@ module WS
       vsb = WSVScrollBar.new(0, 0, 16, height - 4)
       add_control(vsb, :vsb)
       vsb.add_handler(:slide) {|obj, pos| @vposition = pos}
-      vsb.total = @items.length
-      vsb.screen_length = client.height.quo(@font.size)
-      vsb.unit_quantity = 1
+      vsb.total_size = @items.length
+      vsb.view_size = client.height.quo(@font.size)
+      vsb.shift_qty = 1
 
       # 横スクロールバー作成
       hsb = WSHScrollBar.new(0, 0, width - 4, 16)
       add_control(hsb, :hsb)
       hsb.add_handler(:slide) {|obj, pos| @hposition = title.position = pos}
-      hsb.total = client.width
-      hsb.screen_length = client.width # 暫定
-      hsb.unit_quantity = 10
+      hsb.total_size = client.width
+      hsb.view_size = client.width # 暫定
+      hsb.shift_qty = 10
 
       # マウスホイール処理
       client.add_handler(:mouse_wheel_up){vsb.slide(-3)}
@@ -182,19 +182,19 @@ module WS
 
     # resize時にカーソル位置の反転画像を再生成する
     def resize(width, height)
-      vsb.total = @items.length
-      hsb.total = title.titles.inject(0){|t, o| t += o[1]}
+      vsb.total_size = @items.length
+      hsb.total_size = title.titles.inject(0){|t, o| t += o[1]}
       super
       @cursor_image.dispose if @cursor_image
-      @cursor_image = Image.new(hsb.total, @font.size, C_BLACK)
-      vsb.screen_length = client.height.quo(@font.size)
-      hsb.screen_length = client.width
+      @cursor_image = Image.new(hsb.total_size, @font.size, C_BLACK)
+      vsb.view_size = client.height.quo(@font.size)
+      hsb.view_size = client.width
       @client_tmp_rt.each_with_index{|rt, i|rt.resize(title.titles[i][1], client.height)}
     end
 
     def set_scrollbar
-      vsb.total = @items.length
-      hsb.total = title.titles.inject(0){|total, o| total += o[1]}
+      vsb.total_size = @items.length
+      hsb.total_size = title.titles.inject(0){|total, o| total += o[1]}
 
       # スクロールバーの描画が必要ない場合は描画しない(つくりかけ)
      if client.height.quo(@font.size) >= @items.length

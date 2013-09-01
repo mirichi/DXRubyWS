@@ -37,9 +37,9 @@ module WS
       sb = WSVScrollBar.new(0, 0, 16, height - 4)
       add_control(sb, :sb)
       sb.add_handler(:slide) {|obj, pos| @position = pos}
-      sb.total = @items.length
-      sb.screen_length = client.height.quo(@font.size)
-      sb.unit_quantity = 1
+      sb.total_size = @items.length
+      sb.view_size = client.height.quo(@font.size)
+      sb.shift_qty = 1
 
       # マウスホイール処理
       client.add_handler(:mouse_wheel_up){sb.slide(-3)}
@@ -55,15 +55,15 @@ module WS
 
     # resize時にカーソル位置の反転画像を再生成する
     def resize(width, height)
-      sb.total = @items.length
+      sb.total_size = @items.length
       super
       @cursor_image.dispose if @cursor_image
       @cursor_image = Image.new(width, @font.size, C_BLACK)
-      sb.screen_length = client.height.quo(@font.size)
+      sb.view_size = client.height.quo(@font.size)
     end
 
     def set_scrollbar
-      sb.total = @items.length
+      sb.total_size = @items.length
 
       # スクロールバーの描画が必要ない場合は描画しない
      if client.height.quo(@font.size) >= @items.length

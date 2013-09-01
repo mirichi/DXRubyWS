@@ -51,41 +51,44 @@ module WS
      end
     end
     
-    attr_accessor :screen_length, :total, :unit_quantity, :position
+    attr_accessor :view_size, :total_size, :shift_qty, :pos
     include RepeatClickable
 
     def initialize(tx, ty, width, height)
       super
       self.image.bgcolor = [220, 220, 220]
-      @position = 0
+      @pos = 0
+      @view_size = height - 32
+      @total_size = 0
+      @shift_qty = 1
 
       slider = WSVScrollBarSlider.new(0, 16, width, 16)
       slider.add_handler(:slide) do |obj, ty|
         if @height - 32 - slider.height == 0
-          @position = 0
+          @pos = 0
         else
-          @position = (@total - @screen_length) * ((ty - 16).quo(@height - 32 - slider.height))
+          @pos = (@total_size - @view_size) * ((ty - 16).quo(@height - 32 - slider.height))
         end
-        signal(:slide, @position)
+        signal(:slide, @pos)
       end
       add_control(slider, :slider)
 
       ub = WSScrollBarUpButton.new(0, 0, 16, 16)
       add_control(ub, :btn_up)
       ub.add_handler(:click) do
-        @position = @position - @unit_quantity
-        @position = 0 if @position < 0
-        signal(:slide, @position)
+        @pos -= @shift_qty
+        @pos = 0 if @pos < 0
+        signal(:slide, @pos)
       end
 
       db = WSScrollBarDownButton.new(0, 0, 16, 16)
       add_control(db, :btn_down)
       db.add_handler(:click) do
-        max = @total - @screen_length
+        max = @total_size - @view_size
         if max >= 0
-          @position += @unit_quantity
-          @position = max if @position > max
-          signal(:slide, @position)
+          @pos += @shift_qty
+          @pos = max if @pos > max
+          signal(:slide, @pos)
         end
       end
 
@@ -98,17 +101,17 @@ module WS
 
     def resize(width, height)
       super
-      @position = @position.clamp(0, (@total - @screen_length < 0 ? 0 : @total - @screen_length))
-      signal(:slide, @position)
+      @pos = @pos.clamp(0, (@total_size - @view_size < 0 ? 0 : @total_size - @view_size))
+      signal(:slide, @pos)
     end
 
     # 描画時にスライダーのサイズを再計算する
     def draw
       if self.visible # DXRubyのバグ回避
-        self.slider.height = (@total > 0 ? @screen_length.quo(@total) * (@height - 32) : 0)
+        self.slider.height = (@total_size > 0 ? @view_size.quo(@total_size) * (@height - 32) : 0)
         self.slider.height = self.slider.height.clamp(8, @height - 32)
-        if @total > @screen_length
-          self.slider.y = (@height - 32 - slider.height) * (@position / (@total - @screen_length)) + 16
+        if @total_size > @view_size
+          self.slider.y = (@height - 32 - slider.height) * (@pos.quo((@total_size - @view_size))) + 16
         else
           self.slider.y = 16
         end
@@ -117,21 +120,21 @@ module WS
     end
 
     def slide(dy)
-      @position += dy
-      @position = @position.clamp(0, (@total - @screen_length < 0 ? 0 : @total - @screen_length))
-      signal(:slide, @position)
+      @pos += dy
+      @pos = @pos.clamp(0, (@total_size - @view_size < 0 ? 0 : @total_size - @view_size))
+      signal(:slide, @pos)
     end
 
     def on_click(obj, tx, ty)
       if ty < self.slider.y
-        @position -= @screen_length
-        @position = 0 if @position < 0
-        signal(:slide, @position)
+        @pos -= @view_size
+        @pos = 0 if @pos < 0
+        signal(:slide, @pos)
       elsif ty >= self.slider.y + self.slider.height
-        max = @total - @screen_length
-        @position += @screen_length
-        @position = max if @position > max
-        signal(:slide, @position)
+        max = @total_size - @view_size
+        @pos += @view_size
+        @pos = max if @pos > max
+        signal(:slide, @pos)
       end
     end
   end
@@ -186,41 +189,44 @@ module WS
      end
     end
     
-    attr_accessor :screen_length, :total, :unit_quantity, :position
+    attr_accessor :view_size, :total_size, :shift_qty, :pos
     include RepeatClickable
 
     def initialize(tx, ty, width, height)
       super
       self.image.bgcolor = [220, 220, 220]
-      @position = 0
+      @pos = 0
+      @view_size = width - 32
+      @total_size = 0
+      @shift_qty = 1
 
       slider = WSHScrollBarSlider.new(16, 0, 16, height)
       slider.add_handler(:slide) do |obj, tx|
         if @width - 32 - slider.width == 0
-          @position = 0
+          @pos = 0
         else
-          @position = (@total - @screen_length) * ((tx - 16).quo(@width - 32 - slider.width))
+          @pos = (@total_size - @view_size) * ((tx - 16).quo(@width - 32 - slider.width))
         end
-        signal(:slide, @position)
+        signal(:slide, @pos)
       end
       add_control(slider, :slider)
 
       lb = WSScrollBarLeftButton.new(0, 0, 16, 16)
       add_control(lb, :btn_left)
       lb.add_handler(:click) do
-        @position = @position - @unit_quantity
-        @position = 0 if @position < 0
-        signal(:slide, @position)
+        @pos -= @shift_qty
+        @pos = 0 if @pos < 0
+        signal(:slide, @pos)
       end
 
       rb = WSScrollBarRightButton.new(0, 0, 16, 16)
       add_control(rb, :btn_right)
       rb.add_handler(:click) do
-        max = @total - @screen_length
+        max = @total_size - @view_size
         if max >= 0
-          @position += @unit_quantity
-          @position = max if @position > max
-          signal(:slide, @position)
+          @pos += @shift_qty
+          @pos = max if @pos > max
+          signal(:slide, @pos)
         end
       end
 
@@ -233,17 +239,17 @@ module WS
 
     def resize(width, height)
       super
-      @position = @position.clamp(0, (@total - @screen_length < 0 ? 0 : @total - @screen_length))
-      signal(:slide, @position)
+      @pos = @pos.clamp(0, (@total_size - @view_size < 0 ? 0 : @total_size - @view_size))
+      signal(:slide, @pos)
     end
 
     # 描画時にスライダーのサイズを再計算する
     def draw
       if self.visible # DXRubyのバグ回避
-        self.slider.width = (@total > 0 ? @screen_length.quo(@total) * (@width - 32) : 0)
+        self.slider.width = (@total_size > 0 ? @view_size.quo(@total_size) * (@width - 32) : 0)
         self.slider.width = self.slider.width.clamp(8, @width - 32)
-        if @total > @screen_length
-          self.slider.x = (@width - 32 - slider.width) * (@position.quo((@total - @screen_length))) + 16
+        if @total_size > @view_size
+          self.slider.x = (@width - 32 - slider.width) * (@pos.quo((@total_size - @view_size))) + 16
         else
           self.slider.x = 16
         end
@@ -252,22 +258,172 @@ module WS
     end
 
     def slide(dx)
-      @position += dx
-      @position = @position.clamp(0, (@total - @screen_length < 0 ? 0 : @total - @screen_length))
-      signal(:slide, @position)
+      @pos += dx
+      @pos = @pos.clamp(0, (@total_size - @view_size < 0 ? 0 : @total_size - @view_size))
+      signal(:slide, @pos)
     end
 
     def on_click(obj, tx, ty)
       if tx < self.slider.x
-        @position -= @screen_length
-        @position = 0 if @position < 0
-        signal(:slide, @position)
+        @pos -= @view_size
+        @pos = 0 if @pos < 0
+        signal(:slide, @pos)
       elsif tx >= self.slider.x + self.slider.width
-        max = @total - @screen_length
-        @position += @screen_length
-        @position = max if @position > max
-        signal(:slide, @position)
+        max = @total_size - @view_size
+        @pos += @view_size
+        @pos = max if @pos > max
+        signal(:slide, @pos)
       end
+    end
+  end
+
+  # スクロールバー付きコンテナ
+  class WSScrollableContainer < WSContainer
+    attr_accessor :client
+
+    # 生成時にクライアント領域にするコントロールが必須
+    def initialize(x, y, width, height, client)
+      super(x, y, width, height)
+      @client = client
+
+      # スクロールバー生成
+      vsb = WSVScrollBar.new(0, 0, 16, height - 4)
+      add_control(vsb, :vsb)
+      hsb = WSHScrollBar.new(0, 0, width - 4, 16)
+      add_control(hsb, :hsb)
+
+      # 縦横スクロールバー表示用レイアウト
+      @layout_vsb_hsb = WSLayout.new(:vbox, self, self) do
+        self.margin_left = self.margin_top = self.margin_right = self.margin_bottom = 2
+
+        layout(:hbox) do
+          add client, true, true
+          add vsb, false, true
+        end
+        layout(:hbox) do
+          self.resizable_height = false
+          self.height = 16
+          add hsb, true, false
+          layout do
+            self.width = self.height = 16
+            self.resizable_width = self.resizable_height = false
+          end
+        end
+      end
+
+      # 縦スクロールバーのみ表示用レイアウト
+      @layout_vsb = WSLayout.new(:vbox, self, self) do
+        self.margin_left = self.margin_top = self.margin_right = self.margin_bottom = 2
+
+        layout(:hbox) do
+          add client, true, true
+          add vsb, false, true
+        end
+      end
+
+      # 横スクロールバーのみ表示用レイアウト
+      @layout_hsb = WSLayout.new(:vbox, self, self) do
+        self.margin_left = self.margin_top = self.margin_right = self.margin_bottom = 2
+
+        layout(:vbox) do
+          add client, true, true
+          add hsb, true, false
+        end
+      end
+
+      # スクロールバーなし
+      @layout_none = WSLayout.new(:vbox, self, self) do
+        add client, true, true
+      end
+    end
+
+    def resize(width, height)
+      size_x = width - 4 # とりあえずスクロールバー無しのクライアントサイズ
+      size_y = height - 4
+      bhsb = bvsb = false
+      if size_x <= hsb.total_size # トータルサイズに満たない場合はスクロールバーが必要
+        bhsb = true
+        size_y -= 16 # スクロールバーのぶん縦が小さくなる
+      end
+      if size_y <= vsb.total_size
+        bvsb = true
+      end
+
+      # 横が小さくなった場合の再判定
+      if bvsb and !bhsb
+        size_x -= 16
+        if size_x <= hsb.total_size
+          bhsb = true
+        end
+      end
+
+      if bhsb and bvsb
+        @layout = @layout_vsb_hsb
+        hsb.visible = vsb.visible = true
+        hsb.collision_enable = vsb.collision_enable = true
+      elsif bhsb
+        @layout = @layout_hsb
+        hsb.visible = true
+        vsb.visible = false
+        hsb.collision_enable = true
+        vsb.collision_enable = false
+      elsif bvsb
+        @layout = @layout_vsb
+        hsb.visible = false
+        vsb.visible = true
+        hsb.collision_enable = false
+        vsb.collision_enable = true
+      else
+        @layout = @layout_none
+        hsb.visible = vsb.visible = false
+        hsb.collision_enable = vsb.collision_enable = false
+      end
+
+      super
+
+      hsb.view_size = client.width
+      vsb.view_size = client.height
+    end
+
+    def total_size_x=(v)
+      hsb.total_size = v
+    end
+    def total_size_y=(v)
+      vsb.total_size = v
+    end
+    def view_size_x=(v)
+      hsb.view_size = v
+    end
+    def view_size_y=(v)
+      vsb.view_size = v
+    end
+    def shift_qty_x=(v)
+      hsb.shift_qty = v
+    end
+    def shift_qty_y=(v)
+      vsb.shift_qty = v
+    end
+    def pos_x=(v)
+      hsb.pos = v
+    end
+    def pos_y=(v)
+      vsb.pos = v
+    end
+
+
+    def draw
+      resize(@width, @height) unless @layout
+
+      # ボーダーライン
+      self.image.draw_line(0,0,@width-1,0,[80,80,80])
+      self.image.draw_line(0,0,0,@height-1,[80,80,80])
+      self.image.draw_line(1,1,@width-1,1,[120,120,120])
+      self.image.draw_line(1,1,1,@height-1,[120,120,120])
+      self.image.draw_line(@width-1,0,@width-1,@height-1,[240,240,240])
+      self.image.draw_line(0,@height-1,@width-1,@height-1,[240,240,240])
+      self.image.draw_line(@width-2,1,@width-2,@height-2,[200,200,200])
+      self.image.draw_line(1,@height-2,@width-2,@height-2,[200,200,200])
+      super
     end
   end
 end
