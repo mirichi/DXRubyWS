@@ -279,12 +279,13 @@ module WS
 
   # スクロールバー付きコンテナ
   class WSScrollableContainer < WSContainer
-    attr_accessor :client
+    attr_accessor :client, :h_header_size, :v_header_size
 
     # 生成時にクライアント領域にするコントロールが必須
     def initialize(x, y, width, height, client)
       super(x, y, width, height)
       @client = client
+      @h_header_size = @v_header_size = 0
 
       # スクロールバー生成
       vsb = WSVScrollBar.new(0, 0, 16, height - 4)
@@ -339,8 +340,8 @@ module WS
     end
 
     def resize(width, height)
-      size_x = width - 4 # とりあえずスクロールバー無しのクライアントサイズ
-      size_y = height - 4
+      size_x = width - 4 - @h_header_size# とりあえずスクロールバー無しのクライアントサイズ
+      size_y = height - 4 - @v_header_size
       bhsb = bvsb = false
       if size_x <= hsb.total_size # トータルサイズに満たない場合はスクロールバーが必要
         bhsb = true

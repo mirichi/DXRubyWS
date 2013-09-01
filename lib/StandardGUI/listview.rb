@@ -3,18 +3,18 @@ require_relative './scrollbar'
 
 module WS
   # リストビュークラス
-  class WSListView < WSContainer
+  class WSListView < WSScrollableContainer
     # リストビューのタイトル部分のクラス
     class WSListViewTitle < WSContainer
       attr_reader :titles
-      attr_accessor :position
+      attr_accessor :pos
 
       def initialize(tx, ty, width, height, titles)
         super(tx, ty, width, height)
         self.image.bgcolor = [190,190,190]
         @font = Font.new(12)
         @titles = titles
-        @position = 0
+        @pos = 0
         @dragging_number = nil
       end
 
@@ -31,16 +31,16 @@ module WS
         tx = 0
         ([["",0]]+@titles).each do |title|
           tx += title[1]
-          self.image.draw_line(tx-2-@position,1,tx-2-@position,sy-3,[80,80,80])
-          self.image.draw_line(tx-1-@position,0,tx-1-@position,sy-2,[120,120,120])
-          self.image.draw_line(tx-@position  ,0,tx-@position  ,sy-2,[240,240,240])
-          self.image.draw_line(tx+1-@position,1,tx+1-@position,sy-3,[200,200,200])
+          self.image.draw_line(tx-2-@pos,1,tx-2-@pos,sy-3,[80,80,80])
+          self.image.draw_line(tx-1-@pos,0,tx-1-@pos,sy-2,[120,120,120])
+          self.image.draw_line(tx-@pos  ,0,tx-@pos  ,sy-2,[240,240,240])
+          self.image.draw_line(tx+1-@pos,1,tx+1-@pos,sy-3,[200,200,200])
         end
 
         # タイトル
         tx = 0
         @titles.each do |title|
-          self.image.draw_font(tx + 3-@position, 2, title[0].to_s, @font, :color=>C_BLACK)
+          self.image.draw_font(tx + 3-@pos, 2, title[0].to_s, @font, :color=>C_BLACK)
           tx += title[1]
         end
 
@@ -54,7 +54,7 @@ module WS
           total += @titles[i][1]
 
           # セパレータの判定用Sprite生成
-          s = Sprite.new(total - 2 - @position, 0)
+          s = Sprite.new(total - 2 - @pos, 0)
           s.collision = [0, 0, 4, 15]
 
           # 判定
@@ -90,7 +90,7 @@ module WS
           total += @titles[i][1]
 
           # セパレータの判定用Sprite生成
-          s = Sprite.new(total - 2 - @position, 0)
+          s = Sprite.new(total - 2 - @pos, 0)
           s.collision = [0, 0, 4, 15]
 
           # 判定
@@ -119,161 +119,109 @@ module WS
     # リストビュー内のクライアント領域クラス
     class WSListViewClient < WSContainer
       include DoubleClickable
-      def initialize(*args)
-        super
+      def initialize(x, y, width, height, titles)
+        super(x, y, width, height)
+
+        # タイトル作成
+        title = WSListViewTitle.new(0, 0, width - 4 - 16, 16, titles)
+        add_control(title, :title)
+
+        # リストビュー本体
+        listview = WSContainer.new(0, 0, width - 4 - 16, 16)
+        add_control(listview, :listview)
+ 
         self.image.bgcolor = C_WHITE
+        layout(:vbox) do
+          add title, true, false
+          add listview, true, true
+        end
       end
     end
 
     attr_reader :items, :cursor
-    attr_accessor :vposition, :hposition
+    attr_accessor :vpos, :hpos
 
     def initialize(tx, ty, width, height, titles)
-      super(tx, ty, width, height)
+      # クライアント領域作成。WSScrollableContainerではsuperにクライアント領域コントロールを渡す必要があるので
+      # superより先にこれだけ作る。
+      client = WSListViewClient.new(0, 16, width - 4 - 16, height - 4 - 16, titles)
+      super(tx, ty, width, height, client)
       self.image.bgcolor = [190,190,190]
       @font = Font.new(12)
       @items = [] # リストの中身
-      @vposition = @hposition = 0    # 描画の基点
+      @vpos = @hposition = 0    # 描画の基点
       @cursor = 0 # カーソルの位置
-
-      # タイトル作成
-      title = WSListViewTitle.new(0, 0, width - 4 - 16, 16, titles)
-      add_control(title, :title)
-      title.add_handler(:title_resize) do
-        @client_tmp_rt.each_with_index{|rt, i|rt.resize(title.titles[i][1], client.height)}
-      end
+      @v_header_size = 16
 
       # クライアント領域作成
-      client = WSListViewClient.new(0, 16, width - 4 - 16, height - 4 - 16)
       add_control(client, :client)
-      client.add_handler(:mouse_push) do |obj, tx, ty|
-        tmp = ((@vposition * @font.size + ty) / @font.size).to_i
+      client.listview.add_handler(:mouse_push) do |obj, tx, ty|
+        tmp = ((@vpos + ty) / @font.size).to_i
         if tmp < @items.size
           @cursor = tmp
           signal(:select, @cursor) # 項目がクリックされたら:selectシグナル発行
         end
       end
 
+      client.title.add_handler(:title_resize) do
+        @client_tmp_rt.each_with_index{|rt, i|rt.resize(client.title.titles[i][1], client.listview.height)}
+      end
+
       # 文字描画領域
-      @client_tmp_rt = titles.map {|t|RenderTarget.new(t[1], client.height)}
+      @client_tmp_rt = titles.map {|t|RenderTarget.new(t[1], client.listview.height)}
 
-      # 縦スクロールバー作成
-      vsb = WSVScrollBar.new(0, 0, 16, height - 4)
-      add_control(vsb, :vsb)
-      vsb.add_handler(:slide) {|obj, pos| @vposition = pos}
-      vsb.total_size = @items.length
-      vsb.view_size = client.height.quo(@font.size)
-      vsb.shift_qty = 1
-
-      # 横スクロールバー作成
-      hsb = WSHScrollBar.new(0, 0, width - 4, 16)
-      add_control(hsb, :hsb)
-      hsb.add_handler(:slide) {|obj, pos| @hposition = title.position = pos}
-      hsb.total_size = client.width
-      hsb.view_size = client.width # 暫定
-      hsb.shift_qty = 10
+      # スクロールバーを使うための設定。
+      vsb.view_size = client.listview.height       # 画面に見えているデータのサイズ(ピクセル単位)
+      vsb.shift_qty = @font.size          # 上下ボタンで動く量(ピクセル単位)
+      hsb.view_size = client.width        # 画面に見えているデータのサイズ(ピクセル単位)
+      hsb.shift_qty = @font.size          # 上下ボタンで動く量(ピクセル単位)
 
       # マウスホイール処理
-      client.add_handler(:mouse_wheel_up){vsb.slide(-3)}
-      client.add_handler(:mouse_wheel_down){vsb.slide(3)}
+      client.listview.add_handler(:mouse_wheel_up){vsb.slide(-vsb.shift_qty * 3)}
+      client.listview.add_handler(:mouse_wheel_down){vsb.slide(vsb.shift_qty * 3)}
 
-      set_scrollbar
+      # スライダー移動時のシグナルハンドラ
+      vsb.add_handler(:slide){|obj, pos|@vpos = pos}
+      hsb.add_handler(:slide){|obj, pos|@hpos = pos}
     end
 
-    # resize時にカーソル位置の反転画像を再生成する
     def resize(width, height)
-      vsb.total_size = @items.length
-      hsb.total_size = title.titles.inject(0){|t, o| t += o[1]}
+      vsb.total_size = @items.length * @font.size
+      hsb.total_size = client.title.titles.inject(0){|t, o| t += o[1]}
       super
-      @cursor_image.dispose if @cursor_image
-      @cursor_image = Image.new(hsb.total_size, @font.size, C_BLACK)
-      vsb.view_size = client.height.quo(@font.size)
+      vsb.view_size = client.listview.height
       hsb.view_size = client.width
-      @client_tmp_rt.each_with_index{|rt, i|rt.resize(title.titles[i][1], client.height)}
-    end
-
-    def set_scrollbar
-      vsb.total_size = @items.length
-      hsb.total_size = title.titles.inject(0){|total, o| total += o[1]}
-
-      # スクロールバーの描画が必要ない場合は描画しない(つくりかけ)
-     if client.height.quo(@font.size) >= @items.length
-        if vsb.visible
-          vsb.visible = false
-          vsb.collision_enable = false
-          layout(:vbox) do
-            self.margin_left = self.margin_top = self.margin_right = self.margin_bottom = 2
-            layout(:hbox) do
-              layout(:vbox) do
-                add obj.title, true, false
-                add obj.client, true, true
-              end
-            end
-            layout(:hbox) do
-              self.resizable_height = false
-              self.height = 16
-              add obj.hsb, true, false
-            end
-          end
-        end
-      else
-        unless vsb.visible
-          vsb.visible = true
-          vsb.collision_enable = true
-          layout(:vbox) do
-            self.margin_left = self.margin_top = self.margin_right = self.margin_bottom = 2
-            layout(:hbox) do
-              layout(:vbox) do
-                add obj.title, true, false
-                add obj.client, true, true
-              end
-              add obj.vsb, false, true
-            end
-            layout(:hbox) do
-              self.resizable_height = false
-              self.height = 16
-              add obj.hsb, true, false
-              layout do
-                self.width = self.height = 16
-                self.resizable_width = self.resizable_height = false
-              end
-            end
-          end
-        end
-      end
+      @client_tmp_rt.each_with_index{|rt, i|rt.resize(client.title.titles[i][1], client.listview.height)}
     end
 
     def draw
-      set_scrollbar
+      vsb.total_size = @items.length * @font.size
+      hsb.total_size = client.title.titles.inject(0){|total, o| total += o[1]}
+
+      # カーソル位置の画像を生成する
+      if !@cursor_image or @cursor_image.width != hsb.total_size
+        @cursor_image.dispose if @cursor_image
+        @cursor_image = Image.new(hsb.total_size, @font.size, C_BLACK)
+      end
 
       # リスト描画
-      total = title.titles.inject(0){|t, o| t += o[1]}
+      total = client.title.titles.inject(0){|t, o| t += o[1]}
       @items.each_with_index do |item, i|
         if @cursor != i
           color = C_BLACK
         else
-          client.image.draw(0 - @hposition, (i - @vposition) * @font.size, @cursor_image)
+          client.listview.image.draw(0 - @hpos, i * @font.size - @vpos, @cursor_image)
           color = C_WHITE
         end
         item.each_with_index do |s, x|
-          @client_tmp_rt[x].draw_font(2, (i - @vposition) * @font.size, s.to_s, @font, :color=>color)
+          @client_tmp_rt[x].draw_font(2, i * @font.size - @vpos, s.to_s, @font, :color=>color)
         end
       end
       tx = 0
-      title.titles.size.times do |x|
-        client.image.draw(tx - @hposition, 0, @client_tmp_rt[x])
-        tx += title.titles[x][1]
+      client.title.titles.size.times do |x|
+        client.listview.image.draw(tx - @hpos, 0, @client_tmp_rt[x])
+        tx += client.title.titles[x][1]
       end
-
-      # ボーダーライン
-      self.image.draw_line(0,0,@width-1,0,[80,80,80])
-      self.image.draw_line(0,0,0,@height-1,[80,80,80])
-      self.image.draw_line(1,1,@width-1,1,[120,120,120])
-      self.image.draw_line(1,1,1,@height-1,[120,120,120])
-      self.image.draw_line(@width-1,0,@width-1,@height-1,[240,240,240])
-      self.image.draw_line(0,@height-1,@width-1,@height-1,[240,240,240])
-      self.image.draw_line(@width-2,1,@width-2,@height-2,[200,200,200])
-      self.image.draw_line(1,@height-2,@width-2,@height-2,[200,200,200])
       super
     end
   end
