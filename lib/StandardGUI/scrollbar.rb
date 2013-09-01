@@ -35,6 +35,22 @@ module WS
       end
     end
 
+    class WSScrollBarUpButton < WSRepeatButton
+     def set_image
+       super
+       @image[false].triangle_fill(7, 3, 3, 10, 11, 10, C_BLACK)
+       @image[true].triangle_fill(8, 4, 4, 11, 12, 11, C_BLACK)
+     end
+    end
+
+    class WSScrollBarDownButton < WSRepeatButton
+     def set_image
+       super
+       @image[false].triangle_fill(7, 11, 3, 4, 11, 4, C_BLACK)
+       @image[true].triangle_fill(8, 12, 4, 5, 12, 5, C_BLACK)
+     end
+    end
+    
     attr_accessor :screen_length, :total, :unit_quantity, :position
     include RepeatClickable
 
@@ -55,7 +71,7 @@ module WS
       end
       add_control(slider, :slider)
 
-      ub = WSRepeatButton.new(0, 0, width, 16, "▲")
+      ub = WSScrollBarUpButton.new(0, 0, 16, 16)
       ub.fore_color = C_BLACK
       ub.font = font
       add_control(ub, :btn_up)
@@ -65,7 +81,7 @@ module WS
         signal(:slide, @position)
       end
 
-      db = WSRepeatButton.new(0, 0, width, 16, "▼")
+      db = WSScrollBarDownButton.new(0, 0, 16, 16)
       db.fore_color = C_BLACK
       db.font = font
       add_control(db, :btn_down)
@@ -159,6 +175,22 @@ module WS
       end
     end
 
+    class WSScrollBarLeftButton < WSRepeatButton
+     def set_image
+       super
+       @image[false].triangle_fill(3, 8, 10, 4, 10, 11, C_BLACK)
+       @image[true].triangle_fill(4, 9, 11, 5, 11, 12, C_BLACK)
+     end
+    end
+
+    class WSScrollBarRightButton < WSRepeatButton
+     def set_image
+       super
+       @image[false].triangle_fill(11, 8, 4, 4, 4, 11, C_BLACK)
+       @image[true].triangle_fill(12, 9, 5, 5, 5, 12, C_BLACK)
+     end
+    end
+    
     attr_accessor :screen_length, :total, :unit_quantity, :position
     include RepeatClickable
 
@@ -179,7 +211,7 @@ module WS
       end
       add_control(slider, :slider)
 
-      lb = WSRepeatButton.new(0, 0, 16, height, "←")
+      lb = WSScrollBarLeftButton.new(0, 0, 16, 16)
       lb.fore_color = C_BLACK
       lb.font = font
       add_control(lb, :btn_left)
@@ -189,7 +221,7 @@ module WS
         signal(:slide, @position)
       end
 
-      rb = WSRepeatButton.new(0, 0, 16, height, "→")
+      rb = WSScrollBarRightButton.new(0, 0, 16, 16)
       rb.fore_color = C_BLACK
       rb.font = font
       add_control(rb, :btn_right)
