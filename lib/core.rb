@@ -229,9 +229,8 @@ module WS
 
     # サイズの変更でRenderTargetをresizeし、オートレイアウトを起動する
     def resize(width, height)
-      self.image.resize(width, height)
+      self.image.resize(width, height) if width != @width or height != @height
       super
-      signal(:resize)
       if @layout
         @layout.width, @layout.height = width, height
         @layout.auto_layout
