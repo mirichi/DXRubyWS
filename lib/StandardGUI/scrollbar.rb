@@ -57,7 +57,6 @@ module WS
     def initialize(tx, ty, width, height)
       super
       self.image.bgcolor = [220, 220, 220]
-      font = Font.new(12)
       @position = 0
 
       slider = WSVScrollBarSlider.new(0, 16, width, 16)
@@ -72,8 +71,6 @@ module WS
       add_control(slider, :slider)
 
       ub = WSScrollBarUpButton.new(0, 0, 16, 16)
-      ub.fore_color = C_BLACK
-      ub.font = font
       add_control(ub, :btn_up)
       ub.add_handler(:click) do
         @position = @position - @unit_quantity
@@ -82,8 +79,6 @@ module WS
       end
 
       db = WSScrollBarDownButton.new(0, 0, 16, 16)
-      db.fore_color = C_BLACK
-      db.font = font
       add_control(db, :btn_down)
       db.add_handler(:click) do
         max = @total - @screen_length
@@ -197,7 +192,6 @@ module WS
     def initialize(tx, ty, width, height)
       super
       self.image.bgcolor = [220, 220, 220]
-      font = Font.new(12)
       @position = 0
 
       slider = WSHScrollBarSlider.new(16, 0, 16, height)
@@ -212,8 +206,6 @@ module WS
       add_control(slider, :slider)
 
       lb = WSScrollBarLeftButton.new(0, 0, 16, 16)
-      lb.fore_color = C_BLACK
-      lb.font = font
       add_control(lb, :btn_left)
       lb.add_handler(:click) do
         @position = @position - @unit_quantity
@@ -222,8 +214,6 @@ module WS
       end
 
       rb = WSScrollBarRightButton.new(0, 0, 16, 16)
-      rb.fore_color = C_BLACK
-      rb.font = font
       add_control(rb, :btn_right)
       rb.add_handler(:click) do
         max = @total - @screen_length
