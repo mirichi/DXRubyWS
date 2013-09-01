@@ -560,9 +560,9 @@ module WS
       # スクロールバー
       sb = WSVScrollBar.new(508, 0, 16, 700-16)
       client.add_control(sb, :sb)
-      sb.total = 30        # 全体サイズが30
-      sb.unit_quantity = 1 # ボタンを押したときに1動く
-      sb.screen_length = client.height.quo(32) # 表示される範囲
+      sb.total_size = 30        # 全体サイズが30
+      sb.shift_qty = 1 # ボタンを押したときに1動く
+      sb.view_size = client.height.quo(32) # 表示される範囲
       sb.add_handler(:slide) {|obj, pos| @position = pos}
 
       # マップの画像
@@ -571,7 +571,7 @@ module WS
       client.add_control(wsimage, :wsimage)
       wsimage.add_handler(:resize) do
         wsimage.image.resize(wsimage.width, wsimage.height)
-        sb.screen_length = client.height.quo(32)
+        sb.view_size = client.height.quo(32)
       end
 
       # マウスホイール処理
