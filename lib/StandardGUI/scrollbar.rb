@@ -333,6 +333,7 @@ module WS
 
       # スクロールバーなし
       @layout_none = WSLayout.new(:vbox, self, self) do
+        self.margin_left = self.margin_top = self.margin_right = self.margin_bottom = 2
         add client, true, true
       end
     end
@@ -357,6 +358,7 @@ module WS
         end
       end
 
+      # オートレイアウトの選択
       if bhsb and bvsb
         @layout = @layout_vsb_hsb
         hsb.visible = vsb.visible = true
@@ -384,32 +386,6 @@ module WS
       hsb.view_size = client.width
       vsb.view_size = client.height
     end
-
-    def total_size_x=(v)
-      hsb.total_size = v
-    end
-    def total_size_y=(v)
-      vsb.total_size = v
-    end
-    def view_size_x=(v)
-      hsb.view_size = v
-    end
-    def view_size_y=(v)
-      vsb.view_size = v
-    end
-    def shift_qty_x=(v)
-      hsb.shift_qty = v
-    end
-    def shift_qty_y=(v)
-      vsb.shift_qty = v
-    end
-    def pos_x=(v)
-      hsb.pos = v
-    end
-    def pos_y=(v)
-      vsb.pos = v
-    end
-
 
     def draw
       resize(@width, @height) unless @layout
