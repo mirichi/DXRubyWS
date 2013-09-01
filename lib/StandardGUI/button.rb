@@ -54,10 +54,12 @@ module WS
     def draw
       self.image = @image[@image_flag]
       super
-      width = @font.get_width(@caption)
-      self.target.draw_font(self.image.width / 2 - width / 2 + self.x - 1 + (@image_flag ? 1 : 0),
-                            self.image.height / 2 - @font.size / 2 + self.y - 1 + (@image_flag ? 1 : 0),
-                            @caption, @font, :color=>@fore_color)
+      if @caption.length > 0
+        width = @font.get_width(@caption)
+        self.target.draw_font(self.image.width / 2 - width / 2 + self.x - 1 + (@image_flag ? 1 : 0),
+                              self.image.height / 2 - @font.size / 2 + self.y - 1 + (@image_flag ? 1 : 0),
+                              @caption, @font, :color=>@fore_color)
+      end
     end
   end
 
