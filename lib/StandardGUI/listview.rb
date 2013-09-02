@@ -182,7 +182,7 @@ module WS
 
       # スライダー移動時のシグナルハンドラ
       vsb.add_handler(:slide){|obj, pos|@vpos = pos}
-      hsb.add_handler(:slide){|obj, pos|@hpos = pos}
+      hsb.add_handler(:slide){|obj, pos|@hpos = pos;client.title.pos=pos}
     end
 
     def resize(width, height)
