@@ -13,9 +13,33 @@ module WS
       @select = false
     end
 
-    def on_mouse_push(tx, ty)
+    def mouse_event(tx, ty)
       @obj.call if @obj
       @block.call(self.parent.object) if @block
+    end
+
+    def on_mouse_push(tx, ty)
+      mouse_event(tx, ty)
+      super
+    end
+    def on_mouse_release(tx, ty)
+      mouse_event(tx, ty)
+      super
+    end
+    def on_mouse_m_push(tx, ty)
+      mouse_event(tx, ty)
+      super
+    end
+    def on_mouse_m_release(tx, ty)
+      mouse_event(tx, ty)
+      super
+    end
+    def on_mouse_r_push(tx, ty)
+      mouse_event(tx, ty)
+      super
+    end
+    def on_mouse_r_release(tx, ty)
+      mouse_event(tx, ty)
       super
     end
     

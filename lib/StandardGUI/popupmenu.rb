@@ -32,40 +32,77 @@ module WS
     end
 
     # WSContainerでは配下オブジェクトの選択はinternalのメソッドで処理されるが、
-    # PopupMenuはマウスキャプチャするため配下のオブジェクトが呼ばれないのでここで自前で処理する
-    def on_mouse_push(tx, ty)
+    # PopupMenuはマウスキャプチャするため配下のオブジェクトが呼ばれないので自前で処理する
+    def mouse_event(event, tx, ty)
       ctl = find_hit_object(tx, ty)
-      ctl.mouse_event_dispach(:mouse_push, tx - ctl.x, ty - ctl.y) if ctl
-      self.parent.remove_control(self)
-      WS.capture(nil)
+      if ctl
+        # メニュー項目にヒットしていたらそっちにイベントを送ってメニューを消す
+        WS.capture(nil)
+        ctl.mouse_event_dispach(event, tx - ctl.x, ty - ctl.y)
+        self.parent.remove_control(self)
+        return ctl
+      else
+        # メニュー項目にヒットしていなくてもメニューウィンドウの上なら何もしない
+        @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
+        if @hit_cursor === self
+          return self
+        end
+
+        # メニューウィンドウ外だった場合はデスクトップにイベントを送ってメニューを消す
+        # マウスボタンを離したときは送らない(操作性のため)
+        if event != :mouse_release and event != :mouse_r_release and event != :mouse_m_release
+          tmp = self.get_global_vertex
+          WS.capture(nil)
+          self.parent.remove_control(self)
+          WS.desktop.mouse_event_dispach(event, tmp[0] + tx, tmp[1] + ty)
+        end
+      end
     end
 
-    def on_mouse_r_push(tx, ty)
-      on_mouse_push(tx, ty)
+    # ボタン系のイベントはすべてmouse_eventで処理する
+    def on_mouse_push(tx, ty)
+      mouse_event(:mouse_push, tx, ty)
+      super
     end
     
     def on_mouse_m_push(tx, ty)
-      on_mouse_push(tx, ty)
+      mouse_event(:mouse_m_push, tx, ty)
+      super
     end
     
+    def on_mouse_r_push(tx, ty)
+      mouse_event(:mouse_r_push, tx, ty)
+      super
+    end
+    
+    def on_mouse_release(tx, ty)
+      mouse_event(:mouse_release, tx, ty)
+      super
+    end
+
     def on_mouse_m_release(tx, ty)
-      on_mouse_r_release(tx, ty)
+      mouse_event(:mouse_m_release, tx, ty)
+      super
     end
+
     def on_mouse_r_release(tx, ty)
-      ctl = find_hit_object(tx, ty)
-      if ctl
-        ctl.mouse_event_dispach(:mouse_push, tx - ctl.x, ty - ctl.y)
-        self.parent.remove_control(self)
-        WS.capture(nil)
-      end
+      mouse_event(:mouse_r_release, tx, ty)
+      super
     end
-    
+
+    # 移動イベントだけはキャプチャをはずさないので独自に処理する
     def on_mouse_move(tx, ty)
       ctl = find_hit_object(tx, ty)
       if ctl
         ctl.mouse_event_dispach(:mouse_move, tx - ctl.x, ty - ctl.y)
+        return ctl
       else
-        super
+        @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
+        if @hit_cursor === self
+          return self
+        end
+        tmp = self.get_global_vertex
+        WS.desktop.mouse_event_dispach(:mouse_move, tmp[0] + tx, tmp[1] + ty)
       end
     end
 
