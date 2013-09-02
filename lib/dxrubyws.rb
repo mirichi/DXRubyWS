@@ -16,6 +16,7 @@ module WS
       @hit_cursor.collision = [0,0]
       @font = @@default_font
       @mouse_l_flag = false
+      @mouse_m_flag = false
       @mouse_r_flag = false
       @capture_object = nil
       @over_object = nil
@@ -52,6 +53,18 @@ module WS
       if !Input.mouse_down?(M_LBUTTON) and @mouse_l_flag == true
         @mouse_l_flag = false
         tmp.mouse_event_dispach(:mouse_release, tx, ty)
+      end
+
+      # 中ボタン押した
+      if Input.mouse_down?(M_MBUTTON) and @mouse_m_flag == false
+        @mouse_m_flag = true
+        tmp.mouse_event_dispach(:mouse_m_push, tx, ty)
+      end
+  
+      # 中ボタン離した
+      if !Input.mouse_down?(M_MBUTTON) and @mouse_m_flag == true
+        @mouse_m_flag = false
+        tmp.mouse_event_dispach(:mouse_m_release, tx, ty)
       end
 
       # 右ボタン押した

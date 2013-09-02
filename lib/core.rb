@@ -39,6 +39,18 @@ module WS
       self
     end
 
+    # マウスの中ボタンを押したときに呼ばれる
+    def on_mouse_m_push(tx, ty)
+      signal(:mouse_m_push, tx, ty)
+      self
+    end
+
+    # マウスの中ボタンを離したときに呼ばれる
+    def on_mouse_m_release(tx, ty)
+      signal(:mouse_m_release, tx, ty)
+      self
+    end
+
     # マウスの右ボタンを押したときに呼ばれる
     def on_mouse_r_push(tx, ty)
       signal(:mouse_r_push, tx, ty)
@@ -214,7 +226,7 @@ module WS
     end
 
     def mouse_event_dispach(event, tx, ty)
-      if !WS.captured?(self) 
+      if !WS.captured?(self) # キャプチャしたのが自コンテナだった場合は配下コントロールにイベントを渡さない
         ctl = find_hit_object(tx, ty)
         return ctl.mouse_event_dispach(event, tx - ctl.x, ty - ctl.y) if ctl
       end
