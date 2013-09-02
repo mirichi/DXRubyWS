@@ -53,21 +53,21 @@ module UseObjectBrowser
   end
   def initialize(*args)
     super
-    self.menuitems = @@ary
+    self.m_menuitems = @@ary
   end
 end
 
 class WS::WSWindow::WSWindowClient
   include UseObjectBrowser
-  include WS::UseRightClickMenu
+  include WS::UseMiddleClickMenu
 end
 class WS::WSButton
   include UseObjectBrowser
-  include WS::UseRightClickMenu
+  include WS::UseMiddleClickMenu
 end
 class WS::WSImage
   include UseObjectBrowser
-  include WS::UseRightClickMenu
+  include WS::UseMiddleClickMenu
 end
 
 
@@ -97,6 +97,7 @@ WS.desktop.add_control(w)
 w = WS::WSWindow.new(400, 100, 200, 250, "ListBoxTest")
 lbx = WS::WSListBox.new(50, 30, 100, 160)
 lbx.items.concat(String.instance_methods(false))
+#lbx.items.concat(w.instance_variables)
 w.client.add_control(lbx)
 lbl = WS::WSLabel.new(0, 0, 100, 16)
 lbl.caption = lbx.items[lbx.cursor].to_s
@@ -202,8 +203,7 @@ end
 
 # extendでいつでもポップアップ機能を追加できる。menuitemsにWSMenuItemの配列をセットする。
 WS.desktop.extend WS::UseRightClickMenu
-WS.desktop.menuitems = ary
-
+WS.desktop.r_menuitems = ary
 
 Window.loop do
   WS.update

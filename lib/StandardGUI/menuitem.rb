@@ -15,7 +15,7 @@ module WS
 
     def on_mouse_push(tx, ty)
       @obj.call if @obj
-      @block.call(self.parent.parent.object) if @block
+      @block.call(self.parent.object) if @block
       super
     end
     
