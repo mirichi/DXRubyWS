@@ -54,6 +54,8 @@ WSControl.new(x, y, width, height) -> WSControl
 
 WSControl#on_mouse_push(x, y) -> self       # 左ボタン押した
 WSControl#on_mouse_release(x, y) -> self    # 左ボタン離した
+WSControl#on_mouse_m_push(x, y) -> self     # 中ボタン押した
+WSControl#on_mouse_m_release(x, y) -> self  # 中ボタン離した
 WSControl#on_mouse_r_push(x, y) -> self     # 右ボタン押した
 WSControl#on_mouse_r_release(x, y) -> self  # 右ボタン離した
 WSControl#on_mouse_move(x, y) -> self       # カーソル動かした
