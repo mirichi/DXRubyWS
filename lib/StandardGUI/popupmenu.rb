@@ -4,7 +4,7 @@ require_relative './menuitem'
 module WS
   # ポップアップメニュー
   class WSPopupMenu < WSContainer
-    attr_accessor :object
+    attr_accessor :object, :submenu
     def initialize(tx, ty, menuitems)
       @menuitems = menuitems
       @font = Font.new(12)
@@ -27,8 +27,6 @@ module WS
           add_control(o)
         end
       end
-
-      WS.capture(self)
     end
 
     # WSContainerでは配下オブジェクトの選択はinternalのメソッドで処理されるが、
@@ -36,6 +34,9 @@ module WS
     def mouse_event(event, tx, ty)
       ctl = find_hit_object(tx, ty)
       if ctl
+        if Array === ctl.obj # サブメニューを押した場合は無反応
+          return self
+        end
         # メニュー項目にヒットしていたらそっちにイベントを送ってメニューを消す
         WS.capture(nil)
         ctl.mouse_event_dispach(event, tx - ctl.x, ty - ctl.y)
@@ -52,9 +53,17 @@ module WS
         # マウスボタンを離したときは送らない(操作性のため)
         if event != :mouse_release and event != :mouse_r_release and event != :mouse_m_release
           tmp = self.get_global_vertex
-          WS.capture(nil)
-          self.parent.remove_control(self)
-          WS.desktop.mouse_event_dispach(event, tmp[0] + tx, tmp[1] + ty)
+          if @submenu and @hit_cursor === @submenu
+            hit_obj = @submenu.mouse_event_dispach(event, tmp[0] + tx - @submenu.x, tmp[1] + ty - @submenu.y)
+            if hit_obj != @submenu
+              self.parent.remove_control(self)
+              WS.capture(nil)
+            end
+          else
+            WS.capture(nil)
+            self.parent.remove_control(self)
+            WS.desktop.mouse_event_dispach(event, tmp[0] + tx, tmp[1] + ty)
+          end
         end
       end
     end
@@ -94,6 +103,13 @@ module WS
     def on_mouse_move(tx, ty)
       ctl = find_hit_object(tx, ty)
       if ctl
+        # サブメニューだった場合、もうひとつポップアップメニューを表示する
+        if Array === ctl.obj and @old_ctl != ctl
+          @old_ctl = ctl
+          @submenu = WSPopupMenu.new(self.x + self.width, self.y + ((ty - 4) / @font.size) * @font.size, ctl.obj)
+          @submenu.z = WS::default_z
+        end
+
         ctl.mouse_event_dispach(:mouse_move, tx - ctl.x, ty - ctl.y)
         return ctl
       else
@@ -101,8 +117,13 @@ module WS
         if @hit_cursor === self
           return self
         end
+
         tmp = self.get_global_vertex
-        WS.desktop.mouse_event_dispach(:mouse_move, tmp[0] + tx, tmp[1] + ty)
+        if @submenu and @hit_cursor === @submenu
+          @submenu.mouse_event_dispach(:mouse_move, tmp[0] + tx - @submenu.x, tmp[1] + ty - @submenu.y)
+        else
+          WS.desktop.mouse_event_dispach(:mouse_move, tmp[0] + tx, tmp[1] + ty)
+        end
       end
     end
 
@@ -131,6 +152,10 @@ module WS
       self.image.draw_line(1,sy-2,sx-2,sy-2,[120,120,120])
 
       super
+
+      if @submenu
+        @submenu.draw
+      end
     end
   end
 end

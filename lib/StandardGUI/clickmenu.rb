@@ -12,6 +12,7 @@ module WS
       WS.desktop.add_control(@rightclickmenu)
       @rightclickmenu.object = self
       super
+      WS.capture(@rightclickmenu)
     end
   end
 
@@ -25,6 +26,7 @@ module WS
       WS.desktop.add_control(@middleclickmenu)
       @middleclickmenu.object = self
       super
+      WS.capture(@middleclickmenu)
     end
   end
 end

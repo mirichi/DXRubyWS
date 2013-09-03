@@ -192,18 +192,24 @@ WS.desktop.add_control(t)
 
 # とりあえずの右クリックメニューテスト
 # 仕様はこれから考える。
-ary = []
-ary << WS::WSMenuItem.new("Add new Window") do
-  WS.desktop.add_control(WS::WSWindow.new(Input.mouse_pos_x, Input.mouse_pos_y, 300, 100, "PopupTestWindow"))
+submenu = []
+submenu << WS::WSMenuItem.new("Add new Window1") do
+  WS.desktop.add_control(WS::WSWindow.new(Input.mouse_pos_x, Input.mouse_pos_y, 300, 100, "PopupTestWindow1"))
 end
-ary << nil # nilが入っていたらセパレータラインが表示される
-ary << WS::WSMenuItem.new("Exit") do
+submenu << WS::WSMenuItem.new("Add new Window2") do
+  WS.desktop.add_control(WS::WSWindow.new(Input.mouse_pos_x, Input.mouse_pos_y, 300, 100, "PopupTestWindow2"))
+end
+
+mainmenu = []
+mainmenu << WS::WSMenuItem.new("Add new Object →", submenu)
+mainmenu << nil # nilが入っていたらセパレータラインが表示される
+mainmenu << WS::WSMenuItem.new("Exit") do
   break
 end
 
 # extendでいつでもポップアップ機能を追加できる。menuitemsにWSMenuItemの配列をセットする。
 WS.desktop.extend WS::UseRightClickMenu
-WS.desktop.r_menuitems = ary
+WS.desktop.r_menuitems = mainmenu
 
 Window.loop do
   WS.update

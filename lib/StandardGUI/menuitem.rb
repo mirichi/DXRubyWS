@@ -14,7 +14,7 @@ module WS
     end
 
     def mouse_event(tx, ty)
-      @obj.call if @obj
+      @obj.call if @obj.respond_to?(:call)
       @block.call(self.parent.object) if @block
     end
 
@@ -42,7 +42,7 @@ module WS
       mouse_event(tx, ty)
       super
     end
-    
+
     def on_mouse_over
       @select = true
       super
