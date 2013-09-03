@@ -192,16 +192,25 @@ WS.desktop.add_control(t)
 
 # とりあえずの右クリックメニューテスト
 # 仕様はこれから考える。
-submenu = []
-submenu << WS::WSMenuItem.new("Add new Window1") do
+submenu1 = []
+submenu1 << WS::WSMenuItem.new("Add new Window1") do
   WS.desktop.add_control(WS::WSWindow.new(Input.mouse_pos_x, Input.mouse_pos_y, 300, 100, "PopupTestWindow1"))
 end
-submenu << WS::WSMenuItem.new("Add new Window2") do
+submenu1 << WS::WSMenuItem.new("Add new Window2") do
   WS.desktop.add_control(WS::WSWindow.new(Input.mouse_pos_x, Input.mouse_pos_y, 300, 100, "PopupTestWindow2"))
 end
 
+submenu2 = []
+submenu2 << WS::WSMenuItem.new("Add new Window3") do
+  WS.desktop.add_control(WS::WSWindow.new(Input.mouse_pos_x, Input.mouse_pos_y, 300, 100, "PopupTestWindow3"))
+end
+submenu2 << WS::WSMenuItem.new("Add new Window4") do
+  WS.desktop.add_control(WS::WSWindow.new(Input.mouse_pos_x, Input.mouse_pos_y, 300, 100, "PopupTestWindow4"))
+end
+
 mainmenu = []
-mainmenu << WS::WSMenuItem.new("Add new Object →", submenu)
+mainmenu << WS::WSMenuItem.new("Add new Object1 →", submenu1)
+mainmenu << WS::WSMenuItem.new("Add new Object2 →", submenu2)
 mainmenu << nil # nilが入っていたらセパレータラインが表示される
 mainmenu << WS::WSMenuItem.new("Exit") do
   break
