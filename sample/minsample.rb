@@ -111,6 +111,32 @@ end
 
 WS::desktop.add_control(w)
 
+
+# ポップアップメニューのデータ
+submenu1 = []
+submenu1 << WS::WSMenuItem.new("Add new Window1") do
+  WS.desktop.add_control(WS::WSWindow.new(Input.mouse_pos_x, Input.mouse_pos_y, 300, 100, "PopupTestWindow1"))
+end
+submenu1 << WS::WSMenuItem.new("Add new Window2") do
+  WS.desktop.add_control(WS::WSWindow.new(Input.mouse_pos_x, Input.mouse_pos_y, 300, 100, "PopupTestWindow2"))
+end
+
+submenu2 = []
+submenu2 << WS::WSMenuItem.new("Add new Window3") do
+  WS.desktop.add_control(WS::WSWindow.new(Input.mouse_pos_x, Input.mouse_pos_y, 300, 100, "PopupTestWindow3"))
+end
+submenu2 << WS::WSMenuItem.new("Add new Window4") do
+  WS.desktop.add_control(WS::WSWindow.new(Input.mouse_pos_x, Input.mouse_pos_y, 300, 100, "PopupTestWindow4"))
+end
+
+mainmenu = []
+mainmenu << WS::WSMenuItem.new("Add new Object1 →", submenu1)
+mainmenu << WS::WSMenuItem.new("Add new Object2 →", submenu2)
+mainmenu << nil # nilが入っていたらセパレータラインが表示される
+mainmenu << WS::WSMenuItem.new("Exit") do
+  break
+end
+
 # ListViewTestWindow
 w = WS::WSWindow.new(600, 100, 300, 200, "ListViewTest")
 titles = [["instance_variable", 100], ["class", 150], ["to_s", 200]]
@@ -119,12 +145,14 @@ w.instance_variables.each do |i|
   lv.items << [i, w.instance_variable_get(i).class, w.instance_variable_get(i)]
 end
 w.client.add_control(lv)
+w.add_menubar([["がおー", mainmenu], ["わおー", submenu1], ["うぎゃー", submenu2]])
 
 w.client.layout(:vbox) do
   add lv, true, true
 end
 
 WS::desktop.add_control(w)
+
 
 # LayoutTestWindow
 class Test < WS::WSWindow
@@ -192,29 +220,6 @@ WS.desktop.add_control(t)
 
 # とりあえずの右クリックメニューテスト
 # 仕様はこれから考える。
-submenu1 = []
-submenu1 << WS::WSMenuItem.new("Add new Window1") do
-  WS.desktop.add_control(WS::WSWindow.new(Input.mouse_pos_x, Input.mouse_pos_y, 300, 100, "PopupTestWindow1"))
-end
-submenu1 << WS::WSMenuItem.new("Add new Window2") do
-  WS.desktop.add_control(WS::WSWindow.new(Input.mouse_pos_x, Input.mouse_pos_y, 300, 100, "PopupTestWindow2"))
-end
-
-submenu2 = []
-submenu2 << WS::WSMenuItem.new("Add new Window3") do
-  WS.desktop.add_control(WS::WSWindow.new(Input.mouse_pos_x, Input.mouse_pos_y, 300, 100, "PopupTestWindow3"))
-end
-submenu2 << WS::WSMenuItem.new("Add new Window4") do
-  WS.desktop.add_control(WS::WSWindow.new(Input.mouse_pos_x, Input.mouse_pos_y, 300, 100, "PopupTestWindow4"))
-end
-
-mainmenu = []
-mainmenu << WS::WSMenuItem.new("Add new Object1 →", submenu1)
-mainmenu << WS::WSMenuItem.new("Add new Object2 →", submenu2)
-mainmenu << nil # nilが入っていたらセパレータラインが表示される
-mainmenu << WS::WSMenuItem.new("Exit") do
-  break
-end
 
 # extendでいつでもポップアップ機能を追加できる。menuitemsにWSMenuItemの配列をセットする。
 WS.desktop.extend WS::UseRightClickMenu

@@ -1,6 +1,7 @@
 # coding: utf-8
 require_relative './button'
 require_relative './label'
+require_relative './menubar'
 
 module WS
   # ウィンドウぽい動きを実現してみる
@@ -64,7 +65,7 @@ module WS
       # ウィンドウタイトルはそれでひとつのコントロールを作る
       # メニューやツールバー、ステータスバーもたぶんそうなる
       window_title = WSWindowTitle.new(0, 0, sx - @border_width * 2, 16, caption)
-      add_control(window_title)
+      add_control(window_title, :window_title)
       window_title.add_handler(:close) {self.parent.remove_control(self)}
       window_title.add_handler(:drag_move, self.method(:on_drag_move))
 
@@ -82,6 +83,16 @@ module WS
         self.margin_top = self.margin_left = self.margin_right = self.margin_bottom = self.obj.border_width
         add window_title, true
         add client, true, true
+      end
+    end
+
+    def add_menubar(menuitems)
+      add_control(WSMenuBar.new(menuitems), :menubar)
+      layout(:vbox) do
+        self.margin_top = self.margin_left = self.margin_right = self.margin_bottom = self.obj.border_width
+        add obj.window_title, true
+        add obj.menubar, true
+        add obj.client, true, true
       end
     end
 
