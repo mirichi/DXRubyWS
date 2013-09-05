@@ -13,34 +13,11 @@ module WS
       @select = false
     end
 
-    def mouse_event(tx, ty)
-      @obj.call if @obj.respond_to?(:call)
-      @block.call(self.parent.object) if @block
-    end
-
-    def on_mouse_push(tx, ty)
-      mouse_event(tx, ty)
-      super
-    end
-    def on_mouse_release(tx, ty)
-      mouse_event(tx, ty)
-      super
-    end
-    def on_mouse_m_push(tx, ty)
-      mouse_event(tx, ty)
-      super
-    end
-    def on_mouse_m_release(tx, ty)
-      mouse_event(tx, ty)
-      super
-    end
-    def on_mouse_r_push(tx, ty)
-      mouse_event(tx, ty)
-      super
-    end
-    def on_mouse_r_release(tx, ty)
-      mouse_event(tx, ty)
-      super
+    def mouse_event_dispatch(event, tx, ty)
+      if event != :mouse_move
+        @obj.call if @obj.respond_to?(:call)
+        @block.call(self.parent.object) if @block
+      end
     end
 
     def on_mouse_over

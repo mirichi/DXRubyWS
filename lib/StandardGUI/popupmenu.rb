@@ -86,41 +86,12 @@ module WS
               end
             else
               WS.capture(nil)
-              self.parent.remove_control(self)
+              self.parent.remove_control(self) if self.parent
               WS.desktop.mouse_event_dispatch(event, self.x + tx, self.y + ty)
             end
           end
         end
       end
-    end
-
-    # ボタン系のイベントはすべてmouse_eventで処理する
-    def on_mouse_move(tx, ty)
-      mouse_event(:mouse_move, tx, ty)
-    end
-    
-    def on_mouse_push(tx, ty)
-      mouse_event(:mouse_push, tx, ty)
-    end
-    
-    def on_mouse_m_push(tx, ty)
-      mouse_event(:mouse_m_push, tx, ty)
-    end
-    
-    def on_mouse_r_push(tx, ty)
-      mouse_event(:mouse_r_push, tx, ty)
-    end
-    
-    def on_mouse_release(tx, ty)
-      mouse_event(:mouse_release, tx, ty)
-    end
-
-    def on_mouse_m_release(tx, ty)
-      mouse_event(:mouse_m_release, tx, ty)
-    end
-
-    def on_mouse_r_release(tx, ty)
-      mouse_event(:mouse_r_release, tx, ty)
     end
 
     def draw
