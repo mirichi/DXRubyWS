@@ -131,11 +131,11 @@ module WS
     end
 
     # マウスのボタンが押されたときに手前に持ってくる処理(ちょっとアレな手)
-    def mouse_event_dispach(event, tx, ty)
+    def mouse_event_dispatch(event, tx, ty)
       self.parent.childlen.push(self.parent.childlen.delete(self)) if event == :mouse_push or event == :mouse_r_push
       super
     end
-    def mouse_event_dispach(event, tx, ty)
+    def mouse_event_dispatch(event, tx, ty)
       self.parent.childlen.push(self.parent.childlen.delete(self)) if event == :mouse_push or event == :mouse_r_push
       super
     end

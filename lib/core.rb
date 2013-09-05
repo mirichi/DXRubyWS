@@ -95,7 +95,7 @@ module WS
 
     # マウスイベント用の内部処理
     # WSContainerとの協調に必要。特殊なパターンでない限り、ユーザが意識する必要はない。
-    def mouse_event_dispach(event, tx, ty)
+    def mouse_event_dispatch(event, tx, ty)
       self.__send__(("on_" + event.to_s).to_sym, tx, ty)
     end
 
@@ -225,10 +225,10 @@ module WS
       @hit_cursor.check(@childlen.reverse)[0]
     end
 
-    def mouse_event_dispach(event, tx, ty)
+    def mouse_event_dispatch(event, tx, ty)
       if !WS.captured?(self) # キャプチャしたのが自コンテナだった場合は配下コントロールにイベントを渡さない
         ctl = find_hit_object(tx, ty)
-        return ctl.mouse_event_dispach(event, tx - ctl.x, ty - ctl.y) if ctl
+        return ctl.mouse_event_dispatch(event, tx - ctl.x, ty - ctl.y) if ctl
       end
       super
     end

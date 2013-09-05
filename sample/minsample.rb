@@ -129,9 +129,18 @@ submenu2 << WS::WSMenuItem.new("Add new Window4") do
   WS.desktop.add_control(WS::WSWindow.new(Input.mouse_pos_x, Input.mouse_pos_y, 300, 100, "PopupTestWindow4"))
 end
 
+submenu3 = []
+submenu3 << WS::WSMenuItem.new("Add new Window5") do
+  WS.desktop.add_control(WS::WSWindow.new(Input.mouse_pos_x, Input.mouse_pos_y, 300, 100, "PopupTestWindow5"))
+end
+submenu3 << WS::WSMenuItem.new("Add new Window6") do
+  WS.desktop.add_control(WS::WSWindow.new(Input.mouse_pos_x, Input.mouse_pos_y, 300, 100, "PopupTestWindow6"))
+end
+submenu3 << WS::WSMenuItem.new("submenutest →", submenu2)
+
 mainmenu = []
 mainmenu << WS::WSMenuItem.new("Add new Object1 →", submenu1)
-mainmenu << WS::WSMenuItem.new("Add new Object2 →", submenu2)
+mainmenu << WS::WSMenuItem.new("Add new Object2 →", submenu3)
 mainmenu << nil # nilが入っていたらセパレータラインが表示される
 mainmenu << WS::WSMenuItem.new("Exit") do
   break

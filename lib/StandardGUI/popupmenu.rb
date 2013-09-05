@@ -31,100 +31,96 @@ module WS
 
     # WSContainerでは配下オブジェクトの選択はinternalのメソッドで処理されるが、
     # PopupMenuはマウスキャプチャするため配下のオブジェクトが呼ばれないので自前で処理する
-    def mouse_event(event, tx, ty)
-      ctl = find_hit_object(tx, ty)
-      if ctl
-        if Array === ctl.obj # サブメニューを押した場合は無反応
-          return self
-        end
-        # メニュー項目にヒットしていたらそっちにイベントを送ってメニューを消す
-        WS.capture(nil)
-        ctl.mouse_event_dispach(event, tx - ctl.x, ty - ctl.y)
-        self.parent.remove_control(self)
-        return ctl
-      else
-        # メニュー項目にヒットしていなくてもメニューウィンドウの上なら何もしない
-        @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
-        if @hit_cursor === self
-          return self
-        end
-
-        # メニューウィンドウ外だった場合はデスクトップにイベントを送ってメニューを消す
-        # マウスボタンを離したときは送らない(操作性のため)
-        if event != :mouse_release and event != :mouse_r_release and event != :mouse_m_release
-          tmp = self.get_global_vertex
-          if @submenu and @hit_cursor === @submenu
-            hit_obj = @submenu.mouse_event_dispach(event, tmp[0] + tx - @submenu.x, tmp[1] + ty - @submenu.y)
-            if hit_obj != @submenu
-              self.parent.remove_control(self)
-              WS.capture(nil)
-            end
+    def mouse_event_dispatch(event, tx, ty)
+      if event == :mouse_move
+        ctl = find_hit_object(tx, ty)
+        if ctl
+          # サブメニューだった場合、もうひとつポップアップメニューを表示する
+          if Array === ctl.obj and @old_ctl != ctl
+            @old_ctl = ctl
+            @submenu = WSPopupMenu.new(self.x + self.width, self.y + ((ty - 4) / @font.size) * @font.size, ctl.obj)
+            @submenu.z = WS::default_z
           else
-            WS.capture(nil)
-            self.parent.remove_control(self)
-            WS.desktop.mouse_event_dispach(event, tmp[0] + tx, tmp[1] + ty)
+            ctl.mouse_event_dispatch(:mouse_move, tx - ctl.x, ty - ctl.y)
+          end
+  
+          return ctl
+        else
+          @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
+          if @hit_cursor === self
+            return self
+          end
+
+          if @submenu
+            @submenu.mouse_event_dispatch(:mouse_move, self.x + tx - @submenu.x, self.y + ty - @submenu.y)
+          else
+            WS.desktop.mouse_event_dispatch(:mouse_move, self.x + tx, self.y + ty)
+          end
+        end
+      else
+        ctl = find_hit_object(tx, ty)
+        if ctl
+          if Array === ctl.obj # サブメニューを押した場合は無反応
+            return self
+          end
+          # メニュー項目にヒットしていたらそっちにイベントを送ってメニューを消す
+          WS.capture(nil)
+          ctl.mouse_event_dispatch(event, tx - ctl.x, ty - ctl.y)
+          self.parent.remove_control(self) if self.parent
+          return ctl
+        else
+          # メニュー項目にヒットしていなくてもメニューウィンドウの上なら何もしない
+          @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
+          if @hit_cursor === self
+            return self
+          end
+  
+          # メニューウィンドウ外だった場合はデスクトップにイベントを送ってメニューを消す
+          # マウスボタンを離したときは送らない(操作性のため)
+          if event != :mouse_release and event != :mouse_r_release and event != :mouse_m_release
+            if @submenu
+              hit_obj = @submenu.mouse_event_dispatch(event, self.x + tx - @submenu.x, self.y + ty - @submenu.y)
+              if hit_obj != @submenu
+                self.parent.remove_control(self) if self.parent
+                WS.capture(nil)
+              end
+            else
+              WS.capture(nil)
+              self.parent.remove_control(self)
+              WS.desktop.mouse_event_dispatch(event, self.x + tx, self.y + ty)
+            end
           end
         end
       end
     end
 
     # ボタン系のイベントはすべてmouse_eventで処理する
+    def on_mouse_move(tx, ty)
+      mouse_event(:mouse_move, tx, ty)
+    end
+    
     def on_mouse_push(tx, ty)
       mouse_event(:mouse_push, tx, ty)
-      super
     end
     
     def on_mouse_m_push(tx, ty)
       mouse_event(:mouse_m_push, tx, ty)
-      super
     end
     
     def on_mouse_r_push(tx, ty)
       mouse_event(:mouse_r_push, tx, ty)
-      super
     end
     
     def on_mouse_release(tx, ty)
       mouse_event(:mouse_release, tx, ty)
-      super
     end
 
     def on_mouse_m_release(tx, ty)
       mouse_event(:mouse_m_release, tx, ty)
-      super
     end
 
     def on_mouse_r_release(tx, ty)
       mouse_event(:mouse_r_release, tx, ty)
-      super
-    end
-
-    # 移動イベントだけはキャプチャをはずさないので独自に処理する
-    def on_mouse_move(tx, ty)
-      ctl = find_hit_object(tx, ty)
-      if ctl
-        # サブメニューだった場合、もうひとつポップアップメニューを表示する
-        if Array === ctl.obj and @old_ctl != ctl
-          @old_ctl = ctl
-          @submenu = WSPopupMenu.new(self.x + self.width, self.y + ((ty - 4) / @font.size) * @font.size, ctl.obj)
-          @submenu.z = WS::default_z
-        end
-
-        ctl.mouse_event_dispach(:mouse_move, tx - ctl.x, ty - ctl.y)
-        return ctl
-      else
-        @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
-        if @hit_cursor === self
-          return self
-        end
-
-        tmp = self.get_global_vertex
-        if @submenu and @hit_cursor === @submenu
-          @submenu.mouse_event_dispach(:mouse_move, tmp[0] + tx - @submenu.x, tmp[1] + ty - @submenu.y)
-        else
-          WS.desktop.mouse_event_dispach(:mouse_move, tmp[0] + tx, tmp[1] + ty)
-        end
-      end
     end
 
     def draw
