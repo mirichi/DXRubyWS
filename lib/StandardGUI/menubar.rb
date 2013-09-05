@@ -41,7 +41,7 @@ module WS
         tmp = @font.get_width(ary[0])
         if x - 5 <= tx and tx < x + tmp + 5
           @selected = i
-          if @popup
+          if @popup and WS.captured?(@popup)
             WS.desktop.remove_control(@popup) if @popup
             tmpx, tmpy = self.get_global_vertex
             @popup = WSPopupMenu.new(x + tmpx, 16 + tmpy, ary[1])
@@ -59,12 +59,6 @@ module WS
     def on_mouse_out
       @selected = nil
       super
-    end
-
-    def update
-      unless WS.captured?(@popup)
-        @popup = nil
-      end
     end
 
     def draw
