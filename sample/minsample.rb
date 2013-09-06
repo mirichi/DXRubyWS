@@ -92,6 +92,7 @@ i.add_handler(:mouse_r_push){|obj|obj.image = image4}
 w.client.add_control(i)
 
 WS.desktop.add_control(w)
+WS.focus(w)
 
 # ListBoxTestWindow
 w = WS::WSWindow.new(400, 100, 200, 250, "ListBoxTest")

@@ -161,6 +161,14 @@ module WS
       signal(:resize)
       nil
     end
+
+    # キー押したイベント。引数はDXRubyのキー定数。
+    def on_key_push(key)
+    end
+ 
+    # キー離したイベント。引数はDXRubyのキー定数。
+    def on_key_release(key)
+    end
   end
 
   # 配下にコントロールを保持する機能を追加したコントロール

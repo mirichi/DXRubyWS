@@ -6,7 +6,7 @@ require_relative './module'
 # ウィンドウシステム
 module WS
   class WSDesktop < WSContainer
-    attr_accessor :capture_object
+    attr_accessor :capture_object, :system_focus
 
     def initialize
       self.collision = [0, 0, Window.width - 1, Window.height - 1]
@@ -19,9 +19,11 @@ module WS
       @mouse_m_flag = false
       @mouse_r_flag = false
       @capture_object = nil
+      @system_focus = nil
       @over_object = nil
       @cursor_x, @cursor_y = Input.mouse_pos_x, Input.mouse_pos_y
       @mouse_wheel = Input.mouse_wheel_pos
+      @old_keys = nil
     end
 
     def add_control(obj, name=nil)
@@ -31,6 +33,22 @@ module WS
     end
 
     def update
+      # キーイベント
+      keys = Input.keys
+      if @old_keys
+        push_keys = keys - @old_keys
+        release_keys = @old_keys - keys
+        if @system_focus
+          push_keys.each do |key|
+            @system_focus.on_key_push(key)
+          end
+          release_keys.each do |key|
+            @system_focus.on_key_release(key)
+          end
+        end
+      end
+      @old_keys = keys      
+      
       oldx, oldy = @cursor_x, @cursor_y
       @cursor_x, @cursor_y = Input.mouse_pos_x, Input.mouse_pos_y
 
@@ -116,6 +134,10 @@ module WS
     @@desktop.capture_object = obj
   end
 
+  def self.focus(obj)
+    @@desktop.system_focus = obj
+  end
+
   def self.desktop
     @@desktop
   end
@@ -124,6 +146,10 @@ module WS
     @@desktop.capture_object == obj
   end
 
+  def self.focused?(obj)
+    @@desktop.system_focus == obj
+  end
+    
   @@default_z = 10000
   def self.default_z;@@default_z;end
   def self.default_z=(v);@@default_z=v;end
