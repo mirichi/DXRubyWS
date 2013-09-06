@@ -150,13 +150,6 @@ module WS
       end
       super
     end
-    def mouse_event_dispatch(event, tx, ty)
-      if event == :mouse_push or event == :mouse_r_push
-        self.parent.childlen.push(self.parent.childlen.delete(self))
-        WS.focus(self)
-      end
-      super
-    end
 
     # ウィンドウを閉じたら次の優先ウィンドウにフォーカスを移す
     def close
