@@ -66,7 +66,7 @@ module WS
       # メニューやツールバー、ステータスバーもたぶんそうなる
       window_title = WSWindowTitle.new(0, 0, sx - @border_width * 2, 16, caption)
       add_control(window_title, :window_title)
-      window_title.add_handler(:close) {self.parent.remove_control(self)}
+      window_title.add_handler(:close) {self.close}
       window_title.add_handler(:drag_move, self.method(:on_drag_move))
 
       # タイトルバーのダブルクリックで最大化する
@@ -84,6 +84,12 @@ module WS
         add window_title, true
         add client, true, true
       end
+
+      # Escで閉じる
+      add_key_handler(K_ESCAPE){self.close}
+    
+      # 新規生成したウィンドウはシステムフォーカスを取る
+      WS.focus(self)
     end
 
     def add_menubar(menuitems)
@@ -107,6 +113,12 @@ module WS
       self.image.draw_line(0,sy-1,sx-1,sy-1,[80,80,80])
       self.image.draw_line(sx-2,1,sx-2,sy-2,[120,120,120])
       self.image.draw_line(1,sy-2,sx-2,sy-2,[120,120,120])
+
+      if WS.focused?(self)
+        self.window_title.image.bgcolor = [30, 30, 180]
+      else
+        self.window_title.image.bgcolor = [120, 120, 120]
+      end
       super
     end
 
@@ -132,12 +144,24 @@ module WS
 
     # マウスのボタンが押されたときに手前に持ってくる処理(ちょっとアレな手)
     def mouse_event_dispatch(event, tx, ty)
-      self.parent.childlen.push(self.parent.childlen.delete(self)) if event == :mouse_push or event == :mouse_r_push
+      if event == :mouse_push or event == :mouse_r_push
+        self.parent.childlen.push(self.parent.childlen.delete(self))
+        WS.focus(self)
+      end
       super
     end
     def mouse_event_dispatch(event, tx, ty)
-      self.parent.childlen.push(self.parent.childlen.delete(self)) if event == :mouse_push or event == :mouse_r_push
+      if event == :mouse_push or event == :mouse_r_push
+        self.parent.childlen.push(self.parent.childlen.delete(self))
+        WS.focus(self)
+      end
       super
+    end
+
+    # ウィンドウを閉じたら次の優先ウィンドウにフォーカスを移す
+    def close
+      self.parent.remove_control(self)
+      WS.focus(self.parent.childlen.last)
     end
   end
 end

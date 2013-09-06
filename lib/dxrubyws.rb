@@ -11,7 +11,8 @@ module WS
     def initialize
       self.collision = [0, 0, Window.width - 1, Window.height - 1]
       @childlen = []
-      @signal = {}
+      @signal_handler = {}
+      @key_handler = {}
       @hit_cursor = Sprite.new
       @hit_cursor.collision = [0,0]
       @font = @@default_font
@@ -38,12 +39,19 @@ module WS
       if @old_keys
         push_keys = keys - @old_keys
         release_keys = @old_keys - keys
-        if @system_focus
-          push_keys.each do |key|
+        if @system_focus # システムフォーカスにキーイベントを送信
+          push_keys.each do |key| # 押した
             @system_focus.on_key_push(key)
           end
-          release_keys.each do |key|
+          release_keys.each do |key| # 離した
             @system_focus.on_key_release(key)
+          end
+        else # システムフォーカスが無い場合はデスクトップに送っとく
+          push_keys.each do |key|
+            self.on_key_push(key)
+          end
+          release_keys.each do |key|
+            self.on_key_release(key)
           end
         end
       end

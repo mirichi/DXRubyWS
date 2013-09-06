@@ -235,7 +235,10 @@ WS.desktop.add_control(t)
 WS.desktop.extend WS::UseRightClickMenu
 WS.desktop.r_menuitems = mainmenu
 
+
+WS.desktop.add_key_handler(K_ESCAPE) do break end
+
+
 Window.loop do
   WS.update
-  break if Input.key_push?(K_ESCAPE)
 end

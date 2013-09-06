@@ -13,7 +13,8 @@ module WS
       @width, @height = width, height
       @min_width, @min_height = 16, 16
       self.collision = [0, 0, width - 1, height - 1]
-      @signal = {}             # シグナルデータ
+      @signal_handler = {}   # シグナルハンドラ
+      @key_handler = {}      # キーハンドラ
       @hit_cursor = Sprite.new # 衝突判定用スプライト
       @hit_cursor.collision = [0,0]
       @font ||= @@default_font
@@ -107,30 +108,33 @@ module WS
     # シグナルハンドラの登録
     def add_handler(signal, obj=nil, &block)
       if obj
-        if @signal.has_key?(signal)
-          @signal[signal] << obj
+        if @signal_handler.has_key?(signal)
+          @signal_handler[signal] << obj
         else
-          @signal[signal] = [obj]
+          @signal_handler[signal] = [obj]
         end
       end
       if block
-        if @signal.has_key?(signal)
-          @signal[signal] << block
+        if @signal_handler.has_key?(signal)
+          @signal_handler[signal] << block
         else
-          @signal[signal] = [block]
+          @signal_handler[signal] = [block]
         end
       end
       nil
     end
 
     # シグナルの発行(=ハンドラの呼び出し)
+    # ハンドラを呼んだらtrue、何もなければfalseを返す。
     def signal(s, *args)
-      if @signal.has_key?(s)
-        @signal[s].each do |obj|
+      if @signal_handler.has_key?(s)
+        @signal_handler[s].each do |obj|
           obj.call(self, *args)
         end
+        true
+      else
+        false
       end
-      nil
     end
 
     # 絶対座標の算出
@@ -163,12 +167,41 @@ module WS
     end
 
     # キー押したイベント。引数はDXRubyのキー定数。
+    # ハンドラを呼んだらtrue、何もなければfalseを返す。
     def on_key_push(key)
+      if @key_handler.has_key?(key)
+        @key_handler[key].each do |obj|
+          obj.call(self)
+        end
+        true
+      else
+        false
+      end
     end
- 
+
     # キー離したイベント。引数はDXRubyのキー定数。
     def on_key_release(key)
     end
+
+    # キーハンドラ登録
+    def add_key_handler(key, obj=nil, &block)
+      if obj
+        if @key_handler.has_key?(key)
+          @key_handler[key] << obj
+        else
+          @key_handler[key] = [obj]
+        end
+      end
+      if block
+        if @key_handler.has_key?(key)
+          @key_handler[key] << block
+        else
+          @key_handler[key] = [block]
+        end
+      end
+      nil
+    end
+
   end
 
   # 配下にコントロールを保持する機能を追加したコントロール
