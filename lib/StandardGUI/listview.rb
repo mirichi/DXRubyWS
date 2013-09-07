@@ -214,7 +214,7 @@ module WS
           color = C_WHITE
         end
         item.each_with_index do |s, x|
-          @client_tmp_rt[x].draw_font(2, i * @font.size - @vpos, s.to_s, @font, :color=>color)
+          @client_tmp_rt[x].draw_font(2, i * @font.size - @vpos, s.inspect, @font, :color=>color)
         end
       end
       tx = 0

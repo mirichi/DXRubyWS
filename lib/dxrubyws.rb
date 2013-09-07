@@ -37,18 +37,18 @@ module WS
       # キーイベント
       keys = Input.keys
       if @old_keys
-        push_keys = keys - @old_keys
+        push_keys = keys
         release_keys = @old_keys - keys
         if @system_focus # システムフォーカスにキーイベントを送信
           push_keys.each do |key| # 押した
-            @system_focus.on_key_push(key)
+            @system_focus.on_key_push(key) if Input.key_push?(key)
           end
           release_keys.each do |key| # 離した
             @system_focus.on_key_release(key)
           end
         else # システムフォーカスが無い場合はデスクトップに送っとく
           push_keys.each do |key|
-            self.on_key_push(key)
+            self.on_key_push(key) if Input.key_push?(key)
           end
           release_keys.each do |key|
             self.on_key_release(key)
@@ -56,7 +56,13 @@ module WS
         end
       end
       @old_keys = keys      
-      
+
+      # 文字列イベント
+      str = Input::IME.get_string.encode("UTF-8")
+      if str.length > 0
+        @system_focus.on_string(str)
+      end
+
       oldx, oldy = @cursor_x, @cursor_y
       @cursor_x, @cursor_y = Input.mouse_pos_x, Input.mouse_pos_y
 
@@ -143,7 +149,9 @@ module WS
   end
 
   def self.focus(obj)
+    @@desktop.system_focus.on_leave if @@desktop.system_focus and @@desktop.system_focus != obj
     @@desktop.system_focus = obj
+    obj.on_enter if obj
   end
 
   def self.desktop
@@ -156,6 +164,10 @@ module WS
 
   def self.focused?(obj)
     @@desktop.system_focus == obj
+  end
+    
+  def self.focused_object
+    @@desktop.system_focus
   end
     
   @@default_z = 10000

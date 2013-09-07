@@ -202,6 +202,21 @@ module WS
       nil
     end
 
+    # 文字列入力イベント
+    def on_string(str)
+    end
+
+    # フォーカスが当てられたときに呼ばれる
+    def on_enter
+    end
+
+    # フォーカスを失ったときに呼ばれる
+    def on_leave
+    end
+
+    def inspect
+      "#<" + self.class.name + ">"
+    end
   end
 
   # 配下にコントロールを保持する機能を追加したコントロール
@@ -224,6 +239,7 @@ module WS
     def add_control(obj, name=nil)
       obj.target = self.image # 子コントロールの描画先は親のRenderTargetである
       obj.parent = self
+      
       @childlen << obj
       if name
         tmp = class << self;self;end
@@ -459,6 +475,10 @@ module WS
 
     def resize(width, height)
       @width, @height = width, height
+    end
+
+    def inspect
+      "#<" + self.class.name + ">"
     end
   end
 end

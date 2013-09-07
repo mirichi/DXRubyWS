@@ -55,6 +55,7 @@ module WS
     end
 
     attr_accessor :border_width # ウィンドウボーダーの幅
+    attr_reader :window_focus # ウィンドウ上のフォーカスを持つコントロール
     include Resizable
 
     def initialize(tx, ty, sx, sy, caption = "WindowTitle")
@@ -155,6 +156,44 @@ module WS
     def close
       self.parent.remove_control(self)
       WS.focus(self.parent.childlen.last)
+    end
+
+    # キーハンドラを呼ばなかったらウィンドウフォーカスコントロールに転送
+    def on_key_push(key)
+      tmp = super
+      unless tmp
+        @window_focus.on_key_push(key) if @window_focus
+      end
+    end
+
+    # キーハンドラを呼ばなかったらウィンドウフォーカスコントロールに転送
+    def on_key_release(key)
+      tmp = super
+      unless tmp
+        @window_focus.on_key_release(key) if @window_focus
+      end
+    end
+
+    # ウィンドウ上のフォーカスがあるコントロールに文字列イベントを転送
+    def on_string(str)
+      @window_focus.on_string(str) if @window_focus
+      super
+    end
+
+    def window_focus=(obj)
+      @window_focus.on_leave if @window_focus and @window_focus != obj
+      @window_focus = obj
+      @window_focus.on_enter if WS.focused_object == self and @window_focus
+    end
+
+    # ウィンドウがアクティブ化したときにフォーカスコントロールにon_enterを転送
+    def on_enter
+      @window_focus.on_enter if @window_focus
+    end
+
+    # ウィンドウがノンアクティブ化したときにフォーカスコントロールにon_leaveを転送
+    def on_leave
+      @window_focus.on_leave if @window_focus
     end
   end
 end

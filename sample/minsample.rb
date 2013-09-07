@@ -72,27 +72,6 @@ end
 
 
 
-# TestWindow1
-w = WS::WSWindow.new(100, 100, 300, 100, "Test")
-b = WS::WSButton.new(10, 10, 100, 20, "button")
-l = WS::WSLabel.new(10, 50, 100, 20, "label")
-w.client.add_control(b)
-w.client.add_control(l)
-
-image1 = Image.new(30, 30, C_WHITE)
-image2 = Image.new(30, 30, C_BLACK)
-image3 = Image.new(30, 30, C_RED)
-image4 = Image.new(30, 30, C_BLUE)
-i = WS::WSImage.new(200, 30, 30, 30)
-i.image = image1
-i.add_handler(:mouse_over){|obj|obj.image = image2}
-i.add_handler(:mouse_out){|obj|obj.image = image1}
-i.add_handler(:mouse_push){|obj|obj.image = image3}
-i.add_handler(:mouse_r_push){|obj|obj.image = image4}
-w.client.add_control(i)
-
-WS.desktop.add_control(w)
-
 # ListBoxTestWindow
 w = WS::WSWindow.new(400, 100, 200, 250, "ListBoxTest")
 lbx = WS::WSListBox.new(50, 30, 100, 160)
@@ -225,6 +204,32 @@ end
 
 t = Test.new
 WS.desktop.add_control(t)
+
+
+# TestWindow1
+w = WS::WSWindow.new(100, 100, 300, 100, "Test")
+b = WS::WSButton.new(10, 10, 100, 20, "button")
+l = WS::WSLabel.new(10, 50, 100, 20, "label")
+w.client.add_control(b)
+w.client.add_control(l)
+
+image1 = Image.new(30, 30, C_WHITE)
+image2 = Image.new(30, 30, C_BLACK)
+image3 = Image.new(30, 30, C_RED)
+image4 = Image.new(30, 30, C_BLUE)
+i = WS::WSImage.new(200, 10, 30, 30)
+i.image = image1
+i.add_handler(:mouse_over){|obj|obj.image = image2}
+i.add_handler(:mouse_out){|obj|obj.image = image1}
+i.add_handler(:mouse_push){|obj|obj.image = image3}
+i.add_handler(:mouse_r_push){|obj|obj.image = image4}
+w.client.add_control(i)
+
+tb = WS::WSTextBox.new(70, 45, 200, 20)
+w.client.add_control(tb, :tb)
+w.window_focus = tb
+
+WS.desktop.add_control(w)
 
 
 # とりあえずの右クリックメニューテスト
