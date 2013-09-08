@@ -79,17 +79,11 @@ module WS
     def on_enter
       @active = true
       Input::IME.enable = true
-      [K_BACKSPACE, K_DELETE, K_LEFT, K_RIGHT].each do |k|
-        Input.set_key_repeat(k, 30, 2)
-      end
       Input::IME.set_font(@font)
     end
 
     def on_leave
       @active = false
-      [K_BACKSPACE, K_DELETE, K_LEFT, K_RIGHT].each do |k|
-        Input.set_key_repeat(k, 0, 0)
-      end
       Input::IME.enable = false
     end
 
