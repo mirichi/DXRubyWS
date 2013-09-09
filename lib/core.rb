@@ -5,7 +5,7 @@ module WS
   # すべての基本、コントロールのクラス
   class WSControl < Sprite
     attr_accessor :parent, :font, :width, :height, :resizable_width, :resizable_height
-    attr_accessor :min_width, :min_height
+    attr_accessor :min_width, :min_height, :focusable, :active
     @@default_font = Font.new(16)
 
     def initialize(tx, ty, width, height)
@@ -20,6 +20,8 @@ module WS
       @font ||= @@default_font
       @resizable_width = false  # オートレイアウト用設定
       @resizable_height = false # オートレイアウト用設定
+      @focusable = false
+      @active = false
     end
 
     # マウスイベント
@@ -208,14 +210,19 @@ module WS
 
     # フォーカスが当てられたときに呼ばれる
     def on_enter
+      @active = true
     end
 
     # フォーカスを失ったときに呼ばれる
     def on_leave
+      @active = false
     end
 
     def inspect
       "#<" + self.class.name + ">"
+    end
+
+    def get_childlen_ary(ary)
     end
   end
 
@@ -303,6 +310,13 @@ module WS
       if @layout
         @layout.width, @layout.height = width, height
         @layout.auto_layout
+      end
+    end
+
+    def get_childlen_ary(ary)
+      @childlen.each do |o|
+        ary.concat(o)
+        o.get_childlen_ary(ary)
       end
     end
   end

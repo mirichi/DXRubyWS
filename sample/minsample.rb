@@ -207,7 +207,7 @@ WS.desktop.add_control(t)
 
 
 # TestWindow1
-w = WS::WSWindow.new(100, 100, 300, 100, "Test")
+w = WS::WSWindow.new(100, 100, 300, 150, "Test")
 b = WS::WSButton.new(10, 10, 100, 20, "button")
 l = WS::WSLabel.new(10, 50, 100, 20, "label")
 w.client.add_control(b)
@@ -225,9 +225,11 @@ i.add_handler(:mouse_push){|obj|obj.image = image3}
 i.add_handler(:mouse_r_push){|obj|obj.image = image4}
 w.client.add_control(i)
 
-tb = WS::WSTextBox.new(70, 45, 200, 20)
-w.client.add_control(tb, :tb)
-w.window_focus = tb
+tb1 = WS::WSTextBox.new(70, 45, 200, 20)
+w.client.add_control(tb1, :tb1)
+tb2 = WS::WSTextBox.new(70, 80, 200, 20)
+w.client.add_control(tb2, :tb2)
+w.window_focus = b
 
 WS.desktop.add_control(w)
 

@@ -88,7 +88,25 @@ module WS
 
       # Escで閉じる
       add_key_handler(K_ESCAPE){self.close}
-    
+
+      # Tabでフォーカス移動
+      add_key_handler(K_TAB) do
+        if @window_focus
+          tmp = client.childlen.index(@window_focus)
+          if Input.key_down?(K_LSHIFT) or Input.key_down?(K_RSHIFT)
+            ary = client.childlen[0...tmp].reverse + client.childlen[tmp..-1].reverse
+          else
+            ary = client.childlen[(tmp+1)..-1] + client.childlen[0..tmp]
+          end
+          ary.each do |o|
+            if o.focusable
+              self.window_focus = o
+              break
+            end
+          end
+        end
+      end
+
       # 新規生成したウィンドウはシステムフォーカスを取る
       WS.focus(self)
     end
@@ -189,11 +207,13 @@ module WS
     # ウィンドウがアクティブ化したときにフォーカスコントロールにon_enterを転送
     def on_enter
       @window_focus.on_enter if @window_focus
+      super
     end
 
     # ウィンドウがノンアクティブ化したときにフォーカスコントロールにon_leaveを転送
     def on_leave
       @window_focus.on_leave if @window_focus
+      super
     end
   end
 end

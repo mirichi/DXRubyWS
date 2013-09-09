@@ -9,6 +9,7 @@ module WS
       @image = {}
       @caption = caption
       @fore_color = C_BLACK
+      @focusable = true
 
       # 画像を作成する
       set_image
@@ -60,12 +61,31 @@ module WS
                               self.image.height / 2 - @font.size / 2 + self.y - 1 + (@image_flag ? 1 : 0),
                               @caption, @font, :color=>@fore_color)
       end
+      if @active
+        self.target.draw_line(self.x - 1, self.y - 1, self.x + @width, self.y - 1, C_BLACK)
+                   .draw_line(self.x - 1, self.y - 1, self.x - 1, self.y + @height, C_BLACK)
+                   .draw_line(self.x + @width, self.y - 1, self.x + @width, self.y + @height, C_BLACK)
+                   .draw_line(self.x - 1, self.y + @height, self.x + @width, self.y + @height, C_BLACK)
+      end
     end
   end
 
   # 普通のボタン
   class WSButton < WSButtonBase
     include ButtonClickable # 普通のクリック用モジュール
+
+    def on_key_push(key)
+      if key == K_SPACE
+        @image_flag = true
+      end
+    end
+
+    def on_key_release(key)
+      if key == K_SPACE
+        @image_flag = false
+        on_click(self, 0, 0)
+      end
+    end
   end
 
   # 押しっぱなしでリピートするボタンクラス

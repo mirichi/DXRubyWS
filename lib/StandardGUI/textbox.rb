@@ -20,10 +20,10 @@ module WS
       @text = ""
       @cursor_count = 0 # カーソル点滅用カウント
       @cursor_pos = 0   # カーソル位置
-      @active = false   # フォーカスがあるかどうか
       @selected_range_first = nil # 範囲選択始点
       @selected_range_last = nil  # 範囲選択終点
       @font = Font.new(12)
+      @focusable = true # フォーカスをあてれるかどうか
 
       # 特殊キーのハンドラ
       add_key_handler(K_BACKSPACE) do
@@ -157,26 +157,30 @@ module WS
 
     # フォーカス取得
     def on_enter
-      @active = true
       Input::IME.enable = true
       Input::IME.set_font(@font)
+      @selected_range_first = 0
+      @selected_range_last = @text.length
+      @cursor_pos = @text.length
+      @cursor_count = 0
+      super
     end
 
     # フォーカス喪失
     def on_leave
-      @active = false
       Input::IME.enable = false
+      super
     end
 
     def draw
       super
 
       # 選択範囲表示
-      if @selected_range_first
+      if @selected_range_first and @active
         tx1 = self.x + @font.get_width(@text[0, [@selected_range_first, @selected_range_last].min]) + 4
         tx2 = self.x + @font.get_width(@text[0, [@selected_range_first, @selected_range_last].max]) + 4
-        (0..(@font.size)).each do |ty|
-          self.target.draw_line(tx1, self.y + ty + 2, tx2, self.y + 2 + ty, [200, 200, 255])
+        (0..(@font.size+1)).each do |ty|
+          self.target.draw_line(tx1, self.y + ty + 3, tx2, self.y + ty + 3, [200, 200, 255])
         end
       end
 
