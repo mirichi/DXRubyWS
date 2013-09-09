@@ -38,18 +38,18 @@ module WS
       push_keys = Input::IME.push_keys
       release_keys = Input::IME.release_keys
       if @system_focus # システムフォーカスにキーイベントを送信
-        release_keys.each do |key| # 離した
-          @system_focus.on_key_release(key)
-        end
         push_keys.each do |key| # 押した
           @system_focus.on_key_push(key)
         end
-      else # システムフォーカスが無い場合はデスクトップに送っとく
-        release_keys.each do |key|
-          self.on_key_release(key)
+        release_keys.each do |key| # 離した
+          @system_focus.on_key_release(key)
         end
+      else # システムフォーカスが無い場合はデスクトップに送っとく
         push_keys.each do |key|
           self.on_key_push(key)
+        end
+        release_keys.each do |key|
+          self.on_key_release(key)
         end
       end
 
