@@ -72,7 +72,7 @@ module WS
     # クリックされたらフォーカスをあてる
     # このタイミングではボタンが乗っているウィンドウはアクティブになっている
     def on_mouse_push(tx, ty)
-      WS.focused_object.window_focus = self
+      WS.focused_object.window_focus = self if @focusable
       super
     end
   end

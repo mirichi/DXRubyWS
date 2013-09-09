@@ -7,6 +7,11 @@ module WS
   # ウィンドウぽい動きを実現してみる
   class WSWindow < WSContainer
    class WSWindowCloseButton < WSButton
+     def initialize(*args)
+       super
+       @focusable = false
+     end
+
      def set_image
        super
        @image[true].line(4, 4, @width-5, @height-5, C_BLACK)
