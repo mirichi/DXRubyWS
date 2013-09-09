@@ -222,7 +222,8 @@ module WS
       "#<" + self.class.name + ">"
     end
 
-    def get_childlen_ary(ary)
+    def get_childlen_ary
+      [self]
     end
   end
 
@@ -313,11 +314,12 @@ module WS
       end
     end
 
-    def get_childlen_ary(ary)
+    def get_childlen_ary
+      ary = [self]
       @childlen.each do |o|
-        ary.concat(o)
-        o.get_childlen_ary(ary)
+        ary.concat(o.get_childlen_ary)
       end
+      ary
     end
   end
 

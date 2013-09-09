@@ -52,6 +52,12 @@ module WS
     end
 
     class WSWindowClient < WSContainer
+      def add_control(obj, name=nil)
+        super
+        if obj.focusable
+          self.parent.window_focus = obj
+        end
+      end
     end
 
     attr_accessor :border_width # ウィンドウボーダーの幅
@@ -92,11 +98,12 @@ module WS
       # Tabでフォーカス移動
       add_key_handler(K_TAB) do
         if @window_focus
-          tmp = client.childlen.index(@window_focus)
+          tmp = client.get_childlen_ary
+          index = tmp.index(@window_focus)
           if Input.key_down?(K_LSHIFT) or Input.key_down?(K_RSHIFT)
-            ary = client.childlen[0...tmp].reverse + client.childlen[tmp..-1].reverse
+            ary = tmp[0...index].reverse + tmp[index..-1].reverse
           else
-            ary = client.childlen[(tmp+1)..-1] + client.childlen[0..tmp]
+            ary = tmp[(index+1)..-1] + tmp[0..index]
           end
           ary.each do |o|
             if o.focusable
