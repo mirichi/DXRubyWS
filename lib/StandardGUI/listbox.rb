@@ -11,6 +11,7 @@ module WS
       include DoubleClickable
     end
 
+    include Focusable
     attr_reader :items, :cursor
 
     def initialize(tx, ty, width, height)
@@ -45,6 +46,54 @@ module WS
 
       # スライダー移動時のシグナルハンドラ
       vsb.add_handler(:slide){|obj, pos|@pos = pos}
+
+      # キーボードイベント
+      add_key_handler(K_UP) do
+        @cursor -= 1
+        @cursor = @cursor.clamp(0, @items.length - 1)
+        if @cursor * @font.size < @pos
+          @pos = @cursor * @font.size
+          vsb.pos = @pos
+        end
+      end
+      add_key_handler(K_PGUP) do
+        @cursor -= client.height / @font.size
+        @cursor = @cursor.clamp(0, @items.length - 1)
+        if @cursor * @font.size < @pos
+          @pos = @cursor * @font.size
+          vsb.pos = @pos
+        end
+      end
+      add_key_handler(K_HOME) do
+        @cursor = 0
+        if @cursor * @font.size < @pos
+          @pos = @cursor * @font.size
+          vsb.pos = @pos
+        end
+      end
+      add_key_handler(K_DOWN) do
+        @cursor += 1
+        @cursor = @cursor.clamp(0, @items.length - 1)
+        if @cursor * @font.size + (@font.size - 1) >= @pos + client.height
+          @pos = @cursor * @font.size + @font.size - client.height
+          vsb.pos = @pos
+        end
+      end
+      add_key_handler(K_PGDN) do
+        @cursor += client.height / @font.size
+        @cursor = @cursor.clamp(0, @items.length - 1)
+        if @cursor * @font.size + (@font.size - 1) >= @pos + client.height
+          @pos = @cursor * @font.size + @font.size - client.height
+          vsb.pos = @pos
+        end
+      end
+      add_key_handler(K_END) do
+        @cursor = @items.length - 1
+        if @cursor * @font.size + (@font.size - 1) >= @pos + client.height
+          @pos = @cursor * @font.size + @font.size - client.height
+          vsb.pos = @pos
+        end
+      end
     end
 
     # resize時にカーソル位置の反転画像を再生成する

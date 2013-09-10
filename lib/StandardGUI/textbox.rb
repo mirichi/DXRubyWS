@@ -3,6 +3,7 @@
 module WS
   # テキストボックス
   class WSTextBox < WSControl
+    include Focusable
     attr_accessor :text
 
     def initialize(tx, ty, sx, sy)
@@ -23,7 +24,6 @@ module WS
       @selected_range_first = nil # 範囲選択始点
       @selected_range_last = nil  # 範囲選択終点
       @font = Font.new(12)
-      @focusable = true # フォーカスをあてれるかどうか
 
       # 特殊キーのハンドラ
       add_key_handler(K_BACKSPACE) do

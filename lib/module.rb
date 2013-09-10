@@ -256,4 +256,15 @@ module WS
       signal(:doubleclick, tx, ty)
     end
   end
+
+  module Focusable
+    def initialize(*args)
+      super
+      @focusable = true
+    end
+
+    def get_focusable_control_ary
+      [self]
+    end
+  end
 end

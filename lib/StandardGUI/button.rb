@@ -9,7 +9,6 @@ module WS
       @image = {}
       @caption = caption
       @fore_color = C_BLACK
-      @focusable = true
 
       # 画像を作成する
       set_image
@@ -79,6 +78,7 @@ module WS
 
   # 普通のボタン
   class WSButton < WSButtonBase
+    include Focusable
     include ButtonClickable # 普通のクリック用モジュール
 
     def on_key_push(key)
@@ -94,10 +94,4 @@ module WS
       end
     end
   end
-
-  # 押しっぱなしでリピートするボタンクラス
-  class WSRepeatButton < WSButtonBase
-    include RepeatClickable # リピートクリック用モジュール
-  end
-
 end

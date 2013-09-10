@@ -103,7 +103,7 @@ module WS
       # Tabでフォーカス移動
       add_key_handler(K_TAB) do
         if @window_focus
-          tmp = client.get_childlen_ary
+          tmp = client.get_focusable_control_ary
           index = tmp.index(@window_focus)
           if Input.key_down?(K_LSHIFT) or Input.key_down?(K_RSHIFT)
             ary = tmp[0...index].reverse + tmp[index..-1].reverse

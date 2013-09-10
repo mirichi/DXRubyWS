@@ -222,8 +222,8 @@ module WS
       "#<" + self.class.name + ">"
     end
 
-    def get_childlen_ary
-      [self]
+    def get_focusable_control_ary
+      []
     end
   end
 
@@ -314,10 +314,11 @@ module WS
       end
     end
 
-    def get_childlen_ary
-      ary = [self]
+    def get_focusable_control_ary
+      return [self] if @focusable
+      ary = []
       @childlen.each do |o|
-        ary.concat(o.get_childlen_ary)
+        ary.concat(o.get_focusable_control_ary)
       end
       ary
     end
