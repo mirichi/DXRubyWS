@@ -68,6 +68,7 @@ module WS
     attr_accessor :border_width # ウィンドウボーダーの幅
     attr_reader :window_focus # ウィンドウ上のフォーカスを持つコントロール
     include Resizable
+    include Focusable
 
     def initialize(tx, ty, sx, sy, caption = "WindowTitle")
       super(tx, ty, sx, sy)
@@ -177,11 +178,7 @@ module WS
     def mouse_event_dispatch(event, tx, ty)
       if event == :mouse_push or event == :mouse_r_push
         ctl = get_focusable_control(tx, ty)
-        if ctl
-          self.window_focus=ctl
-        end
-        self.parent.childlen.push(self.parent.childlen.delete(self))
-        WS.focus(self)
+        self.window_focus=ctl if ctl
       end
       super
     end

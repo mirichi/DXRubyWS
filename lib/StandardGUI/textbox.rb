@@ -180,17 +180,17 @@ module WS
         tx1 = self.x + @font.get_width(@text[0, [@selected_range_first, @selected_range_last].min]) + 4
         tx2 = self.x + @font.get_width(@text[0, [@selected_range_first, @selected_range_last].max]) + 4
         (0..(@font.size+1)).each do |ty|
-          self.target.draw_line(tx1, self.y + ty + 3, tx2, self.y + ty + 3, [200, 200, 255])
+          self.target.draw_line(tx1, self.y + ty + 3, tx2, self.y + ty + 3, [200, 200, 255], self.z)
         end
       end
 
       # 文字列表示
-      self.target.draw_font(self.x + 4, self.y + 4, @text, @font, :color=>C_BLACK)
+      self.target.draw_font(self.x + 4, self.y + 4, @text, @font, :color=>C_BLACK, :z=>self.z)
 
       # カーソル表示
       if @active and (@cursor_count / 30) % 2 == 0
         tx = self.x + @font.get_width(@text[0, @cursor_pos]) + 4
-        self.target.draw_line(tx, self.y + 3, tx, self.y + 2 + @font.size, C_BLACK)
+        self.target.draw_line(tx, self.y + 3, tx, self.y + 2 + @font.size, C_BLACK, self.z)
       end
     end
   end

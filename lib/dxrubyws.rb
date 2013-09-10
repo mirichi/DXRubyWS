@@ -69,6 +69,18 @@ module WS
       else
         tx, ty = @cursor_x, @cursor_y
         tmp = self
+
+        # フォーカスを取得できるコントロールだった場合にフォーカスを設定する
+        if (Input.mouse_down?(M_LBUTTON) and @mouse_l_flag == false) or
+           (Input.mouse_down?(M_RBUTTON) and @mouse_r_flag == false)
+          ctl = get_focusable_control(tx, ty)
+          if ctl
+            @system_focus.on_leave if @system_focus
+            @system_focus = ctl
+            ctl.on_enter
+            @childlen.push(@childlen.delete(ctl))
+          end
+        end
       end
 
       # ボタン押した

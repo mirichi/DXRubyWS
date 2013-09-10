@@ -223,11 +223,19 @@ module WS
     end
 
     def get_focusable_control_ary
-      []
+      if @focusable
+        [self]
+      else
+        []
+      end
     end
 
     def get_focusable_control(tx, ty)
-      nil
+      if @focusable
+        self
+      else
+        nil
+      end
     end
   end
 
@@ -328,11 +336,9 @@ module WS
     end
 
     def get_focusable_control(tx, ty)
-      return self if @focusable
-
       ctl = find_hit_object(tx, ty)
       return nil unless ctl
-
+      return ctl if ctl.focusable
       return ctl.get_focusable_control(tx - ctl.x, ty - ctl.y)
     end
   end

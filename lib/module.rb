@@ -262,21 +262,5 @@ module WS
       super
       @focusable = true
     end
-
-    def get_focusable_control_ary
-      if @focusable
-        [self]
-      else
-        []
-      end
-    end
-
-    def get_focusable_control(tx, ty)
-      if @focusable
-        self
-      else
-        nil
-      end
-    end
   end
 end
