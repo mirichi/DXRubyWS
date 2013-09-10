@@ -140,6 +140,7 @@ module WS
 
     attr_reader :items, :cursor
     attr_accessor :vpos, :hpos
+    include Focusable
 
     def initialize(tx, ty, width, height, titles)
       # クライアント領域作成。WSScrollableContainerではsuperにクライアント領域コントロールを渡す必要があるので
@@ -183,6 +184,66 @@ module WS
       # スライダー移動時のシグナルハンドラ
       vsb.add_handler(:slide){|obj, pos|@vpos = pos}
       hsb.add_handler(:slide){|obj, pos|@hpos = pos;client.title.pos=pos}
+
+      # キーボードイベント
+      add_key_handler(K_UP) do
+        old_cursor = @cursor
+        @cursor -= 1
+        @cursor = @cursor.clamp(0, @items.length - 1)
+        if @cursor * @font.size < @vpos
+          @vpos = @cursor * @font.size
+          vsb.pos = @vpos
+        end
+        signal(:select, @cursor) if old_cursor != @cursor
+      end
+      add_key_handler(K_PGUP) do
+        old_cursor = @cursor
+        @cursor -= client.height / @font.size
+        @cursor = @cursor.clamp(0, @items.length - 1)
+        if @cursor * @font.size < @vpos
+          @vpos = @cursor * @font.size
+          vsb.pos = @vpos
+        end
+        signal(:select, @cursor) if old_cursor != @cursor
+      end
+      add_key_handler(K_HOME) do
+        old_cursor = @cursor
+        @cursor = 0
+        if @cursor * @font.size < @vpos
+          @vpos = @cursor * @font.size
+          vsb.pos = @vpos
+        end
+        signal(:select, @cursor) if old_cursor != @cursor
+      end
+      add_key_handler(K_DOWN) do
+        old_cursor = @cursor
+        @cursor += 1
+        @cursor = @cursor.clamp(0, @items.length - 1)
+        if @cursor * @font.size + (@font.size - 1) >= @vpos + client.listview.height
+          @vpos = @cursor * @font.size + @font.size - client.listview.height
+          vsb.pos = @vpos
+        end
+        signal(:select, @cursor) if old_cursor != @cursor
+      end
+      add_key_handler(K_PGDN) do
+        old_cursor = @cursor
+        @cursor += client.height / @font.size
+        @cursor = @cursor.clamp(0, @items.length - 1)
+        if @cursor * @font.size + (@font.size - 1) >= @vpos + client.listview.height
+          @vpos = @cursor * @font.size + @font.size - client.listview.height
+          vsb.pos = @vpos
+        end
+        signal(:select, @cursor) if old_cursor != @cursor
+      end
+      add_key_handler(K_END) do
+        old_cursor = @cursor
+        @cursor = @items.length - 1
+        if @cursor * @font.size + (@font.size - 1) >= @vpos + client.listview.height
+          @vpos = @cursor * @font.size + @font.size - client.listview.height
+          vsb.pos = @vpos
+        end
+        signal(:select, @cursor) if old_cursor != @cursor
+      end
     end
 
     def resize(width, height)
