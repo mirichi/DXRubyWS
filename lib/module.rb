@@ -264,7 +264,19 @@ module WS
     end
 
     def get_focusable_control_ary
-      [self]
+      if @focusable
+        [self]
+      else
+        []
+      end
+    end
+
+    def get_focusable_control(tx, ty)
+      if @focusable
+        self
+      else
+        nil
+      end
     end
   end
 end

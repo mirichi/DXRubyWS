@@ -78,13 +78,13 @@ lbx = WS::WSListBox.new(50, 30, 100, 160)
 lbx.items.concat(String.instance_methods(false))
 #lbx.items.concat(w.instance_variables)
 w.client.add_control(lbx)
-lbl = WS::WSLabel.new(0, 0, 100, 16)
-lbl.caption = lbx.items[lbx.cursor].to_s
-lbx.add_handler(:select){|obj, cursor| lbl.caption = obj.items[cursor].to_s}
-w.client.add_control(lbl)
+txt = WS::WSTextBox.new(0, 0, 100, 20)
+txt.text = lbx.items[lbx.cursor].to_s
+lbx.add_handler(:select){|obj, cursor| txt.text = obj.items[cursor].to_s}
+w.client.add_control(txt)
 
 w.client.layout(:vbox) do
-  add lbl, true
+  add txt, true
   add lbx, true, true
 end
 

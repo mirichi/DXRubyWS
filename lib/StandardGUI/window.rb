@@ -176,6 +176,10 @@ module WS
     # マウスのボタンが押されたときに手前に持ってくる処理(ちょっとアレな手)
     def mouse_event_dispatch(event, tx, ty)
       if event == :mouse_push or event == :mouse_r_push
+        ctl = get_focusable_control(tx, ty)
+        if ctl
+          self.window_focus=ctl
+        end
         self.parent.childlen.push(self.parent.childlen.delete(self))
         WS.focus(self)
       end

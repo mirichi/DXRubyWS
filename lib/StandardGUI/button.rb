@@ -67,13 +67,6 @@ module WS
                    .draw_line(self.x - 1, self.y + @height, self.x + @width, self.y + @height, C_BLACK)
       end
     end
-
-    # クリックされたらフォーカスをあてる
-    # このタイミングではボタンが乗っているウィンドウはアクティブになっている
-    def on_mouse_push(tx, ty)
-      WS.focused_object.window_focus = self if @focusable
-      super
-    end
   end
 
   # 普通のボタン

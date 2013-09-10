@@ -193,12 +193,5 @@ module WS
         self.target.draw_line(tx, self.y + 3, tx, self.y + 2 + @font.size, C_BLACK)
       end
     end
-
-    # クリックされたらフォーカスをあてる
-    # このタイミングではテキストボックスが乗っているウィンドウはアクティブになっている
-    def on_mouse_push(tx, ty)
-      WS.focused_object.window_focus = self
-      super
-    end
   end
 end

@@ -225,6 +225,10 @@ module WS
     def get_focusable_control_ary
       []
     end
+
+    def get_focusable_control(tx, ty)
+      nil
+    end
   end
 
   # 配下にコントロールを保持する機能を追加したコントロール
@@ -321,6 +325,15 @@ module WS
         ary.concat(o.get_focusable_control_ary)
       end
       ary
+    end
+
+    def get_focusable_control(tx, ty)
+      return self if @focusable
+
+      ctl = find_hit_object(tx, ty)
+      return nil unless ctl
+
+      return ctl.get_focusable_control(tx - ctl.x, ty - ctl.y)
     end
   end
 
