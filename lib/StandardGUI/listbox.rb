@@ -49,50 +49,62 @@ module WS
 
       # キーボードイベント
       add_key_handler(K_UP) do
+        old_cursor = @cursor
         @cursor -= 1
         @cursor = @cursor.clamp(0, @items.length - 1)
         if @cursor * @font.size < @pos
           @pos = @cursor * @font.size
           vsb.pos = @pos
         end
+        signal(:select, @cursor) if old_cursor != @cursor
       end
       add_key_handler(K_PGUP) do
+        old_cursor = @cursor
         @cursor -= client.height / @font.size
         @cursor = @cursor.clamp(0, @items.length - 1)
         if @cursor * @font.size < @pos
           @pos = @cursor * @font.size
           vsb.pos = @pos
         end
+        signal(:select, @cursor) if old_cursor != @cursor
       end
       add_key_handler(K_HOME) do
+        old_cursor = @cursor
         @cursor = 0
         if @cursor * @font.size < @pos
           @pos = @cursor * @font.size
           vsb.pos = @pos
         end
+        signal(:select, @cursor) if old_cursor != @cursor
       end
       add_key_handler(K_DOWN) do
+        old_cursor = @cursor
         @cursor += 1
         @cursor = @cursor.clamp(0, @items.length - 1)
         if @cursor * @font.size + (@font.size - 1) >= @pos + client.height
           @pos = @cursor * @font.size + @font.size - client.height
           vsb.pos = @pos
         end
+        signal(:select, @cursor) if old_cursor != @cursor
       end
       add_key_handler(K_PGDN) do
+        old_cursor = @cursor
         @cursor += client.height / @font.size
         @cursor = @cursor.clamp(0, @items.length - 1)
         if @cursor * @font.size + (@font.size - 1) >= @pos + client.height
           @pos = @cursor * @font.size + @font.size - client.height
           vsb.pos = @pos
         end
+        signal(:select, @cursor) if old_cursor != @cursor
       end
       add_key_handler(K_END) do
+        old_cursor = @cursor
         @cursor = @items.length - 1
         if @cursor * @font.size + (@font.size - 1) >= @pos + client.height
           @pos = @cursor * @font.size + @font.size - client.height
           vsb.pos = @pos
         end
+        signal(:select, @cursor) if old_cursor != @cursor
       end
     end
 
