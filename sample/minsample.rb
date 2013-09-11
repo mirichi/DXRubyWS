@@ -245,6 +245,9 @@ WS.desktop.r_menuitems = mainmenu
 WS.desktop.add_key_handler(K_ESCAPE) do break end
 
 
+txt2 = WS::WSTextBox.new(10, 10, 200, 20)
+WS.desktop.add_control(txt2)
+
 Window.loop do
   WS.update
 end

@@ -6,14 +6,12 @@ DXRubyWSはDXRuby用ゲームに組み込むことを想定したイベントド
 この文書はDXRubyWSの基本部分のクラス・モジュールのリファレンスマニュアルとなります。標準GUIについては現在開発中でほとんど形になっていないのでマニュアルを書けるレベルではありません。興味がある人はサンプルプログラムやGUI部分のソースを眺めてみるとよいでしょう。標準GUIはどちらかというとアプリを作るための部品ではなく、このように書けばこのように動くというサンプル的な意味合いのほうが強いと思っています。
 
 できること
-・マウスの移動、ボタン操作、ホイール操作の各種イベント発行
+・マウスの移動、ボタン操作、ホイール操作、キーボードの各種イベント発行
 ・コンテナとコントロールによるオブジェクトツリー(Compositeパターンのようなもの)でのGUI構築
 ・シグナルハンドラの登録とシグナル発行による実行
 ・コンテナ上のコントロールのサイズ・配置を自動的に調整するオートレイアウト
+・フォーカスの指定とキーボードイベントの伝達
 ・基本的なマウス操作でシグナルを発行してくれるサポートモジュール群
-
-開発中
-・キーボード入力イベント
 
 ずっと開発中
 ・GUI部品
@@ -31,21 +29,22 @@ WS.update -> nil
 WS.desktop -> WSDesktop
  スクリーン全体の最背面を表すWSDesktopオブジェクトを返します。スクリーン上にウィンドウなどを配置するときにはこのオブジェクトに対してコントロールの追加を行います。
 
-WS.capture(obj) -> obj
- マウスキャプチャします。通常マウスイベントはマウスカーソルの位置にあるオブジェクトに対して送信されますが、このメソッドを呼び出して登録するとそれ以降のイベントは登録されたオブジェクトに対して送信されます。nilを指定すると解除します。
+WS.capture(ctl) -> ctl
+ マウスキャプチャします。通常マウスイベントはマウスカーソルの位置にあるコントロールに対して送信されますが、このメソッドを呼び出して登録するとそれ以降のイベントは登録されたコントロールに対して送信されます。nilを指定すると解除します。
 
-WS.captured?(obj) -> true/false
- 引数で渡されたオブジェクトがマウスキャプチャされている場合にtrueを返します。
+WS.captured?(ctl) -> true/false
+ 引数で渡されたコントロールがマウスキャプチャされている場合にtrueを返します。
 
-WS.focus(obj) -> obj
- 引数で渡されたオブジェクトをシステムフォーカスに設定します。
- キーボードイベントはシステムフォーカスに設定されたオブジェクトに送信されます。
+WS.focus(ctl) -> ctl
+ 引数で渡されたコントロールをシステムフォーカスに設定します。
+ フォーカスを失ったコントロールにon_leaveイベントが、新しく設定されたコントロールにon_enterイベントが発行されます。
+ 以降のキーボードイベントはシステムフォーカスに設定されたコントロールに送信されます。
 
-WS.focused?(obj) -> true/false
- 引数で渡されたオブジェクトがシステムフォーカスに設定されている場合にtrueを返します。
+WS.focused?(ctl) -> true/false
+ 引数で渡されたコントロールがシステムフォーカスに設定されている場合にtrueを返します。
 
-WS.focused_object -> obj
- システムフォーカスに設定されているオブジェクトを返します。
+WS.focused_object -> ctl
+ システムフォーカスに設定されているコントロールを返します。
  システムフォーカスの初期値はnilで、nilの場合はデスクトップオブジェクトを表します。
 
 WS.default_z -> z (default 10000)
@@ -58,7 +57,7 @@ WS.default_z=(z) -> z
 すべてのコントロールのベースクラスです。DXRubyのSpriteを継承しています。生成したコントロールはWS.desktopかWSContainerオブジェクトのいずれかに登録する必要があります。WSContainerオブジェクトもWSControlを継承しているので、すべてのコントロールはWS.desktopを頂点としたオブジェクトツリーのどこかに位置します。このツリー内に存在しないコントロールにはマウスイベントは送信されませんし、描画もされません。
 WSControlはSpriteを継承していますが、imageにはデフォルトでは何も設定されません。画面に描画する画像については自分でImageオブジェクトを生成して設定するなどしてください。
 
-WSControl.new(x, y, width, height) -> WSControl
+WSControl.new(x, y, width, height) -> WSControlオブジェクト
  座標x/yとコントロールのサイズwidth/heightを渡し、WSControlオブジェクトを生成します。座標は登録するWS.desktopもしくはWSContainerオブジェクトの左上を(0,0)とした相対位置で表します。
  引数に渡すwidth/heightはインスタンス変数@width/@heightに設定され、WSControl#width/heightで参照できます。Sprite#collisionにも設定されますので、Sprite#imageの画像サイズとは関係なくこの値でマウスの判定がされます。画像サイズで判定したい場合はcollision=nilとしてください。
  WSControlを継承してクラスを作った場合にはinitialize内でのsuperは一番最初に呼ぶことをオススメします。
@@ -78,10 +77,10 @@ WSControl#on_mouse_wheel_down(x, y) -> self # ホイールを下に回した
  これらのメソッドはそれぞれon_を省いた名称のシグナルを発行します。
 
 WSControl#on_key_push(key) -> true/false
- キーボードのキーを押した場合にキーボードイベントが発生し、システムフォーカスオブジェクトのコントロールのon_key_pushが呼ばれます。引数はDXRubyのキー定数です。キーハンドラが登録されていた場合にはそれが呼ばれ、trueを返します。キーハンドラが無ければfalseを返します。
+ キーボードのキーを押した場合にキーボードイベントが発生し、システムフォーカスコントロールのon_key_pushが呼ばれます。引数はDXRubyのキー定数です。キーハンドラが登録されていた場合にはそれが呼ばれ、trueを返します。キーハンドラが無ければfalseを返します。
 
 WSControl#on_key_push(key) -> nil
- キーボードのキーを離した場合にキーボードイベントが発生し、システムフォーカスオブジェクトのコントロールのon_key_releaseが呼ばれます。引数はDXRubyのキー定数です。
+ キーボードのキーを離した場合にキーボードイベントが発生し、システムフォーカスコントロールのon_key_releaseが呼ばれます。引数はDXRubyのキー定数です。
 
 WSControl#on_string(str) -> nil
  なんらかの文字が入力された場合に呼ばれます。通常は一文字ずつ渡されますが、IMEを使って文字列を確定した場合はまとめて渡されてきます。
@@ -129,13 +128,13 @@ attr_accessor :min_width, :min_height
 
 複数のコントロールを配下に持つことができるコンテナのクラスです。WSControlを継承しています。WSContainerはimageにRenderTargetオブジェクトを生成して保持し、配下のコントロールはそのRenderTargetオブジェクトがSprite#target=で自動的に設定されます。なので、配下のコントロールは基本的に親のオブジェクトの外側には描画できません。
 
-WSContainer.new(x, y, width, height) -> WSContainer
+WSContainer.new(x, y, width, height) -> WSContainerオブジェクト
  imageにRenderTarget.new(width, height)としてRenderTargetオブジェクトが設定されます。
 
-WSContainer#add_control(obj, name=nil) -> obj
+WSContainer#add_control(ctl, name=nil) -> ctl
  selfの配下にobjを追加します。nameにSymbolオブジェクトを指定するとselfの特異メソッドとしてobjを返すメソッドnameを追加します。
 
-WSContainer#remove_control(obj, name=nil) -> obj
+WSContainer#remove_control(ctl, name=nil) -> ctl
  selfの配下のobjを削除します。nameにSymbolオブジェクトを指定するとその名前の特異メソッドも削除します。
 
 WSContainer#update
@@ -144,7 +143,7 @@ WSContainer#update
 WSContainer#draw
  配下のオブジェクトのdrawを呼び出してから、自身のdrawを呼びます。
 
-WSContainer#find_hit_object(x, y) -> WSControl
+WSContainer#find_hit_object(x, y) -> WSControlオブジェクト
  内部処理に使われます。配下のオブジェクトのうち、(x, y)にヒットするオブジェクトを返します。
 
 WSContainer#mouse_event_dispach(event, x, y) -> イベントを受け取ったオブジェクト
@@ -157,6 +156,14 @@ WSContainer#layout(type=nil, &block)
 WSContainer#resize(width, height)
  selfのimageに格納されているRenderTargetオブジェクトをリサイズし、:resizeシグナルを発行してからオートレイアウトを実行します。
 
+WSContainer#get_focusable_control_ary -> Array
+ コンテナ配下のフォーカスを持てる(@focusable==trueの)コントロールの配列を返します。フォーカスを持てる指定になっているコンテナが存在した場合はその配下のコントロールは返しません。
+ フォーカスを持てるコントロールが1つも存在しない場合は空の配列を返します。
+
+WSContainer#get_focusable_control(x, y) -> WSControlオブジェクト
+ コンテナ配下の(x, y)の座標に位置し、フォーカスを持てるコントロールを返します。
+ フォーカスを持てるコントロールが存在しない場合はnilを返します。
+
 プロパティ類
 attr_accessor :childlen
  配下のオブジェクトが格納されている配列です。格納順に描画しますが、マウスの判定は逆順になります。
@@ -164,7 +171,7 @@ attr_accessor :childlen
 
 ■５．class WSDesktop < WSContainer
 
-スクリーン全体を表すデスクトップオブジェクトです。マウスイベントの発生元です。require 'dxrubyws'した時点で生成されます。WS.desktopで参照できます。ユーザがnewすることは想定していません。
+スクリーン全体を表すデスクトップオブジェクトです。マウス・キーボードイベントの発生元です。require 'dxrubyws'した時点で生成されます。WS.desktopで参照できます。ユーザがnewすることは想定していません。
 特別なメソッドを定義しているわけではありませんが、このオブジェクトにadd_controlしたもののみがマウスイベントを受け取り、描画もされます。
 WS.updateの中身はWS.desktopに対するupdateとdrawの呼び出しです。
 
