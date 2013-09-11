@@ -157,6 +157,7 @@ module WS
   end
 
   def self.focus(obj)
+    return obj if @@desktop.system_focus == obj
     @@desktop.system_focus.on_leave if @@desktop.system_focus and @@desktop.system_focus != obj
     @@desktop.system_focus = obj
     obj.on_enter if obj
