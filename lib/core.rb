@@ -2,6 +2,11 @@
 
 # ウィンドウシステム
 module WS
+  K_SHIFT = 256
+  K_NSHIFT = 512
+  K_CTRL = 1024
+  K_NCTRL = 2048
+  
   # すべての基本、コントロールのクラス
   class WSControl < Sprite
     attr_accessor :parent, :font, :width, :height, :resizable_width, :resizable_height
@@ -171,14 +176,47 @@ module WS
     # キー押したイベント。引数はDXRubyのキー定数。
     # ハンドラを呼んだらtrue、何もなければfalseを返す。
     def on_key_push(key)
+      result = false
       if @key_handler.has_key?(key)
         @key_handler[key].each do |obj|
           obj.call(self)
         end
-        true
-      else
-        false
+        result ||= true
       end
+
+      tmp = key
+      key += 256 if Input.key_down?(K_LSHIFT) or Input.key_down?(K_RSHIFT)
+      key += 512 if !Input.key_down?(K_LSHIFT) and !Input.key_down?(K_RSHIFT)
+      if @key_handler.has_key?(key)
+        @key_handler[key].each do |obj|
+          obj.call(self)
+        end
+        result ||= true
+      end
+
+      key = tmp
+      key += 1024 if Input.key_down?(K_LCONTROL) or Input.key_down?(K_RCONTROL)
+      key += 2048 if !Input.key_down?(K_LCONTROL) and !Input.key_down?(K_RCONTROL)
+      if @key_handler.has_key?(key)
+        @key_handler[key].each do |obj|
+          obj.call(self)
+        end
+        result ||= true
+      end
+
+      key = tmp
+      key += 256 if Input.key_down?(K_LSHIFT) or Input.key_down?(K_RSHIFT)
+      key += 512 if !Input.key_down?(K_LSHIFT) and !Input.key_down?(K_RSHIFT)
+      key += 1024 if Input.key_down?(K_LCONTROL) or Input.key_down?(K_RCONTROL)
+      key += 2048 if !Input.key_down?(K_LCONTROL) and !Input.key_down?(K_RCONTROL)
+      if @key_handler.has_key?(key)
+        @key_handler[key].each do |obj|
+          obj.call(self)
+        end
+        result ||= true
+      end
+
+      result
     end
 
     # キー離したイベント。引数はDXRubyのキー定数。

@@ -102,15 +102,25 @@ module WS
       add_key_handler(K_ESCAPE){self.close}
 
       # Tabでフォーカス移動
-      add_key_handler(K_TAB) do
+      add_key_handler(K_NCTRL + K_NSHIFT + K_TAB) do
         if @window_focus
           tmp = client.get_focusable_control_ary
           index = tmp.index(@window_focus)
-          if Input.key_down?(K_LSHIFT) or Input.key_down?(K_RSHIFT)
-            ary = tmp[0...index].reverse + tmp[index..-1].reverse
-          else
-            ary = tmp[(index+1)..-1] + tmp[0..index]
+          ary = tmp[(index+1)..-1] + tmp[0..index]
+          ary.each do |o|
+            if o.focusable
+              self.window_focus = o
+              break
+            end
           end
+        end
+      end
+
+      add_key_handler(K_NCTRL + K_SHIFT + K_TAB) do
+        if @window_focus
+          tmp = client.get_focusable_control_ary
+          index = tmp.index(@window_focus)
+          ary = tmp[0...index].reverse + tmp[index..-1].reverse
           ary.each do |o|
             if o.focusable
               self.window_focus = o

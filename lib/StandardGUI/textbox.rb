@@ -118,11 +118,9 @@ module WS
         @cursor_pos = @text.length
       end
 
-      add_key_handler(K_A) do
-        if Input.key_down?(K_LCONTROL) or Input.key_down?(K_RCONTROL)
-          @selected_range_first = 0
-          @selected_range_last = @text.length
-        end
+      add_key_handler(K_CTRL + K_NSHIFT + K_A) do
+        @selected_range_first = 0
+        @selected_range_last = @text.length
       end
     end
 
