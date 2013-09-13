@@ -7,18 +7,18 @@ module WS
     # リストビューのタイトル部分のクラス
     class WSListViewTitle < WSContainer
       attr_reader :titles
-      attr_accessor :pos
 
       def initialize(tx, ty, width, height, titles)
         super(tx, ty, width, height)
         self.image.bgcolor = [190,190,190]
         @font = Font.new(12)
         @titles = titles
-        @pos = 0
         @dragging_number = nil
       end
 
       def draw
+        pos = self.parent.parent.hsb.pos
+
         # ボーダー
         sx = @width
         sy = @height
@@ -31,16 +31,16 @@ module WS
         tx = 0
         ([["",0]]+@titles).each do |title|
           tx += title[1]
-          self.image.draw_line(tx-2-@pos,1,tx-2-@pos,sy-3,[80,80,80])
-          self.image.draw_line(tx-1-@pos,0,tx-1-@pos,sy-2,[120,120,120])
-          self.image.draw_line(tx-@pos  ,0,tx-@pos  ,sy-2,[240,240,240])
-          self.image.draw_line(tx+1-@pos,1,tx+1-@pos,sy-3,[200,200,200])
+          self.image.draw_line(tx-2-pos,1,tx-2-pos,sy-3,[80,80,80])
+          self.image.draw_line(tx-1-pos,0,tx-1-pos,sy-2,[120,120,120])
+          self.image.draw_line(tx-pos  ,0,tx-pos  ,sy-2,[240,240,240])
+          self.image.draw_line(tx+1-pos,1,tx+1-pos,sy-3,[200,200,200])
         end
 
         # タイトル
         tx = 0
         @titles.each do |title|
-          self.image.draw_font(tx + 3-@pos, 2, title[0].to_s, @font, :color=>C_BLACK)
+          self.image.draw_font(tx + 3-pos, 2, title[0].to_s, @font, :color=>C_BLACK)
           tx += title[1]
         end
 
@@ -54,7 +54,7 @@ module WS
           total += @titles[i][1]
 
           # セパレータの判定用Sprite生成
-          s = Sprite.new(total - 2 - @pos, 0)
+          s = Sprite.new(total - 2 - self.parent.parent.hsb.pos, 0)
           s.collision = [0, 0, 4, 15]
 
           # 判定
@@ -90,7 +90,7 @@ module WS
           total += @titles[i][1]
 
           # セパレータの判定用Sprite生成
-          s = Sprite.new(total - 2 - @pos, 0)
+          s = Sprite.new(total - 2 - self.parent.parent.hsb.pos, 0)
           s.collision = [0, 0, 4, 15]
 
           # 判定
@@ -178,9 +178,6 @@ module WS
       # マウスホイール処理
       client.listview.add_handler(:mouse_wheel_up){vsb.slide(-vsb.shift_qty * 3)}
       client.listview.add_handler(:mouse_wheel_down){vsb.slide(vsb.shift_qty * 3)}
-
-      # スライダー移動時のシグナルハンドラ
-      hsb.add_handler(:slide){|obj, pos|client.title.pos=pos}
 
       # キーボードイベント
       add_key_handler(K_UP) do
