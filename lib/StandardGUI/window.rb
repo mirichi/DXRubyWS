@@ -27,8 +27,8 @@ module WS
     
     # ウィンドウのタイトルバー用クラス
     class WSWindowTitle < WSContainer
-      include Draggable       # ウィンドウのドラッグ用
       include DoubleClickable # 最大化用
+      include Draggable       # ウィンドウのドラッグ用
   
       def initialize(tx, ty, width, height, title="")
         super(tx, ty, width, height)
@@ -45,6 +45,10 @@ module WS
         label.fore_color = C_WHITE
         label.font = Font.new(14, nil, :weight=>true)
         add_control(label)
+
+        add_handler(:doubleclick) do
+          @dragging_flag = false
+        end
 
         # オートレイアウト
         layout(:hbox) do
