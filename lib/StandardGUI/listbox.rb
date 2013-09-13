@@ -23,12 +23,11 @@ module WS
       self.image.bgcolor = C_WHITE
       @font = Font.new(12)
       @items = [] # リストの中身
-      @pos = 0    # 描画の基点
       @cursor = 0 # カーソルの位置
 
       add_control(client, :client)
       client.add_handler(:mouse_push) do |obj, tx, ty|
-        tmp = ((@pos + ty) / @font.size).to_i
+        tmp = ((vsb.pos + ty) / @font.size).to_i
         if tmp < @items.size
           @cursor = tmp
           signal(:select, @cursor) # 項目がクリックされたら:selectシグナル発行
@@ -44,17 +43,13 @@ module WS
       client.add_handler(:mouse_wheel_up){vsb.slide(-vsb.shift_qty * 3)}
       client.add_handler(:mouse_wheel_down){vsb.slide(vsb.shift_qty * 3)}
 
-      # スライダー移動時のシグナルハンドラ
-      vsb.add_handler(:slide){|obj, pos|@pos = pos}
-
       # キーボードイベント
       add_key_handler(K_UP) do
         old_cursor = @cursor
         @cursor -= 1
         @cursor = @cursor.clamp(0, @items.length - 1)
-        if @cursor * @font.size < @pos
-          @pos = @cursor * @font.size
-          vsb.pos = @pos
+        if @cursor * @font.size < vsb.pos
+          vsb.pos = @cursor * @font.size
         end
         signal(:select, @cursor) if old_cursor != @cursor
       end
@@ -62,18 +57,16 @@ module WS
         old_cursor = @cursor
         @cursor -= client.height / @font.size
         @cursor = @cursor.clamp(0, @items.length - 1)
-        if @cursor * @font.size < @pos
-          @pos = @cursor * @font.size
-          vsb.pos = @pos
+        if @cursor * @font.size < vsb.pos
+          vsb.pos = @cursor * @font.size
         end
         signal(:select, @cursor) if old_cursor != @cursor
       end
       add_key_handler(K_HOME) do
         old_cursor = @cursor
         @cursor = 0
-        if @cursor * @font.size < @pos
-          @pos = @cursor * @font.size
-          vsb.pos = @pos
+        if @cursor * @font.size < vsb.pos
+          vsb.pos = @cursor * @font.size
         end
         signal(:select, @cursor) if old_cursor != @cursor
       end
@@ -81,9 +74,8 @@ module WS
         old_cursor = @cursor
         @cursor += 1
         @cursor = @cursor.clamp(0, @items.length - 1)
-        if @cursor * @font.size + (@font.size - 1) >= @pos + client.height
-          @pos = @cursor * @font.size + @font.size - client.height
-          vsb.pos = @pos
+        if @cursor * @font.size + (@font.size - 1) >= vsb.pos + client.height
+          vsb.pos = @cursor * @font.size + @font.size - client.height
         end
         signal(:select, @cursor) if old_cursor != @cursor
       end
@@ -91,18 +83,16 @@ module WS
         old_cursor = @cursor
         @cursor += client.height / @font.size
         @cursor = @cursor.clamp(0, @items.length - 1)
-        if @cursor * @font.size + (@font.size - 1) >= @pos + client.height
-          @pos = @cursor * @font.size + @font.size - client.height
-          vsb.pos = @pos
+        if @cursor * @font.size + (@font.size - 1) >= vsb.pos + client.height
+          vsb.pos = @cursor * @font.size + @font.size - client.height
         end
         signal(:select, @cursor) if old_cursor != @cursor
       end
       add_key_handler(K_END) do
         old_cursor = @cursor
         @cursor = @items.length - 1
-        if @cursor * @font.size + (@font.size - 1) >= @pos + client.height
-          @pos = @cursor * @font.size + @font.size - client.height
-          vsb.pos = @pos
+        if @cursor * @font.size + (@font.size - 1) >= vsb.pos + client.height
+          vsb.pos = @cursor * @font.size + @font.size - client.height
         end
         signal(:select, @cursor) if old_cursor != @cursor
       end
@@ -123,10 +113,10 @@ module WS
       # リスト描画
       @items.each_with_index do |s, i|
         if @cursor != i
-          client.image.draw_font(2, i * @font.size - @pos, s.to_s, @font, :color=>C_BLACK)
+          client.image.draw_font(2, i * @font.size - vsb.pos, s.to_s, @font, :color=>C_BLACK)
         else
-          client.image.draw(0, i * @font.size - @pos, @cursor_image)
-          client.image.draw_font(2, i * @font.size - @pos, s.to_s, @font, :color=>C_WHITE)
+          client.image.draw(0, i * @font.size - vsb.pos, @cursor_image)
+          client.image.draw_font(2, i * @font.size - vsb.pos, s.to_s, @font, :color=>C_WHITE)
         end
       end
       super

@@ -139,7 +139,6 @@ module WS
     end
 
     attr_reader :items, :cursor
-    attr_accessor :vpos, :hpos
     include Focusable
 
     def initialize(tx, ty, width, height, titles)
@@ -150,14 +149,13 @@ module WS
       self.image.bgcolor = [190,190,190]
       @font = Font.new(12)
       @items = [] # リストの中身
-      @vpos = @hposition = 0    # 描画の基点
       @cursor = 0 # カーソルの位置
       @v_header_size = 16
 
       # クライアント領域作成
       add_control(client, :client)
       client.listview.add_handler(:mouse_push) do |obj, tx, ty|
-        tmp = ((@vpos + ty) / @font.size).to_i
+        tmp = ((vsb.pos + ty) / @font.size).to_i
         if tmp < @items.size
           @cursor = tmp
           signal(:select, @cursor) # 項目がクリックされたら:selectシグナル発行
@@ -182,17 +180,15 @@ module WS
       client.listview.add_handler(:mouse_wheel_down){vsb.slide(vsb.shift_qty * 3)}
 
       # スライダー移動時のシグナルハンドラ
-      vsb.add_handler(:slide){|obj, pos|@vpos = pos}
-      hsb.add_handler(:slide){|obj, pos|@hpos = pos;client.title.pos=pos}
+      hsb.add_handler(:slide){|obj, pos|client.title.pos=pos}
 
       # キーボードイベント
       add_key_handler(K_UP) do
         old_cursor = @cursor
         @cursor -= 1
         @cursor = @cursor.clamp(0, @items.length - 1)
-        if @cursor * @font.size < @vpos
-          @vpos = @cursor * @font.size
-          vsb.pos = @vpos
+        if @cursor * @font.size < vsb.pos
+          vsb.pos = @cursor * @font.size
         end
         signal(:select, @cursor) if old_cursor != @cursor
       end
@@ -200,18 +196,16 @@ module WS
         old_cursor = @cursor
         @cursor -= client.height / @font.size
         @cursor = @cursor.clamp(0, @items.length - 1)
-        if @cursor * @font.size < @vpos
-          @vpos = @cursor * @font.size
-          vsb.pos = @vpos
+        if @cursor * @font.size < vsb.pos
+          vsb.pos = @cursor * @font.size
         end
         signal(:select, @cursor) if old_cursor != @cursor
       end
       add_key_handler(K_HOME) do
         old_cursor = @cursor
         @cursor = 0
-        if @cursor * @font.size < @vpos
-          @vpos = @cursor * @font.size
-          vsb.pos = @vpos
+        if @cursor * @font.size < vsb.pos
+          vsb.pos = @cursor * @font.size
         end
         signal(:select, @cursor) if old_cursor != @cursor
       end
@@ -219,9 +213,8 @@ module WS
         old_cursor = @cursor
         @cursor += 1
         @cursor = @cursor.clamp(0, @items.length - 1)
-        if @cursor * @font.size + (@font.size - 1) >= @vpos + client.listview.height
-          @vpos = @cursor * @font.size + @font.size - client.listview.height
-          vsb.pos = @vpos
+        if @cursor * @font.size + (@font.size - 1) >= vsb.pos + client.listview.height
+          vsb.pos = @cursor * @font.size + @font.size - client.listview.height
         end
         signal(:select, @cursor) if old_cursor != @cursor
       end
@@ -229,18 +222,16 @@ module WS
         old_cursor = @cursor
         @cursor += client.height / @font.size
         @cursor = @cursor.clamp(0, @items.length - 1)
-        if @cursor * @font.size + (@font.size - 1) >= @vpos + client.listview.height
-          @vpos = @cursor * @font.size + @font.size - client.listview.height
-          vsb.pos = @vpos
+        if @cursor * @font.size + (@font.size - 1) >= vsb.pos + client.listview.height
+          vsb.pos = @cursor * @font.size + @font.size - client.listview.height
         end
         signal(:select, @cursor) if old_cursor != @cursor
       end
       add_key_handler(K_END) do
         old_cursor = @cursor
         @cursor = @items.length - 1
-        if @cursor * @font.size + (@font.size - 1) >= @vpos + client.listview.height
-          @vpos = @cursor * @font.size + @font.size - client.listview.height
-          vsb.pos = @vpos
+        if @cursor * @font.size + (@font.size - 1) >= vsb.pos + client.listview.height
+          vsb.pos = @cursor * @font.size + @font.size - client.listview.height
         end
         signal(:select, @cursor) if old_cursor != @cursor
       end
@@ -271,16 +262,16 @@ module WS
         if @cursor != i
           color = C_BLACK
         else
-          client.listview.image.draw(0 - @hpos, i * @font.size - @vpos, @cursor_image)
+          client.listview.image.draw(0 - hsb.pos, i * @font.size - vsb.pos, @cursor_image)
           color = C_WHITE
         end
         item.each_with_index do |s, x|
-          @client_tmp_rt[x].draw_font(2, i * @font.size - @vpos, s.inspect, @font, :color=>color)
+          @client_tmp_rt[x].draw_font(2, i * @font.size - vsb.pos, s.inspect, @font, :color=>color)
         end
       end
       tx = 0
       client.title.titles.size.times do |x|
-        client.listview.image.draw(tx - @hpos, 0, @client_tmp_rt[x])
+        client.listview.image.draw(tx - hsb.pos, 0, @client_tmp_rt[x])
         tx += client.title.titles[x][1]
       end
       super
