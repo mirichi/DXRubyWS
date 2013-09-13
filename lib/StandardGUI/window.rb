@@ -191,17 +191,19 @@ module WS
 
     # キーハンドラを呼ばなかったらウィンドウフォーカスコントロールに転送
     def on_key_push(key)
-      tmp = super
-      unless tmp
-        @window_focus.on_key_push(key) if @window_focus
+      if @window_focus
+        tmp = @window_focus.on_key_push(key)
+        tmp = super unless tmp
+        tmp
       end
     end
 
     # キーハンドラを呼ばなかったらウィンドウフォーカスコントロールに転送
     def on_key_release(key)
-      tmp = super
-      unless tmp
-        @window_focus.on_key_release(key) if @window_focus
+      if @window_focus
+        tmp = @window_focus.on_key_release(key)
+        tmp = super unless tmp
+        tmp
       end
     end
 
