@@ -374,16 +374,20 @@ module WS
         vsb.visible = false
         hsb.collision_enable = true
         vsb.collision_enable = false
+        vsb.pos = 0
       elsif bvsb
         @layout = @layout_vsb
         hsb.visible = false
         vsb.visible = true
         hsb.collision_enable = false
         vsb.collision_enable = true
+        hsb.pos = 0
       else
         @layout = @layout_none
         hsb.visible = vsb.visible = false
         hsb.collision_enable = vsb.collision_enable = false
+        vsb.pos = 0
+        hsb.pos = 0
       end
 
       super
