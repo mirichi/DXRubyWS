@@ -82,7 +82,6 @@ module WS
               hit_obj = @submenu.mouse_event_dispatch(event, self.x + tx - @submenu.x, self.y + ty - @submenu.y)
               if hit_obj != @submenu
                 self.parent.remove_control(self) if self.parent
-                WS.capture(nil)
               end
             else
               WS.capture(nil)
