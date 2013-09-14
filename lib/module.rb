@@ -24,9 +24,16 @@ module WS
       @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
       @image_flag = false
       if @hit_cursor === self and WS.captured?(self)
+        WS.capture(nil)
         on_click(self, tx, ty)
+      else
+        if WS.captured?(self)
+          WS.capture(nil)
+          on_click_cancel(self, tx, ty)
+        else
+          WS.capture(nil)
+        end
       end
-      WS.capture(nil)
       super
     end
 
@@ -40,6 +47,10 @@ module WS
 
     def on_click(obj, tx, ty)
       signal(:click, tx, ty)
+    end
+
+    def on_click_cancel(obj, tx, ty)
+      signal(:click_cancel, tx, ty)
     end
   end
 
