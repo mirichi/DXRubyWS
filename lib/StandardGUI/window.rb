@@ -186,6 +186,8 @@ module WS
         tmp = @window_focus.on_key_push(key)
         tmp = super unless tmp
         tmp
+      else
+        super
       end
     end
 
@@ -195,6 +197,8 @@ module WS
         tmp = @window_focus.on_key_release(key)
         tmp = super unless tmp
         tmp
+      else
+        super
       end
     end
 
