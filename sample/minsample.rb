@@ -61,16 +61,6 @@ class WS::WSWindow::WSWindowClient
   include UseObjectBrowser
   include WS::UseMiddleClickMenu
 end
-class WS::WSButton
-  include UseObjectBrowser
-  include WS::UseMiddleClickMenu
-end
-class WS::WSImage
-  include UseObjectBrowser
-  include WS::UseMiddleClickMenu
-end
-
-
 
 # ListBoxTestWindow
 w = WS::WSWindow.new(400, 100, 200, 250, "ListBoxTest")
