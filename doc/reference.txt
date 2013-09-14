@@ -4,6 +4,7 @@ DXRuby用ウィンドウシステムDXRubyWS リファレンスマニュアル
 
 DXRubyWSはDXRuby用ゲームに組み込むことを想定したイベントドリブンのウィンドウシステムフレームワークです。ゲームのコードと独立した定義で、マウス操作などをトリガーにしたイベントに対処するコードを記述し、DXRubyWSシステムから呼び出されることで動作します。
 この文書はDXRubyWSの基本部分のクラス・モジュールのリファレンスマニュアルとなります。標準GUIについては現在開発中でほとんど形になっていないのでマニュアルを書けるレベルではありません。興味がある人はサンプルプログラムやGUI部分のソースを眺めてみるとよいでしょう。標準GUIはどちらかというとアプリを作るための部品ではなく、このように書けばこのように動くというサンプル的な意味合いのほうが強いと思っています。
+ゲームに組み込む場合は標準GUIは使わず、ゲームの雰囲気に合ったコントロールを作ることをオススメします。標準GUIのウィンドウほど多機能なものを作ることにはならないはずです。
 
 できること
 ・マウスの移動、ボタン操作、ホイール操作、キーボードの各種イベント発行
@@ -35,10 +36,11 @@ WS.capture(ctl) -> ctl
 WS.captured?(ctl) -> true/false
  引数で渡されたコントロールがマウスキャプチャされている場合にtrueを返します。
 
-WS.focus(ctl) -> ctl
+WS.set_focus(ctl) -> ctl
  引数で渡されたコントロールをシステムフォーカスに設定します。
  フォーカスを失ったコントロールにon_leaveイベントが、新しく設定されたコントロールにon_enterイベントが発行されます。
  以降のキーボードイベントはシステムフォーカスに設定されたコントロールに送信されます。
+ nilを設定するとデスクトップにフォーカスが移ります。
 
 WS.focused?(ctl) -> true/false
  引数で渡されたコントロールがシステムフォーカスに設定されている場合にtrueを返します。
@@ -49,7 +51,7 @@ WS.focused_object -> ctl
 
 WS.default_z -> z (default 10000)
 WS.default_z=(z) -> z
- WS.desktopで返されるWSDesktopオブジェクトは、何も描画しません。WS.desktopに対して追加したコントロールはスクリーン(DXRubyでいうWindow)に直接描画されます。Sprite#target=nil(or Window)とした状態です。DXRubyWS外で描画された画像との描画優先順位が不明になってしまうので、このメソッドでz値のデフォルトを設定します。初期値は10000となっています。たいがいの場合にはDXRubyWSで描画された画像が一番手前にくるでしょう。
+ WS.desktopで返されるWSDesktopオブジェクトは、何も描画しません。WS.desktopに対して追加したコントロールはスクリーン(DXRubyでいうWindow)に直接描画されます。Sprite#target=nil(or Window)とした状態です。DXRubyWS外で描画された画像との描画優先順位が不明になってしまうので、このメソッドでz値のデフォルトを設定します。初期値は10000となっています。デフォルトのままだとたいがいの場合にはDXRubyWSで描画された画像が一番手前にくるでしょう。
 
 
 ■３．class WSControl < Sprite
@@ -60,7 +62,7 @@ WSControlはSpriteを継承していますが、imageにはデフォルトでは
 WSControl.new(x, y, width, height) -> WSControlオブジェクト
  座標x/yとコントロールのサイズwidth/heightを渡し、WSControlオブジェクトを生成します。座標は登録するWS.desktopもしくはWSContainerオブジェクトの左上を(0,0)とした相対位置で表します。
  引数に渡すwidth/heightはインスタンス変数@width/@heightに設定され、WSControl#width/heightで参照できます。Sprite#collisionにも設定されますので、Sprite#imageの画像サイズとは関係なくこの値でマウスの判定がされます。画像サイズで判定したい場合はcollision=nilとしてください。
- WSControlを継承してクラスを作った場合にはinitialize内でのsuperは一番最初に呼ぶことをオススメします。
+ WSControlを継承してクラスを作った場合にはinitialize内でのsuperは特殊な事情が無い限りは一番最初に呼ぶことをオススメします。
 
 WSControl#on_mouse_push(x, y) -> self       # 左ボタン押した
 WSControl#on_mouse_release(x, y) -> self    # 左ボタン離した
@@ -76,6 +78,9 @@ WSControl#on_mouse_wheel_down(x, y) -> self # ホイールを下に回した
  それぞれ、マウスイベント発生時にDXRubyWSシステムから呼び出されるメソッドです。WSControlを継承してクラスを作った場合には、これらをオーバーライドして処理を書きます。superは最後に呼びます。最後に呼べない場合はselfを返すようにしてください。
  これらのメソッドはそれぞれon_を省いた名称のシグナルを発行します。
 
+WSControl#mouse_event_dispach(event, x, y) -> イベントを受け取ったオブジェクト
+ 内部処理に使われるイベント伝播用メソッドです。上記マウスイベントを呼び出します。
+
 WSControl#on_key_push(key) -> true/false
  キーボードのキーを押した場合にキーボードイベントが発生し、システムフォーカスコントロールのon_key_pushが呼ばれます。引数はDXRubyのキー定数です。キーハンドラが登録されていた場合にはそれが呼ばれ、trueを返します。キーハンドラが無ければfalseを返します。
 
@@ -83,7 +88,7 @@ WSControl#on_key_push(key) -> nil
  キーボードのキーを離した場合にキーボードイベントが発生し、システムフォーカスコントロールのon_key_releaseが呼ばれます。引数はDXRubyのキー定数です。
 
 WSControl#on_string(str) -> nil
- なんらかの文字が入力された場合に呼ばれます。通常は一文字ずつ渡されますが、IMEを使って文字列を確定した場合はまとめて渡されてきます。
+ なんらかの文字が入力された場合に呼ばれます。通常は一文字ずつ渡されますが、一度にたくさんのキーを押したり、IMEを使って文字列を確定した場合はまとめて渡されてきます。
 
 WSControl#on_enter -> nil
  コントロールにフォーカスが設定された場合に呼ばれます。すでに設定されているコントロールに再設定しても呼ばれません。
@@ -91,16 +96,15 @@ WSControl#on_enter -> nil
 WSControl#on_leave -> nil
  コントロールがフォーカスを失った場合に呼ばれます。フォーカスを設定したコントロールのon_enterの前に呼ばれます。
 
-WSControl#mouse_event_dispach(event, x, y) -> イベントを受け取ったオブジェクト
- 内部処理に使われるイベント伝播用メソッドです。上記マウスイベントを呼び出します。
-
 WSControl#add_handler(signal, obj=nil, &block) -> nil
  シグナルハンドラを追加します。signalにはシグナル名を表すSymbolオブジェクトを渡します。このオブジェクトで指定したシグナルが発生したときに、objで指定されたMethodオブジェクトもしくはブロックが呼び出されます。両方指定した場合は両方呼び出されます。同じシグナルに複数のハンドラを登録することができます。
- MethodオブジェクトもProcオブジェクトも結局はcallメソッドが呼び出されるので、callメソッドが存在するオブジェクトをobjに指定するとそれが呼び出されます。
+ MethodオブジェクトもProcオブジェクトも結局はcallメソッドが呼ばれるので、callメソッドが存在するオブジェクトをobjに指定するとそれが呼ばれます。
 
 WSControl#add_key_handler(key, obj=nil, &block) -> nil
  キーハンドラを追加します。keyで渡したキー定数のキーが押された場合にobjのcallを呼び、ブロックを実行します。
-
+ WSモジュール内にK_CTRLが定義されており、これを足すことでコントロールキーを押しながらの条件でハンドラを登録できます。K_CTRLを足さないと押してない場合になります。
+ シフトキーについては押した場合/押されていない場合をハンドラ内で判定してください。
+ 
 WSControl#signal(s, *args) -> nil
  sはシグナル名を表すSymbolオブジェクトを渡し、そのシグナルを発行します。シグナルハンドラに登録されているすべてのオブジェクトのcallメソッドを呼び出します。
  引数の数は自由ですが、シグナルハンドラに渡される引数にはシグナル発生元として第1引数にselfが追加されます。
@@ -116,12 +120,14 @@ WSControl#resize(width, height) -> nil
 
 プロパティ類
 attr_accessor :parent, :font, :width, :height, :resizable_width, :resizable_height
-attr_accessor :min_width, :min_height
+attr_accessor :min_width, :min_height, :focusable, :active
  parentは登録された親のオブジェクト(WS.desktopもしくはWSContainerオブジェクト)が格納されます。
  fontは何もしなければFont.new(16)で作られたデフォルトフォントが設定されます。
  width/heightはnewで渡された値が設定されます。resizeで更新されます。
  resizable_width/heightはオートレイアウト機能で自動更新するかどうかが格納されます。デフォルトはfalseです。
  min_width/heightはオートレイアウト機能で縮小される最低サイズを設定します。デフォルトは16です。
+ focusableはサポートモジュールのFocusableをincludeするとinitialize内でtrueになります。trueのオブジェクトはフォーカスを受け取ることができます。
+ activeはフォーカスを持つモジュールだけがtrueになります。
 
 
 ■４．class WSContainer < WSControl
@@ -218,7 +224,7 @@ margin_left/right/top/bottomはレイアウトのそれぞれ左右上下のマ�
 ■７．サポートモジュール
 
 マウスイベントを受け取り、なんらかの判定を行ってシグナルを発行するモジュール群です。ものによってシグナルを発行する以外のこともします。
-WSControl/WSContainerを継承したクラスにincludeするか、生成したオブジェクトにextendして使います。
+WSControl/WSContainerを継承したクラスにincludeするか、生成したオブジェクトにextendして使います。Focusableモジュールはinitializeしかないのでextendしても効果はありません。後からフォーカスを持てるようにしたい場合はWSControl#focusable=trueとしてください。
 疲れてきたので詳細はソースおよびコメントを見てください。module.rbです。
 
 
