@@ -155,7 +155,7 @@ module WS
 
     # フォーカス取得
     def on_enter
-      Input::IME.enable = true
+#      Input::IME.enable = true
       Input::IME.set_font(@font)
       @selected_range_first = 0
       @selected_range_last = @text.length
@@ -166,7 +166,7 @@ module WS
 
     # フォーカス喪失
     def on_leave
-      Input::IME.enable = false
+#      Input::IME.enable = false
       super
     end
 
