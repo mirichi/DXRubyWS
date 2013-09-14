@@ -113,9 +113,6 @@ module WS
           self.window_focus = tmp[tmp.index(@window_focus) - 1]
         end
       end
-
-      # 新規生成したウィンドウはシステムフォーカスを取る
-      WS.focus(self)
     end
 
     def add_menubar(menuitems)
@@ -180,7 +177,7 @@ module WS
     # ウィンドウを閉じたら次の優先ウィンドウにフォーカスを移す
     def close
       self.parent.remove_control(self)
-      WS.focus(self.parent.childlen.last)
+      WS.set_focus(self.parent.childlen.last)
     end
 
     # キーハンドラを呼ばなかったらウィンドウフォーカスコントロールに転送

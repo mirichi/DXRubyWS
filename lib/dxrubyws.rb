@@ -31,6 +31,7 @@ module WS
       super
       obj.z = WS.default_z
       obj.target = Window
+      WS.set_focus(obj)
     end
 
     def update
@@ -73,13 +74,7 @@ module WS
         # フォーカスを取得できるコントロールだった場合にフォーカスを設定する
         if (Input.mouse_down?(M_LBUTTON) and @mouse_l_flag == false) or
            (Input.mouse_down?(M_RBUTTON) and @mouse_r_flag == false)
-          ctl = get_focusable_control(tx, ty)
-          if ctl
-            @system_focus.on_leave if @system_focus
-            @system_focus = ctl
-            ctl.on_enter
-            @childlen.push(@childlen.delete(ctl))
-          end
+          WS.set_focus(get_focusable_control(tx, ty))
         end
       end
 
@@ -156,11 +151,14 @@ module WS
     @@desktop.capture_object = obj
   end
 
-  def self.focus(obj)
+  def self.set_focus(obj)
     return obj if @@desktop.system_focus == obj
-    @@desktop.system_focus.on_leave if @@desktop.system_focus and @@desktop.system_focus != obj
+    return nil if obj != nil and @@desktop.childlen.index(obj) == nil
+
+    @@desktop.system_focus.on_leave if @@desktop.system_focus
     @@desktop.system_focus = obj
     obj.on_enter if obj
+    @@desktop.childlen.push(@@desktop.childlen.delete(obj)) if obj
     obj
   end
 
