@@ -9,7 +9,6 @@ module WS
     attr_accessor :capture_object, :system_focus
 
     def initialize
-      self.collision = [0, 0, Window.width - 1, Window.height - 1]
       @childlen = []
       @signal_handler = {}
       @key_handler = {}
@@ -25,6 +24,8 @@ module WS
       @cursor_x, @cursor_y = Input.mouse_pos_x, Input.mouse_pos_y
       @mouse_wheel = Input.mouse_wheel_pos
       @old_keys = nil
+      @width = Window.width
+      @height = Window.height
     end
 
     def add_control(obj, name=nil)
@@ -35,6 +36,10 @@ module WS
     end
 
     def update
+      @width = Window.width
+      @height = Window.height
+      self.collision = [0, 0, @width, @height]
+
       # キーイベント
       push_keys = Input::IME.push_keys
       release_keys = Input::IME.release_keys
