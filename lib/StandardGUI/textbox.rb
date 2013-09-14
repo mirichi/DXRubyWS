@@ -157,8 +157,13 @@ module WS
     def on_enter
 #      Input::IME.enable = true
       Input::IME.set_font(@font)
-      @selected_range_first = 0
-      @selected_range_last = @text.length
+      if @text.length > 0
+        @selected_range_first = 0
+        @selected_range_last = @text.length
+      else
+        @selected_range_first = nil
+        @selected_range_last = nil
+      end
       @cursor_pos = @text.length
       @cursor_count = 0
       super
