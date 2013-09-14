@@ -56,7 +56,7 @@ module WS
       window_title = WSMessageBoxTitle.new(0, 0, sx - @border_width * 2, 16, caption)
       add_control(window_title, :window_title)
       window_title.add_handler(:drag_move, self.method(:on_drag_move))
-      window_title.add_handler(:drag_end){WS.capture(self)} # キャプチャが外れるのでしなおし
+      window_title.add_handler(:drag_end){WS.capture(self, true)} # キャプチャが外れるのでしなおし
 
       # クライアント領域は単純なコンテナである
       client = WSMessageBoxClient.new(0, 0, sx - @border_width * 2, sy - @border_width * 2 - 16)
@@ -76,10 +76,10 @@ module WS
       btn = WS::WSButton.new(self.width / 2 - 100 / 2, @font.size + 24, 100, 20, "OK")
       client.add_control(btn, :btn)
       btn.add_handler(:click){self.close}
-      btn.add_handler(:click_cancel){WS.capture(self)} # キャプチャが外れるのでしなおし
+      btn.add_handler(:click_cancel){WS.capture(self, true)} # キャプチャが外れるのでしなおし
 
       # マウスキャプチャする
-      WS.capture(self)
+      WS.capture(self, true)
     end
 
     def draw

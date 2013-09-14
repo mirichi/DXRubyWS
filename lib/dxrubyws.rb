@@ -6,7 +6,7 @@ require_relative './module'
 # ウィンドウシステム
 module WS
   class WSDesktop < WSContainer
-    attr_accessor :capture_object, :system_focus
+    attr_accessor :capture_object, :system_focus, :capture_notify
 
     def initialize
       @childlen = []
@@ -152,10 +152,19 @@ module WS
     @@desktop.draw
   end
 
-  def self.capture(obj)
+  # マウスキャプチャする。
+  # notifyをtrueにするとコンテナをキャプチャした際に配下にイベントが流れる。
+  def self.capture(obj, notify=false)
     @@desktop.capture_object = obj
+    @@desktop.capture_notify = notify
   end
 
+  # 配下にイベントを流すかどうかを返す。
+  def self.capture_notify
+    @@desktop.capture_notify
+  end
+
+  # システムフォーカスをセットする。
   def self.set_focus(obj)
     return obj if @@desktop.system_focus == obj
     return nil if obj != nil and @@desktop.childlen.index(obj) == nil
@@ -167,18 +176,22 @@ module WS
     obj
   end
 
+  # デスクトップオブジェクトを返す。
   def self.desktop
     @@desktop
   end
 
+  # マウスキャプチャされているかどうかを返す。
   def self.captured?(obj)
     @@desktop.capture_object == obj
   end
 
+  # システムフォーカスを取得しているかどうかを返す。
   def self.focused?(obj)
     @@desktop.system_focus == obj
   end
-    
+
+  # システムフォーカスを持っているオブジェクトを返す。
   def self.focused_object
     @@desktop.system_focus
   end

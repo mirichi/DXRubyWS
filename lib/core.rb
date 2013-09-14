@@ -307,8 +307,10 @@ module WS
     end
 
     def mouse_event_dispatch(event, tx, ty)
+      if !WS.captured?(self) or WS.capture_notify # キャプチャしたのが自コンテナだった場合は配下コントロールにイベントを渡さない
         ctl = find_hit_object(tx, ty)
         return ctl.mouse_event_dispatch(event, tx - ctl.x, ty - ctl.y) if ctl
+      end
       super
     end
 
