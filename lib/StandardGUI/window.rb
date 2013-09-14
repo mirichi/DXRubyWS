@@ -109,18 +109,8 @@ module WS
       add_key_handler(K_TAB) do
         if @window_focus
           tmp = client.get_focusable_control_ary
-          index = tmp.index(@window_focus)
-          if Input.shift?
-            ary = tmp[0...index].reverse + tmp[index..-1].reverse
-          else
-            ary = tmp[(index+1)..-1] + tmp[0..index]
-          end
-          ary.each do |o|
-            if o.focusable
-              self.window_focus = o
-              break
-            end
-          end
+          tmp.reverse! unless Input.shift?
+          self.window_focus = tmp[tmp.index(@window_focus) - 1]
         end
       end
 
