@@ -112,11 +112,13 @@ module WS
 
       # リスト描画
       @items.each_with_index do |s, i|
-        if @cursor != i
-          client.image.draw_font(2, i * @font.size - vsb.pos, s.to_s, @font, :color=>C_BLACK)
-        else
-          client.image.draw(0, i * @font.size - vsb.pos, @cursor_image)
-          client.image.draw_font(2, i * @font.size - vsb.pos, s.to_s, @font, :color=>C_WHITE)
+        if (i+1) * @font.size - vsb.pos >= 0 and i * @font.size - vsb.pos < client.height
+          if @cursor != i
+            client.image.draw_font(2, i * @font.size - vsb.pos, s.to_s, @font, :color=>C_BLACK)
+          else
+            client.image.draw(0, i * @font.size - vsb.pos, @cursor_image)
+            client.image.draw_font(2, i * @font.size - vsb.pos, s.to_s, @font, :color=>C_WHITE)
+          end
         end
       end
       super
