@@ -196,6 +196,7 @@ module WS
   def self.default_z=(v);@@default_z=v;end
 end
 
+# デスクトップのサイズ＆衝突判定範囲はWindow.width=/height=で書き換える
 class << Window
   alias_method :old_width=, :width=
   def width=(v)
@@ -211,4 +212,3 @@ class << Window
     WS.desktop.collision = [0, 0, WS.desktop.width, v]
   end
 end
-
