@@ -1,6 +1,31 @@
 # coding: utf-8
 
 module WS
+  # テキストの選択範囲を表すクラス
+  class TextRange
+    attr_accessor :first, :last
+    
+    def initialize(first, last)
+      @first, @last = first, last
+    end
+
+    def empty?
+      @first == @last
+    end
+
+    def min
+      [@first, @last].min
+    end
+
+    def max
+      [@first, @last].max
+    end
+
+    def to_range
+      min...max
+    end
+  end
+
   # テキストボックス
   class WSTextBox < WSControl
     include Focusable
@@ -21,33 +46,28 @@ module WS
       @text = ""
       @cursor_count = 0 # カーソル点滅用カウント
       @cursor_pos = 0   # カーソル位置
-      @selected_range_first = nil # 範囲選択始点
-      @selected_range_last = nil  # 範囲選択終点
+      @selected_range = nil # 選択範囲
       @font = Font.new(12)
 
       # 特殊キーのハンドラ
       add_key_handler(K_BACKSPACE) do
-        if @selected_range_first
-          min = [@selected_range_first, @selected_range_last].min
-          max = [@selected_range_first, @selected_range_last].max-1
-          @text[min..max] = ""
-          @selected_range_first = nil
-          @cursor_pos = min
+        if @selected_range
+          @text[@selected_range.to_range] = ""
+          @cursor_pos = @selected_range.min
+          @selected_range = nil
         else
           if @cursor_pos > 0
-            @text[@cursor_pos-1] = ""
+            @text[@cursor_pos - 1] = ""
             @cursor_pos -= 1
           end
         end
       end
 
       add_key_handler(K_DELETE) do
-        if @selected_range_first
-          min = [@selected_range_first, @selected_range_last].min
-          max = [@selected_range_first, @selected_range_last].max-1
-          @text[min..max] = ""
-          @selected_range_first = nil
-          @cursor_pos = min
+        if @selected_range
+          @text[@selected_range.to_range] = ""
+          @cursor_pos = @selected_range.min
+          @selected_range = nil
         else
           @text[@cursor_pos] = ""
         end
@@ -56,73 +76,65 @@ module WS
       add_key_handler(K_LEFT) do
         if Input.shift?
           if @cursor_pos > 0
-            if @selected_range_first
-              @selected_range_last = @cursor_pos-1
+            if @selected_range
+              @selected_range.last = @cursor_pos - 1
+              @selected_range = nil if @selected_range.empty?
             else
-              @selected_range_first = @cursor_pos
-              @selected_range_last = @cursor_pos-1
+              @selected_range = TextRange.new(@cursor_pos, @cursor_pos - 1)
             end
-            @selected_range_first = nil if @selected_range_first == @selected_range_last
-            @cursor_pos -= 1
           end
         else
-          @selected_range_first = nil
-          @cursor_pos -= 1 if @cursor_pos > 0
+          @selected_range = nil
         end
+        @cursor_pos -= 1 if @cursor_pos > 0
       end
 
       add_key_handler(K_RIGHT) do
         if Input.shift?
           if @cursor_pos < @text.length
-            if @selected_range_first
-              @selected_range_last = @cursor_pos+1
+            if @selected_range
+              @selected_range.last = @cursor_pos + 1
+              @selected_range = nil if @selected_range.empty?
             else
-              @selected_range_first = @cursor_pos
-              @selected_range_last = @cursor_pos+1
+              @selected_range = TextRange.new(@cursor_pos, @cursor_pos + 1)
             end
-            @selected_range_first = nil if @selected_range_first == @selected_range_last
-            @cursor_pos += 1
           end
         else
-          @selected_range_first = nil
-          @selected_range_last = nil
-          @cursor_pos += 1 if @cursor_pos < @text.length
+          @selected_range = nil
         end
+        @cursor_pos += 1 if @cursor_pos < @text.length
       end
 
       add_key_handler(K_HOME) do
-          if Input.shift?
-          if @selected_range_first
-            @selected_range_last = 0
+        if Input.shift?
+          if @selected_range
+            @selected_range.last = 0
+            @selected_range = nil if @selected_range.empty?
           else
-            @selected_range_first = @cursor_pos
-            @selected_range_last = 0
+            @selected_range = TextRange.new(@cursor_pos, 0)
           end
-          @selected_range_first = nil if @selected_range_first == @selected_range_last
         else
-          @selected_range_first = nil
+          @selected_range = nil
         end
         @cursor_pos = 0
       end
 
       add_key_handler(K_END) do
-          if Input.shift?
-          if @selected_range_first
-            @selected_range_last = @text.length
+        if Input.shift?
+          if @selected_range
+            @selected_range.last = @text.length
+            @selected_range = nil if @selected_range.empty?
           else
-            @selected_range_first = @cursor_pos
-            @selected_range_last = @text.length
+            @selected_range = TextRange.new(@cursor_pos, @text.length)
           end
-          @selected_range_first = nil if @selected_range_first == @selected_range_last
         else
-          @selected_range_first = nil
+          @selected_range = nil
         end
         @cursor_pos = @text.length
       end
 
       add_key_handler(K_CTRL + K_A) do
-        @selected_range_first = 0
-        @selected_range_last = @text.length
+        @selected_range = TextRange.new(0, @text.length)
       end
     end
 
@@ -134,15 +146,13 @@ module WS
 
     # 文字が入力されたらカーソル位置に挿入
     def on_string(str)
-      if @selected_range_first
-        min = [@selected_range_first, @selected_range_last].min
-        max = [@selected_range_first, @selected_range_last].max-1
-        @text[min..max] = str
-        @cursor_pos = min + str.length - 1
+      if @selected_range
+        @text[@selected_range.to_range] = str
+        @cursor_pos = @selected_range.min + str.length - 1
       else
         @text[@cursor_pos, 0] = str
       end
-      @selected_range_first = nil
+      @selected_range = nil
       @cursor_pos += str.length
     end
 
@@ -160,11 +170,9 @@ module WS
 #      Input::IME.enable = true
       Input::IME.set_font(@font)
       if @text.length > 0
-        @selected_range_first = 0
-        @selected_range_last = @text.length
+        @selected_range = TextRange.new(0, @text.length)
       else
-        @selected_range_first = nil
-        @selected_range_last = nil
+        @selected_range = nil
       end
       @cursor_pos = @text.length
       @cursor_count = 0
@@ -181,9 +189,9 @@ module WS
       super
 
       # 選択範囲表示
-      if @selected_range_first and @active
-        tx1 = self.x + @font.get_width(@text[0, [@selected_range_first, @selected_range_last].min]) + 4
-        tx2 = self.x + @font.get_width(@text[0, [@selected_range_first, @selected_range_last].max]) + 4
+      if @selected_range and @active
+        tx1 = self.x + @font.get_width(@text[0, @selected_range.min]) + 4
+        tx2 = self.x + @font.get_width(@text[0, @selected_range.max]) + 4
         (0..(@font.size+1)).each do |ty|
           self.target.draw_line(tx1, self.y + ty + 3, tx2, self.y + ty + 3, [200, 200, 255], self.z)
         end
