@@ -1,4 +1,5 @@
 # coding: utf-8
+require_relative '../rclip.rb'
 
 module WS
   # テキストの選択範囲を表すクラス
@@ -141,6 +142,32 @@ module WS
       add_key_handler(K_CTRL + K_A) do
         @selected_range.set(0, @text.length)
       end
+
+      add_key_handler(K_CTRL + K_X) do
+        if !@selected_range.empty?
+          Rclip.setData(@text[@selected_range.to_range])
+          @text[@selected_range.to_range] = ""
+          @selected_range.empty
+        end
+      end
+
+      add_key_handler(K_CTRL + K_C) do
+        if !@selected_range.empty?
+          Rclip.setData(@text[@selected_range.to_range])
+        end
+      end
+
+      add_key_handler(K_CTRL + K_V) do
+        str = Rclip.getData.encode("UTF-8").gsub(/\r\n/, "").gsub(/\r/, "").gsub(/\n/, "")
+        if @selected_range.empty?
+          @text[@cursor_pos, 0] = str
+        else
+          @text[@selected_range.to_range] = str
+          @cursor_pos = @selected_range.min
+          @selected_range.empty
+        end
+        @cursor_pos += str.length
+      end
     end
 
     # キーが押されたらカーソル点滅カウントを初期化
@@ -155,7 +182,7 @@ module WS
         @text[@cursor_pos, 0] = str
       else
         @text[@selected_range.to_range] = str
-        @cursor_pos = @selected_range.min + str.length - 1
+        @cursor_pos = @selected_range.min
         @selected_range.empty
       end
       @cursor_pos += str.length
