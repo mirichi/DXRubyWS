@@ -165,7 +165,7 @@ module WS
       end
     end
 
-    # マウスのボタンが押されたときに手前に持ってくる処理(ちょっとアレな手)
+    # 配下のコントロールにフォーカスを設定する
     def mouse_event_dispatch(event, tx, ty)
       if event == :mouse_push or event == :mouse_r_push
         ctl = get_focusable_control(tx, ty)
