@@ -198,7 +198,7 @@ end
 
 # デスクトップのサイズ＆衝突判定範囲はWindow.width=/height=で書き換える
 class << Window
-  alias_method :old_width=, :width=
+  alias :old_width= :width=
   def width=(v)
     self.old_width=v
     WS.desktop.width = v
