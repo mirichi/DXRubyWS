@@ -55,7 +55,7 @@ module WS
 
       add_key_handler(K_LEFT) do
         if @cursor_pos > 0
-          if Input.key_down?(K_LSHIFT) or Input.key_down?(K_RSHIFT)
+          if Input.shift?
             if @selected_range_first
               @selected_range_last = @cursor_pos-1
             else
@@ -72,7 +72,7 @@ module WS
 
       add_key_handler(K_RIGHT) do
         if @cursor_pos < @text.length
-          if Input.key_down?(K_LSHIFT) or Input.key_down?(K_RSHIFT)
+          if Input.shift?
             if @selected_range_first
               @selected_range_last = @cursor_pos+1
             else
@@ -89,7 +89,7 @@ module WS
       end
 
       add_key_handler(K_HOME) do
-        if Input.key_down?(K_LSHIFT) or Input.key_down?(K_RSHIFT)
+          if Input.shift?
           if @selected_range_first
             @selected_range_last = 0
           else
@@ -104,7 +104,7 @@ module WS
       end
 
       add_key_handler(K_END) do
-        if Input.key_down?(K_LSHIFT) or Input.key_down?(K_RSHIFT)
+          if Input.shift?
           if @selected_range_first
             @selected_range_last = @text.length
           else
