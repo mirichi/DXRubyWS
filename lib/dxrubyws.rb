@@ -24,8 +24,7 @@ module WS
       @cursor_x, @cursor_y = Input.mouse_pos_x, Input.mouse_pos_y
       @mouse_wheel = Input.mouse_wheel_pos
       @old_keys = nil
-      @width = Window.width
-      @height = Window.height
+      self.collision = [0, 0, Window.width-1, Window.height-1]
     end
 
     def add_control(obj, name=nil)
@@ -36,10 +35,6 @@ module WS
     end
 
     def update
-      @width = Window.width
-      @height = Window.height
-      self.collision = [0, 0, @width, @height]
-
       # キーイベント
       push_keys = Input::IME.push_keys
       release_keys = Input::IME.release_keys
@@ -200,3 +195,20 @@ module WS
   def self.default_z;@@default_z;end
   def self.default_z=(v);@@default_z=v;end
 end
+
+class << Window
+  alias_method :old_width=, :width=
+  def width=(v)
+    self.old_width=v
+    WS.desktop.width = v
+    WS.desktop.collision = [0, 0, v, WS.desktop.height]
+  end
+
+  alias :old_height= :height=
+  def height=(v)
+    self.old_height=v
+    WS.desktop.height = v
+    WS.desktop.collision = [0, 0, WS.desktop.width, v]
+  end
+end
+
