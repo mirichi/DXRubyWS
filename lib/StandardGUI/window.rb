@@ -209,9 +209,11 @@ module WS
     end
 
     def window_focus=(obj)
-      @window_focus.on_leave if @window_focus and @window_focus != obj
+      return nil if @window_focus == obj
+      @window_focus.on_leave if self.active? and  @window_focus
       @window_focus = obj
-      @window_focus.on_enter if WS.focused_object == self and @window_focus
+      @window_focus.on_enter if self.active? and @window_focus
+      obj
     end
 
     # ウィンドウがアクティブ化したときにフォーカスコントロールにon_enterを転送
