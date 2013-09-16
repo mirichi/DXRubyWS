@@ -186,6 +186,21 @@ module WS
       super
     end
 
+    # マウス押したらカーソル移動
+    def on_mouse_push(tx, ty)
+      cx = 0
+      @cursor_pos = @text.length
+      @text.each_char.with_index do |c, i|
+        cx += @font.get_width(c)
+        if tx < cx + 4
+          @cursor_pos = i
+          break
+        end
+      end
+      @selected_range.empty
+      super
+    end
+
     def draw
       super
 
