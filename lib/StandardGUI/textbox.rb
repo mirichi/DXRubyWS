@@ -158,7 +158,7 @@ module WS
 
     # カーソル点滅と位置設定処理
     def update
-      if @active
+      if self.active?
         @cursor_count += 1
         tx, ty = self.get_global_vertex
         Input::IME.set_cursor(tx + @font.get_width(@text[0, @cursor_pos]) + 4, ty + 4)
@@ -189,7 +189,7 @@ module WS
       super
 
       # 選択範囲表示
-      if @selected_range and @active
+      if @selected_range and self.active?
         tx1 = self.x + @font.get_width(@text[0, @selected_range.min]) + 4
         tx2 = self.x + @font.get_width(@text[0, @selected_range.max]) + 4
         (0..(@font.size+1)).each do |ty|
@@ -201,7 +201,7 @@ module WS
       self.target.draw_font(self.x + 4, self.y + 4, @text, @font, :color=>C_BLACK, :z=>self.z)
 
       # カーソル表示
-      if @active and (@cursor_count / 30) % 2 == 0
+      if self.active? and (@cursor_count / 30) % 2 == 0
         tx = self.x + @font.get_width(@text[0, @cursor_pos]) + 4
         self.target.draw_line(tx, self.y + 3, tx, self.y + 2 + @font.size, C_BLACK, self.z)
       end

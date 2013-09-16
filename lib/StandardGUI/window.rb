@@ -137,7 +137,7 @@ module WS
       self.image.draw_line(sx-2,1,sx-2,sy-2,[120,120,120])
       self.image.draw_line(1,sy-2,sx-2,sy-2,[120,120,120])
 
-      if WS.focused?(self)
+      if self.active?
         self.window_title.image.bgcolor = [30, 30, 180]
       else
         self.window_title.image.bgcolor = [120, 120, 120]

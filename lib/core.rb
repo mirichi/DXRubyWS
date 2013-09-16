@@ -222,6 +222,10 @@ module WS
       @active = false
     end
 
+    def active?
+      @active
+    end
+
     def inspect
       "#<" + self.class.name + ">"
     end
