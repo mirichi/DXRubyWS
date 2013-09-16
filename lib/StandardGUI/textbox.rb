@@ -54,8 +54,8 @@ module WS
       end
 
       add_key_handler(K_LEFT) do
-        if @cursor_pos > 0
-          if Input.shift?
+        if Input.shift?
+          if @cursor_pos > 0
             if @selected_range_first
               @selected_range_last = @cursor_pos-1
             else
@@ -63,16 +63,17 @@ module WS
               @selected_range_last = @cursor_pos-1
             end
             @selected_range_first = nil if @selected_range_first == @selected_range_last
-          else
-            @selected_range_first = nil
+            @cursor_pos -= 1
           end
-          @cursor_pos -= 1
+        else
+          @selected_range_first = nil
+          @cursor_pos -= 1 if @cursor_pos > 0
         end
       end
 
       add_key_handler(K_RIGHT) do
-        if @cursor_pos < @text.length
-          if Input.shift?
+        if Input.shift?
+          if @cursor_pos < @text.length
             if @selected_range_first
               @selected_range_last = @cursor_pos+1
             else
@@ -80,11 +81,12 @@ module WS
               @selected_range_last = @cursor_pos+1
             end
             @selected_range_first = nil if @selected_range_first == @selected_range_last
-          else
-            @selected_range_first = nil
-            @selected_range_last = nil
+            @cursor_pos += 1
           end
-          @cursor_pos += 1
+        else
+          @selected_range_first = nil
+          @selected_range_last = nil
+          @cursor_pos += 1 if @cursor_pos < @text.length
         end
       end
 
