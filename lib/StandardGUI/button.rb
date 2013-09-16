@@ -62,9 +62,9 @@ module WS
       end
       if self.active?
         self.target.draw_line(self.x - 1, self.y - 1, self.x + @width, self.y - 1, C_BLACK)
-                   .draw_line(self.x - 1, self.y - 1, self.x - 1, self.y + @height, C_BLACK)
-                   .draw_line(self.x + @width, self.y - 1, self.x + @width, self.y + @height, C_BLACK)
-                   .draw_line(self.x - 1, self.y + @height, self.x + @width, self.y + @height, C_BLACK)
+        self.target.draw_line(self.x - 1, self.y - 1, self.x - 1, self.y + @height, C_BLACK)
+        self.target.draw_line(self.x + @width, self.y - 1, self.x + @width, self.y + @height, C_BLACK)
+        self.target.draw_line(self.x - 1, self.y + @height, self.x + @width, self.y + @height, C_BLACK)
       end
     end
   end
