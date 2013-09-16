@@ -56,6 +56,7 @@ module WS
       @cursor_pos = 0   # カーソル位置
       @selected_range = TextRange.new # 選択範囲
       @font = Font.new(12)
+      @dragging_flag = false
 
       # 特殊キーのハンドラ
       add_key_handler(K_BACKSPACE) do
@@ -197,7 +198,40 @@ module WS
           break
         end
       end
-      @selected_range.empty
+      @cursor_count = 0
+
+      # マウスでの範囲選択の準備
+      @dragging_flag = true
+      WS.capture(self)
+      @drag_old_x = tx
+      @drag_old_y = ty
+      @selected_range.set(@cursor_pos, @cursor_pos)
+      super
+    end
+
+    # 範囲選択終了
+    def on_mouse_release(tx, ty)
+      @dragging_flag = false
+      WS.capture(nil)
+      super
+    end
+
+    # ドラッグ操作で選択
+    def on_mouse_move(tx, ty)
+      if @dragging_flag
+        cx = 0
+        @cursor_pos = @text.length
+        @text.each_char.with_index do |c, i|
+          cx += @font.get_width(c)
+          if tx < cx + 4
+            @cursor_pos = i
+            break
+          end
+        end
+        @cursor_count = 0
+  
+        @selected_range.last = @cursor_pos
+      end
       super
     end
 
