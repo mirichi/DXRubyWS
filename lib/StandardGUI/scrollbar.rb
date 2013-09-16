@@ -127,7 +127,7 @@ module WS
       signal(:slide, @pos)
     end
 
-    def on_click(obj, tx, ty)
+    def on_click(tx, ty)
       if ty < self.slider.y
         @pos -= @view_size
         @pos = 0 if @pos < 0
@@ -267,7 +267,7 @@ module WS
       signal(:slide, @pos)
     end
 
-    def on_click(obj, tx, ty)
+    def on_click(tx, ty)
       if tx < self.slider.x
         @pos -= @view_size
         @pos = 0 if @pos < 0

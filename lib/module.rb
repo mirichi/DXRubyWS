@@ -25,11 +25,11 @@ module WS
       @image_flag = false
       if @hit_cursor === self and WS.captured?(self)
         WS.capture(nil)
-        on_click(self, tx, ty)
+        on_click(tx, ty)
       else
         if WS.captured?(self)
           WS.capture(nil)
-          on_click_cancel(self, tx, ty)
+          on_click_cancel(tx, ty)
         else
           WS.capture(nil)
         end
@@ -45,11 +45,11 @@ module WS
       super
     end
 
-    def on_click(obj, tx, ty)
+    def on_click(tx, ty)
       signal(:click, tx, ty)
     end
 
-    def on_click_cancel(obj, tx, ty)
+    def on_click_cancel(tx, ty)
       signal(:click_cancel, tx, ty)
     end
   end
@@ -68,7 +68,7 @@ module WS
       @downcount = 20
       @image_flag = true
       super
-      on_click(self, tx, ty)
+      on_click(tx, ty)
     end
 
     def on_mouse_release(tx, ty)
@@ -97,7 +97,7 @@ module WS
       super
     end
 
-    def on_click(obj, tx, ty)
+    def on_click(tx, ty)
       signal(:click, tx, ty)
     end
   end
@@ -117,20 +117,32 @@ module WS
       WS.capture(self)
       @drag_old_x = tx
       @drag_old_y = ty
-      signal(:drag_start)
+      on_drag_start(tx, ty)
       super
     end
 
     def on_mouse_release(tx, ty)
       @dragging_flag = false
       WS.capture(nil)
-      signal(:drag_end)
+      on_drag_end(tx, ty)
       super
     end
 
     def on_mouse_move(tx, ty)
-      signal(:drag_move, tx - @drag_old_x, ty - @drag_old_y) if @dragging_flag
+      on_drag_move(tx - @drag_old_x, ty - @drag_old_y) if @dragging_flag
       super
+    end
+
+    def on_drag_move(tx, ty)
+      signal(:drag_move, tx, ty)
+    end
+
+    def on_drag_start(tx, ty)
+      signal(:drag_start, tx, ty)
+    end
+
+    def on_drag_end(tx, ty)
+      signal(:drag_rnd, tx, ty)
     end
   end
 
@@ -249,7 +261,7 @@ module WS
     def on_mouse_push(tx, ty)
       if @doubleclickcount and @doubleclickcount > 0 and
          (@doubleclick_x - tx).abs < 5 and (@doubleclick_y - ty).abs < 5
-          on_doubleclick(self, tx, ty)
+          on_doubleclick(tx, ty)
       else
         @doubleclickcount = 30
         @doubleclick_x = tx
@@ -263,7 +275,7 @@ module WS
       super
     end
 
-    def on_doubleclick(obj, tx, ty)
+    def on_doubleclick(tx, ty)
       signal(:doubleclick, tx, ty)
     end
   end
