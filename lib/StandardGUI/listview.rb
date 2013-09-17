@@ -164,6 +164,7 @@ module WS
 
       client.title.add_handler(:title_resize) do
         @client_tmp_rt.each_with_index{|rt, i|rt.resize(client.title.titles[i][1], client.listview.height)}
+        resize(@width, @height)
       end
 
       # 文字描画領域
