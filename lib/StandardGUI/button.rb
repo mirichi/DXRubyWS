@@ -83,7 +83,7 @@ module WS
     def on_key_release(key)
       if key == K_SPACE
         @image_flag = false
-        on_click(self, 0, 0)
+        on_click(0, 0)
       end
     end
   end
