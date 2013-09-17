@@ -292,7 +292,7 @@ module WS
     def mouse_event_dispatch(event, tx, ty)
       if event == :mouse_push or event == :mouse_r_push
         ctl = get_focusable_control(tx, ty)
-        self.window_focus=ctl if ctl
+        self.set_focus(ctl) if ctl
       end
       super
     end
@@ -331,7 +331,7 @@ module WS
       super
     end
 
-    def window_focus=(obj)
+    def set_focus(obj)
       return nil if @window_focus == obj
       @window_focus.on_leave if self.active? and  @window_focus
       @window_focus = obj

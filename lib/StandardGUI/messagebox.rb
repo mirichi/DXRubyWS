@@ -31,9 +31,7 @@ module WS
     class WSMessageBoxClient < WSContainer
       def add_control(obj, name=nil)
         super
-        if obj.focusable
-          self.parent.window_focus = obj
-        end
+        self.parent.set_focus(obj) if obj.focusable
       end
     end
 

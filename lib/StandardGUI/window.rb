@@ -63,9 +63,7 @@ module WS
     class WSWindowClient < WSContainer
       def add_control(obj, name=nil)
         super
-        if obj.focusable
-          self.parent.window_focus = obj
-        end
+        self.parent.set_focus(obj) if obj.focusable
       end
     end
 
@@ -111,7 +109,7 @@ module WS
         if @window_focus
           tmp = client.get_focusable_control_ary
           tmp.reverse! unless Input.shift?
-          self.window_focus = tmp[tmp.index(@window_focus) - 1]
+          self.set_focus(tmp[tmp.index(@window_focus) - 1])
         end
       end
     end
