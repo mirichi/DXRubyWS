@@ -39,6 +39,7 @@ module WS
 
     attr_accessor :border_width # ウィンドウボーダーの幅
     attr_reader :window_focus # ウィンドウ上のフォーカスを持つコントロール
+    include WindowFocus
     include Focusable
 
     def initialize(caption = "", message)
@@ -103,48 +104,7 @@ module WS
 
     # ウィンドウを閉じたら次の優先ウィンドウにフォーカスを移す
     def close
-      self.parent.remove_control(self)
       WS.capture(nil)
-      WS.set_focus(self.parent.childlen.last)
-    end
-
-    # キーハンドラを呼ばなかったらウィンドウフォーカスコントロールに転送
-    def on_key_push(key)
-      if @window_focus
-        tmp = @window_focus.on_key_push(key)
-        tmp = super unless tmp
-        tmp
-      else
-        super
-      end
-    end
-
-    # キーハンドラを呼ばなかったらウィンドウフォーカスコントロールに転送
-    def on_key_release(key)
-      if @window_focus
-        tmp = @window_focus.on_key_release(key)
-        tmp = super unless tmp
-        tmp
-      else
-        super
-      end
-    end
-
-    def window_focus=(obj)
-      @window_focus.on_leave if @window_focus and @window_focus != obj
-      @window_focus = obj
-      @window_focus.on_enter if WS.focused_object == self and @window_focus
-    end
-
-    # ウィンドウがアクティブ化したときにフォーカスコントロールにon_enterを転送
-    def on_enter
-      @window_focus.on_enter if @window_focus
-      super
-    end
-
-    # ウィンドウがノンアクティブ化したときにフォーカスコントロールにon_leaveを転送
-    def on_leave
-      @window_focus.on_leave if @window_focus
       super
     end
   end

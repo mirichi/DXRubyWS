@@ -142,7 +142,7 @@ module WS
     end
 
     def on_drag_end(tx, ty)
-      signal(:drag_rnd, tx, ty)
+      signal(:drag_end, tx, ty)
     end
   end
 
@@ -284,6 +284,71 @@ module WS
     def initialize(*args)
       super
       @focusable = true
+    end
+  end
+
+  module WindowFocus
+    # 配下のコントロールにフォーカスを設定する
+    def mouse_event_dispatch(event, tx, ty)
+      if event == :mouse_push or event == :mouse_r_push
+        ctl = get_focusable_control(tx, ty)
+        self.window_focus=ctl if ctl
+      end
+      super
+    end
+
+    # ウィンドウを閉じたら次の優先ウィンドウにフォーカスを移す
+    def close
+      self.parent.remove_control(self)
+      WS.set_focus(self.parent.childlen.last)
+    end
+
+    # キーハンドラを呼ばなかったらウィンドウフォーカスコントロールに転送
+    def on_key_push(key)
+      if @window_focus
+        tmp = @window_focus.on_key_push(key)
+        tmp = super unless tmp
+        tmp
+      else
+        super
+      end
+    end
+
+    # キーハンドラを呼ばなかったらウィンドウフォーカスコントロールに転送
+    def on_key_release(key)
+      if @window_focus
+        tmp = @window_focus.on_key_release(key)
+        tmp = super unless tmp
+        tmp
+      else
+        super
+      end
+    end
+
+    # ウィンドウ上のフォーカスがあるコントロールに文字列イベントを転送
+    def on_string(str)
+      @window_focus.on_string(str) if @window_focus
+      super
+    end
+
+    def window_focus=(obj)
+      return nil if @window_focus == obj
+      @window_focus.on_leave if self.active? and  @window_focus
+      @window_focus = obj
+      @window_focus.on_enter if self.active? and @window_focus
+      obj
+    end
+
+    # ウィンドウがアクティブ化したときにフォーカスコントロールにon_enterを転送
+    def on_enter
+      @window_focus.on_enter if @window_focus
+      super
+    end
+
+    # ウィンドウがノンアクティブ化したときにフォーカスコントロールにon_leaveを転送
+    def on_leave
+      @window_focus.on_leave if @window_focus
+      super
     end
   end
 end
