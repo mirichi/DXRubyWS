@@ -137,6 +137,18 @@ module WS
 
       super
     end
+
+    # フォーカスをセットする。
+    def set_focus(obj)
+      return obj if @system_focus == obj
+      return nil if obj != nil and @childlen.index(obj) == nil
+  
+      @system_focus.on_leave if @system_focus
+      @system_focus = obj
+      obj.on_enter if obj
+      @childlen.push(@childlen.delete(obj)) if obj
+      obj
+    end
   end
 
   @@desktop = WSDesktop.new
@@ -161,14 +173,7 @@ module WS
 
   # システムフォーカスをセットする。
   def self.set_focus(obj)
-    return obj if @@desktop.system_focus == obj
-    return nil if obj != nil and @@desktop.childlen.index(obj) == nil
-
-    @@desktop.system_focus.on_leave if @@desktop.system_focus
-    @@desktop.system_focus = obj
-    obj.on_enter if obj
-    @@desktop.childlen.push(@@desktop.childlen.delete(obj)) if obj
-    obj
+    @@desktop.set_focus(obj)
   end
 
   # デスクトップオブジェクトを返す。
@@ -190,7 +195,7 @@ module WS
   def self.focused_object
     @@desktop.system_focus
   end
-    
+
   @@default_z = 10000
   def self.default_z;@@default_z;end
   def self.default_z=(v);@@default_z=v;end
