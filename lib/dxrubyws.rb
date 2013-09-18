@@ -63,6 +63,9 @@ module WS
       oldx, oldy = @cursor_x, @cursor_y
       @cursor_x, @cursor_y = Input.mouse_pos_x, Input.mouse_pos_y
 
+      # キャプチャされてた場合にはそのコントロールに直接イベントを送る
+      # そうじゃない場合はデスクトップから辿って検索する
+      # ための下準備
       if @capture_object
         tx, ty = @capture_object.get_global_vertex
         tx, ty = @cursor_x - tx, @cursor_y - ty
@@ -143,7 +146,7 @@ module WS
       super
     end
 
-    # フォーカスをセットする。
+    # システムフォーカスをセットする。
     def set_focus(obj)
       return obj if @system_focus == obj
       return nil if obj != nil and @childlen.index(obj) == nil
@@ -155,6 +158,7 @@ module WS
       obj
     end
 
+    # デスクトップをアクティブにする
     def activate
       self.set_focus(nil)
     end

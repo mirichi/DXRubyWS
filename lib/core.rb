@@ -222,19 +222,23 @@ module WS
       @active = false
     end
 
+    # コントロールをアクティブにする
     def activate
       self.parent.set_focus(self) if self.focusable
       self
     end
 
+    # アクティブかどうかを返す
     def activated?
       @active
     end
 
+    # コントロールを読める文字にする
     def inspect
       "#<" + self.class.name + ">"
     end
 
+    # フォーカスを受け取れるコントロールを配列にして返す
     def get_focusable_control_ary
       if @focusable
         [self]
@@ -243,6 +247,7 @@ module WS
       end
     end
 
+    # フォーカスを受け取れるコントロールを返す
     def get_focusable_control(tx, ty)
       if @focusable
         self
@@ -339,6 +344,7 @@ module WS
       end
     end
 
+    # フォーカスを受け取れるコントロールを配列にして返す
     def get_focusable_control_ary
       return [self] if @focusable
       ary = []
@@ -348,6 +354,7 @@ module WS
       ary
     end
 
+    # 座標の位置にあってフォーカスを受け取れるコントロールを返す
     def get_focusable_control(tx, ty)
       ctl = find_hit_object(tx, ty)
       return nil unless ctl
@@ -355,6 +362,7 @@ module WS
       return ctl.get_focusable_control(tx - ctl.x, ty - ctl.y)
     end
 
+    # コントロールにフォーカスを設定する
     def set_focus(obj)
       self.parent.set_focus(obj) if self.parent
       obj

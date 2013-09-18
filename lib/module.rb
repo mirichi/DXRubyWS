@@ -280,6 +280,7 @@ module WS
     end
   end
 
+  # フォーカスを受け取れるようにするモジュール
   module Focusable
     def initialize(*args)
       super
@@ -287,6 +288,7 @@ module WS
     end
   end
 
+  # ウィンドウとして配下のコントロールにフォーカスを設定する機能をパッケージしたモジュール
   module WindowFocus
     # 配下のコントロールにフォーカスを設定する
     def mouse_event_dispatch(event, tx, ty)
@@ -336,6 +338,7 @@ module WS
       super
     end
 
+    # コントロールにウィンドウフォーカスを設定する
     def set_focus(obj)
       return nil if @window_focus == obj
       @window_focus.on_leave if self.activated? and  @window_focus
