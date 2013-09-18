@@ -22,7 +22,7 @@ DXRubyWSはDXRuby用ゲームに組み込むことを想定したイベントド
 
 DXRubyWSはすべてWSモジュールの中に記述されています。が、トップレベルでincludeして使うことは想定していません。
 基本部分は大きくわけて、WSモジュール、WSControlクラス、WSContainerクラス、WSDesktopクラス、WSLayoutクラス、サポートモジュール群に分かれています。
-WSモジュールは各種クラス・モジュールの定義がほとんどですが、6つのモジュールメソッドが定義されています。最もよく使うのはWS.updateとWS.desktopです。
+WSモジュールは各種クラス・モジュールの定義がほとんどですが、いくつかのモジュールメソッドが定義されています。最もよく使うのはWS.updateとWS.desktopです。
 
 WS.update -> nil
  Window.loopの中にこの呼び出しを書くことでDXRubyWSのすべてが動作します。
@@ -30,24 +30,15 @@ WS.update -> nil
 WS.desktop -> WSDesktop
  スクリーン全体の最背面を表すWSDesktopオブジェクトを返します。スクリーン上にウィンドウなどを配置するときにはこのオブジェクトに対してコントロールの追加を行います。
 
-WS.capture(ctl) -> ctl
+WS.capture(ctl, notify=false) -> ctl
  マウスキャプチャします。通常マウスイベントはマウスカーソルの位置にあるコントロールに対して送信されますが、このメソッドを呼び出して登録するとそれ以降のイベントは登録されたコントロールに対して送信されます。nilを指定すると解除します。
+ notifyは登録したコントロールがコンテナだった場合に、配下のコントロールにイベントを流すかどうかを指定します。デフォルトはfalseでイベントを流しません。
+
+WS.capture_notify -> true/false
+ キャプチャされたときに設定されたnotifyを返します。
 
 WS.captured?(ctl) -> true/false
  引数で渡されたコントロールがマウスキャプチャされている場合にtrueを返します。
-
-WS.set_focus(ctl) -> ctl
- 引数で渡されたコントロールをシステムフォーカスに設定します。
- フォーカスを失ったコントロールにon_leaveイベントが、新しく設定されたコントロールにon_enterイベントが発行されます。
- 以降のキーボードイベントはシステムフォーカスに設定されたコントロールに送信されます。
- nilを設定するとデスクトップにフォーカスが移ります。
-
-WS.focused?(ctl) -> true/false
- 引数で渡されたコントロールがシステムフォーカスに設定されている場合にtrueを返します。
-
-WS.focused_object -> ctl
- システムフォーカスに設定されているコントロールを返します。
- システムフォーカスの初期値はnilで、nilの場合はデスクトップオブジェクトを表します。
 
 WS.default_z -> z (default 10000)
 WS.default_z=(z) -> z
@@ -118,6 +109,14 @@ WSControl#move(x, y) -> nil
 WSControl#resize(width, height) -> nil
  @width/@heightを変更します。Sprite#collisionも同時に変更します。変更後に:resizeシグナルを発行します。シグナルの引数にサイズは渡されませんが、objのwidth/heightが変更された後なのでシグナルハンドラではそれを利用できます。
 
+WSControl#activate -> self
+ コントロールをアクティブ化します。@focusable==falseの場合は何もしません。
+ 具体的にはWSControl#parentに設定されている親のコンテナのset_focusを呼び出し、自身にフォーカスを当てます。
+
+WSControl#activated? -> true/false
+ アクティブ化されていたらtrueを返します。
+ このメソッドがtrueを返すようになるタイミングはon_enterイベントを処理したときです。
+
 プロパティ類
 attr_accessor :parent, :font, :width, :height, :resizable_width, :resizable_height
 attr_accessor :min_width, :min_height, :focusable, :active
@@ -169,6 +168,9 @@ WSContainer#get_focusable_control_ary -> Array
 WSContainer#get_focusable_control(x, y) -> WSControlオブジェクト
  コンテナ配下の(x, y)の座標に位置し、フォーカスを持てるコントロールを返します。
  フォーカスを持てるコントロールが存在しない場合はnilを返します。
+
+WSContainer#set_focus(obj) -> obj
+ objにフォーカスをセットします。自身がフォーカスを制御するコンテナじゃない場合は親オブジェクトのset_focusを呼び出します。
 
 プロパティ類
 attr_accessor :childlen
