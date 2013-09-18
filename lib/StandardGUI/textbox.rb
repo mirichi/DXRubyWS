@@ -23,11 +23,11 @@ module WS
     end
 
     def min
-      [@first, @last].min
+      @first < @last ? @first : @last
     end
 
     def max
-      [@first, @last].max
+      @first > @last ? @first : @last
     end
 
     def to_range
