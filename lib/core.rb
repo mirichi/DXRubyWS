@@ -222,7 +222,11 @@ module WS
       @active = false
     end
 
-    def active?
+    def activate
+      self.parent.set_focus(self) if self.focusable
+    end
+
+    def activated?
       @active
     end
 
@@ -348,6 +352,10 @@ module WS
       return nil unless ctl
       return ctl if ctl.focusable
       return ctl.get_focusable_control(tx - ctl.x, ty - ctl.y)
+    end
+
+    def set_focus(obj)
+      self.parent.set_focus(obj) if self.parent
     end
   end
 

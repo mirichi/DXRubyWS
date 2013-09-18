@@ -300,7 +300,12 @@ module WS
     # ウィンドウを閉じたら次の優先ウィンドウにフォーカスを移す
     def close
       self.parent.remove_control(self)
-      WS.set_focus(self.parent.childlen.last)
+      tmp = self.parent.childlen.last
+      if tmp
+        tmp.activate
+      else
+        WS.desktop.activate
+      end
     end
 
     # キーハンドラを呼ばなかったらウィンドウフォーカスコントロールに転送
@@ -333,9 +338,9 @@ module WS
 
     def set_focus(obj)
       return nil if @window_focus == obj
-      @window_focus.on_leave if self.active? and  @window_focus
+      @window_focus.on_leave if self.activated? and  @window_focus
       @window_focus = obj
-      @window_focus.on_enter if self.active? and @window_focus
+      @window_focus.on_enter if self.activated? and @window_focus
       obj
     end
 

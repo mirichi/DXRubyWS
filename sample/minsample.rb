@@ -222,7 +222,7 @@ tb1 = WS::WSTextBox.new(70, 45, 200, 20)
 w.client.add_control(tb1, :tb1)
 tb2 = WS::WSTextBox.new(70, 80, 200, 20)
 w.client.add_control(tb2, :tb2)
-w.window_focus = b
+b.activate
 
 WS.desktop.add_control(w)
 

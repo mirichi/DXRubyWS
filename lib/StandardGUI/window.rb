@@ -63,7 +63,7 @@ module WS
     class WSWindowClient < WSContainer
       def add_control(obj, name=nil)
         super
-        self.parent.set_focus(obj) if obj.focusable
+        self.activate
       end
     end
 
@@ -109,7 +109,7 @@ module WS
         if @window_focus
           tmp = client.get_focusable_control_ary
           tmp.reverse! unless Input.shift?
-          self.set_focus(tmp[tmp.index(@window_focus) - 1])
+          tmp[tmp.index(@window_focus) - 1].activate
         end
       end
     end
@@ -136,7 +136,7 @@ module WS
       self.image.draw_line(sx-2,1,sx-2,sy-2,[120,120,120])
       self.image.draw_line(1,sy-2,sx-2,sy-2,[120,120,120])
 
-      if self.active?
+      if self.activated?
         self.window_title.image.bgcolor = [30, 30, 180]
       else
         self.window_title.image.bgcolor = [120, 120, 120]

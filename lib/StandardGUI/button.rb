@@ -60,7 +60,7 @@ module WS
                               self.image.height / 2 - @font.size / 2 + self.y - 1 + (@image_flag ? 1 : 0),
                               @caption, @font, :color=>@fore_color)
       end
-      if self.active?
+      if self.activated?
         self.target.draw_line(self.x - 1, self.y - 1, self.x + @width, self.y - 1, C_BLACK)
         self.target.draw_line(self.x - 1, self.y - 1, self.x - 1, self.y + @height, C_BLACK)
         self.target.draw_line(self.x + @width, self.y - 1, self.x + @width, self.y + @height, C_BLACK)

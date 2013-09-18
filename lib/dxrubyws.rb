@@ -31,7 +31,7 @@ module WS
       super
       obj.z = WS.default_z
       obj.target = Window
-      WS.set_focus(obj)
+      obj.activate
     end
 
     def update
@@ -74,7 +74,12 @@ module WS
         # フォーカスを取得できるコントロールだった場合にフォーカスを設定する
         if (Input.mouse_down?(M_LBUTTON) and @mouse_l_flag == false) or
            (Input.mouse_down?(M_RBUTTON) and @mouse_r_flag == false)
-          WS.set_focus(get_focusable_control(tx, ty))
+          focus_control = get_focusable_control(tx, ty)
+          if focus_control
+            focus_control.activate
+          else
+            self.activate
+          end
         end
       end
 
@@ -149,6 +154,10 @@ module WS
       @childlen.push(@childlen.delete(obj)) if obj
       obj
     end
+
+    def activate
+      self.set_focus(nil)
+    end
   end
 
   @@desktop = WSDesktop.new
@@ -171,11 +180,6 @@ module WS
     @@desktop.capture_notify
   end
 
-  # システムフォーカスをセットする。
-  def self.set_focus(obj)
-    @@desktop.set_focus(obj)
-  end
-
   # デスクトップオブジェクトを返す。
   def self.desktop
     @@desktop
@@ -184,16 +188,6 @@ module WS
   # マウスキャプチャされているかどうかを返す。
   def self.captured?(obj)
     @@desktop.capture_object == obj
-  end
-
-  # システムフォーカスを取得しているかどうかを返す。
-  def self.focused?(obj)
-    @@desktop.system_focus == obj
-  end
-
-  # システムフォーカスを持っているオブジェクトを返す。
-  def self.focused_object
-    @@desktop.system_focus
   end
 
   @@default_z = 10000
