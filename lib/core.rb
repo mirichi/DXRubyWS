@@ -224,6 +224,7 @@ module WS
 
     def activate
       self.parent.set_focus(self) if self.focusable
+      self
     end
 
     def activated?
@@ -356,6 +357,7 @@ module WS
 
     def set_focus(obj)
       self.parent.set_focus(obj) if self.parent
+      obj
     end
   end
 
