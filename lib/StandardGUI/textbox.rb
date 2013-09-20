@@ -56,8 +56,10 @@ module WS
       @cursor_count = 0 # カーソル点滅用カウント
       @cursor_pos = 0   # カーソル位置
       @selected_range = TextRange.new # 選択範囲
+      @draw_range = TextRange.new     # 描画範囲
       @font = Font.new(12)
       @dragging_flag = false
+      @border_width = 2
 
       # 特殊キーのハンドラ
       add_key_handler(K_BACKSPACE) do
@@ -71,6 +73,8 @@ module WS
           @cursor_pos = @selected_range.min
           @selected_range.empty
         end
+
+        adjust_left
       end
 
       add_key_handler(K_DELETE) do
@@ -81,6 +85,8 @@ module WS
           @cursor_pos = @selected_range.min
           @selected_range.empty
         end
+
+        adjust_left
       end
 
       add_key_handler(K_LEFT) do
@@ -96,6 +102,8 @@ module WS
           @selected_range.empty
         end
         @cursor_pos -= 1 if @cursor_pos > 0
+
+        adjust_left
       end
 
       add_key_handler(K_RIGHT) do
@@ -111,6 +119,8 @@ module WS
           @selected_range.empty
         end
         @cursor_pos += 1 if @cursor_pos < @text.length
+
+        adjust_right
       end
 
       add_key_handler(K_HOME) do
@@ -124,6 +134,8 @@ module WS
           @selected_range.empty
         end
         @cursor_pos = 0
+
+        adjust_left
       end
 
       add_key_handler(K_END) do
@@ -137,17 +149,23 @@ module WS
           @selected_range.empty
         end
         @cursor_pos = @text.length
+
+        adjust_right
       end
 
       add_key_handler(K_CTRL + K_A) do
         @selected_range.set(0, @text.length)
+        @cursor_pos = @text.length
+        adjust_right
       end
 
       add_key_handler(K_CTRL + K_X) do
         if !@selected_range.empty?
           Rclip.setData(@text[@selected_range.to_range])
           @text[@selected_range.to_range] = ""
+          @cursor_pos = @selected_range.min
           @selected_range.empty
+          set_draw_range
         end
       end
 
@@ -167,7 +185,13 @@ module WS
           @selected_range.empty
         end
         @cursor_pos += str.length
+        
+        adjust_right
       end
+    end
+
+    def size_limit
+      @width - @border_width - 2 - 2
     end
 
     # キーが押されたらカーソル点滅カウントを初期化
@@ -186,6 +210,55 @@ module WS
         @selected_range.empty
       end
       @cursor_pos += str.length
+
+      adjust_right
+    end
+
+    def adjust_left
+      if @cursor_pos < @draw_range.first
+        # テキストボックスの左端にカーソルがはみ出した
+        @draw_range.first = @cursor_pos
+      end
+      set_draw_range
+    end
+
+    def adjust_right
+      tmp = @font.get_width(@text[@draw_range.first...@cursor_pos])
+      # テキストボックスの右端にカーソルがはみ出した
+      if tmp > size_limit
+        pos = @draw_range.first
+        while @font.get_width(@text[pos...@cursor_pos]) >= size_limit do
+          pos += 1
+        end
+        @draw_range.first = pos
+        @draw_range.last = @cursor_pos
+      else
+        @draw_range.last = @text.length
+        set_draw_range
+      end
+    end
+
+    def set_draw_range
+      if @text.length == 0
+        @cursor_pos = 0
+        @selected_range.set(0, 0)
+        @draw_range.set(0, 0)
+      else
+        tmp = @font.get_width(@text[@draw_range.to_range])
+        if tmp > size_limit
+          while tmp > size_limit do
+            @draw_range.last -= 1
+            tmp = @font.get_width(@text[@draw_range.to_range])
+          end
+        else
+          begin
+            @draw_range.first -= 1
+            tmp = @font.get_width(@text[@draw_range.to_range])
+          end while tmp < size_limit and @draw_range.first >= 0
+          @draw_range.first += 1
+          p 'a'
+        end
+      end
     end
 
     # カーソル点滅と位置設定処理
@@ -193,7 +266,7 @@ module WS
       if self.activated?
         @cursor_count += 1
         tx, ty = self.get_global_vertex
-        Input::IME.set_cursor(tx + @font.get_width(@text[0, @cursor_pos]) + 4, ty + 4)
+#        Input::IME.set_cursor(tx + @font.get_width(@text[0, @cursor_pos]) + @border_width * 2, ty + @border_width * 2)
       end
     end
 
@@ -217,10 +290,11 @@ module WS
     # マウス押したらカーソル移動
     def on_mouse_push(tx, ty)
       cx = 0
+      tx += @font.get_width(@text[0...@draw_range.first])
       @cursor_pos = @text.length
       @text.each_char.with_index do |c, i|
         cx += @font.get_width(c)
-        if tx < cx + 4
+        if tx < cx + @border_width + 2
           @cursor_pos = i
           break
         end
@@ -248,9 +322,10 @@ module WS
       if @dragging_flag
         cx = 0
         @cursor_pos = @text.length
+        tx += @font.get_width(@text[0...@draw_range.first])
         @text.each_char.with_index do |c, i|
           cx += @font.get_width(c)
-          if tx < cx + 4
+          if tx < cx + @border_width + 2
             @cursor_pos = i
             break
           end
@@ -259,6 +334,8 @@ module WS
   
         @selected_range.last = @cursor_pos
       end
+      adjust_right
+      adjust_left
       super
     end
 
@@ -267,20 +344,20 @@ module WS
 
       # 選択範囲表示
       if !@selected_range.empty? and self.activated?
-        tx1 = self.x + @font.get_width(@text[0, @selected_range.min]) + 4
-        tx2 = self.x + @font.get_width(@text[0, @selected_range.max]) + 4
+        tx1 = self.x + @border_width + 2 + @font.get_width(@text[@draw_range.first...@selected_range.min])
+        tx2 = self.x + @border_width + 2 + @font.get_width(@text[0, [@selected_range.max, @draw_range.last].min]) - @font.get_width(@text[0, @draw_range.first])
         (0..(@font.size+1)).each do |ty|
-          self.target.draw_line(tx1, self.y + ty + 3, tx2, self.y + ty + 3, [200, 200, 255], self.z)
+          self.target.draw_line(tx1, self.y + ty + @border_width + 1, tx2, self.y + ty + @border_width + 1, [200, 200, 255], self.z)
         end
       end
 
       # 文字列表示
-      self.target.draw_font(self.x + 4, self.y + 4, @text, @font, :color=>C_BLACK, :z=>self.z)
+      self.target.draw_font(self.x + @border_width + 2, self.y + @border_width + 2, @text[@draw_range.to_range], @font, :color=>C_BLACK, :z=>self.z)
 
       # カーソル表示
       if self.activated? and (@cursor_count / 30) % 2 == 0
-        tx = self.x + @font.get_width(@text[0, @cursor_pos]) + 4
-        self.target.draw_line(tx, self.y + 3, tx, self.y + 2 + @font.size, C_BLACK, self.z)
+        tx = self.x + @font.get_width(@text[@draw_range.first, @cursor_pos - @draw_range.first]) + @border_width + 2
+        self.target.draw_line(tx, self.y + @border_width + 1, tx, self.y + @border_width + @font.size, C_BLACK, self.z)
       end
     end
   end
