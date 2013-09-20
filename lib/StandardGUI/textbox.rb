@@ -256,7 +256,6 @@ module WS
             tmp = @font.get_width(@text[@draw_range.to_range])
           end while tmp < size_limit and @draw_range.first >= 0
           @draw_range.first += 1
-          p 'a'
         end
       end
     end
