@@ -6,18 +6,37 @@ module WS
   class WSListView < WSScrollableContainer
     # リストビューのタイトル部分のクラス
     class WSListViewTitle < WSContainer
-      attr_reader :titles
+      attr_accessor :titles
 
       def initialize(tx, ty, width, height, titles)
         super(tx, ty, width, height)
         self.image.bgcolor = [190,190,190]
         @font = Font.new(12)
         @titles = titles
+        @titles_bak = nil
         @dragging_number = nil
       end
 
       def draw
         pos = self.parent.parent.hsb.pos
+
+        unless @titles == @titles_bak
+          @titles_bak = @titles.dup
+          @titles_image = []
+          @titles.each do |title|
+            img = Image.new(title[1], @height, [190,190,190])
+            img.draw_font_ex(3, 2, title[0].to_s, @font, :color=>C_BLACK)
+            @titles_image << img
+          end
+          signal(:title_resize)
+        end
+
+        # タイトル
+        tx = 0
+        @titles.each_with_index do |title, i|
+          self.image.draw(tx - pos, 0, @titles_image[i])
+          tx += title[1]
+        end
 
         # ボーダー
         sx = @width
@@ -35,13 +54,6 @@ module WS
           self.image.draw_line(tx-1-pos,0,tx-1-pos,sy-2,[120,120,120])
           self.image.draw_line(tx-pos  ,0,tx-pos  ,sy-2,[240,240,240])
           self.image.draw_line(tx+1-pos,1,tx+1-pos,sy-3,[200,200,200])
-        end
-
-        # タイトル
-        tx = 0
-        @titles.each do |title|
-          self.image.draw_font(tx + 3-pos, 2, title[0].to_s, @font, :color=>C_BLACK)
-          tx += title[1]
         end
 
         super
