@@ -246,10 +246,13 @@ module WS
       else
         tmp = @font.get_width(@text[@draw_range.to_range])
         if tmp > size_limit
-          while tmp > size_limit do
-            @draw_range.last -= 1
+          @draw_range.last = @draw_range.first
+          tmp = @font.get_width(@text[@draw_range.to_range])
+          while tmp <= size_limit do
+            @draw_range.last += 1
             tmp = @font.get_width(@text[@draw_range.to_range])
           end
+          @draw_range.last -= 1
         else
           begin
             @draw_range.first -= 1
