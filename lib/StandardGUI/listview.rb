@@ -17,11 +17,11 @@ module WS
         @dragging_number = nil
       end
 
-      def draw
+      def update
         pos = self.parent.parent.hsb.pos
 
         unless @titles == @titles_bak
-          @titles_bak = @titles.dup
+          @titles_bak = @titles.map {|title| title.dup}
           @titles_image = []
           @titles.each do |title|
             img = Image.new(title[1], @height, [190,190,190])
@@ -30,6 +30,10 @@ module WS
           end
           signal(:title_resize)
         end
+      end
+
+      def draw
+        pos = self.parent.parent.hsb.pos
 
         # タイトル
         tx = 0
@@ -122,7 +126,7 @@ module WS
           tmp = 1 if tmp < 1
           @titles[@dragging_number][1] = tmp
           @drag_old_x = tx if tmp > 1
-          signal(:title_resize)
+#          signal(:title_resize)
         end
         super
       end
