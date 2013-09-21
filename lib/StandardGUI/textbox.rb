@@ -14,7 +14,7 @@ module WS
       @first, @last = first, last
     end
 
-    def empty
+    def clear
       @first = @last = 0
     end
 
@@ -38,7 +38,7 @@ module WS
   # テキストボックス
   class WSTextBox < WSControl
     include Focusable
-    attr_accessor :text
+    attr_reader :text
 
     def initialize(tx, ty, sx, sy)
       super(tx, ty, sx, sy)
@@ -71,7 +71,7 @@ module WS
         else
           @text[@selected_range.to_range] = ""
           @cursor_pos = @selected_range.min
-          @selected_range.empty
+          @selected_range.clear
         end
 
         adjust_left
@@ -83,7 +83,7 @@ module WS
         else
           @text[@selected_range.to_range] = ""
           @cursor_pos = @selected_range.min
-          @selected_range.empty
+          @selected_range.clear
         end
 
         adjust_left
@@ -99,7 +99,7 @@ module WS
             end
           end
         else
-          @selected_range.empty
+          @selected_range.clear
         end
         @cursor_pos -= 1 if @cursor_pos > 0
 
@@ -116,7 +116,7 @@ module WS
             end
           end
         else
-          @selected_range.empty
+          @selected_range.clear
         end
         @cursor_pos += 1 if @cursor_pos < @text.length
 
@@ -131,7 +131,7 @@ module WS
             @selected_range.last = 0
           end
         else
-          @selected_range.empty
+          @selected_range.clear
         end
         @cursor_pos = 0
 
@@ -146,7 +146,7 @@ module WS
             @selected_range.last = @text.length
           end
         else
-          @selected_range.empty
+          @selected_range.clear
         end
         @cursor_pos = @text.length
 
@@ -164,7 +164,7 @@ module WS
           Rclip.setData(@text[@selected_range.to_range])
           @text[@selected_range.to_range] = ""
           @cursor_pos = @selected_range.min
-          @selected_range.empty
+          @selected_range.clear
           set_draw_range
         end
       end
@@ -182,7 +182,7 @@ module WS
         else
           @text[@selected_range.to_range] = str
           @cursor_pos = @selected_range.min
-          @selected_range.empty
+          @selected_range.clear
         end
         @cursor_pos += str.length
         
@@ -207,7 +207,7 @@ module WS
       else
         @text[@selected_range.to_range] = str
         @cursor_pos = @selected_range.min
-        @selected_range.empty
+        @selected_range.clear
       end
       @cursor_pos += str.length
 
@@ -285,7 +285,7 @@ module WS
     # フォーカス喪失
     def on_leave
 #      Input::IME.enable = false
-      @selected_range.empty
+      @selected_range.clear
       super
     end
 
@@ -361,6 +361,14 @@ module WS
         tx = self.x + @font.get_width(@text[@draw_range.first, @cursor_pos - @draw_range.first]) + @border_width + 2
         self.target.draw_line(tx, self.y + @border_width + 1, tx, self.y + @border_width + @font.size, C_BLACK, self.z)
       end
+    end
+
+    def text=(t)
+      @text = t
+      @selected_range.clear
+      @draw_range.set(0, @text.length)
+      @cursor_pos = 0
+      set_draw_range
     end
   end
 end
