@@ -9,10 +9,8 @@ Window.width, Window.height = 1280, 720 # ワイド画面化
 class WS::WSObjectBrowser < WS::WSWindow
   def initialize(tx, ty, width, height, caption, obj)
     super(tx, ty, width, height, caption)
-    lbx1 = WS::WSListBox.new(10,10,100,100)
-    lbx2 = WS::WSListBox.new(10,10,100,100)
-    self.client.add_control(lbx1, :lbx1)
-    self.client.add_control(lbx2, :lbx2)
+    lbx = WS::WSListBox.new(10,10,150,100)
+    self.client.add_control(lbx, :lbx)
     lbl1 = WS::WSLabel.new(0, 0, 100, 16, "SuperClass : ")
     lbl1.fore_color = C_BLACK
     self.client.add_control(lbl1, :lbl1)
@@ -20,12 +18,14 @@ class WS::WSObjectBrowser < WS::WSWindow
     lbl2.fore_color = C_BLACK
     self.client.add_control(lbl2, :lbl2)
 
-    obj.class.instance_methods(false).each do |s|
-      lbx1.items << s
+    titles = [["instance_variable", 100], ["class", 150], ["to_s", 200]]
+    lv = WS::WSListView.new(50, 30, 100, 160, titles)
+    self.instance_variables.each do |i|
+      lv.items << [i, self.instance_variable_get(i).class, self.instance_variable_get(i)]
     end
-    obj.instance_variables.each do |s|
-      lbx2.items << s
-    end
+    self.client.add_control(lv, :lv)
+
+    add_key_handler(K_F5){redraw}
 
     client.layout(:vbox) do
       layout(:hbox) do
@@ -36,18 +36,26 @@ class WS::WSObjectBrowser < WS::WSWindow
         layout
       end
       layout(:hbox) do
-        add lbx1, true, true
-        add lbx2, true, true
+        add lbx, false, true
+        add lv, true, true
       end
     end
   end
+
+  def redraw
+    self.client.lv.items.clear
+    self.instance_variables.each do |i|
+      self.client.lv.items << [i, self.instance_variable_get(i).class, self.instance_variable_get(i)]
+    end
+  end
+
 end
 
 module UseObjectBrowser
   @@ary = []
   @@ary << WS::WSMenuItem.new("Browse it") do |obj|
     obj = obj.parent if WS::WSWindow::WSWindowClient == obj.class
-    tmp = WS::WSObjectBrowser.new(Input.mouse_pos_x, Input.mouse_pos_y, 400, 200, "ObjectBrowser : " + obj.to_s, obj)
+    tmp = WS::WSObjectBrowser.new(Input.mouse_pos_x, Input.mouse_pos_y, 600, 200, "ObjectBrowser : " + obj.to_s, obj)
     tmp.client.lbl2.caption = obj.class.superclass.to_s
     WS.desktop.add_control(tmp)
   end
