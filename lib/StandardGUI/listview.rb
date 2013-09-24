@@ -10,7 +10,7 @@ module WS
 
       def initialize(tx, ty, width, height, titles)
         super(tx, ty, width, height)
-        self.image.bgcolor = [190,190,190]
+        self.image.bgcolor = C_GRAY
         @font = Font.new(12)
         @titles = titles
         @titles_bak = nil
@@ -24,7 +24,7 @@ module WS
           @titles_bak = @titles.map {|title| title.dup}
           @titles_image = []
           @titles.each do |title|
-            img = Image.new(title[1], @height, [190,190,190])
+            img = Image.new(title[1], @height, C_GRAY)
             img.draw_font_ex(3, 2, title[0].to_s, @font, :color=>C_BLACK)
             @titles_image << img
           end
@@ -162,7 +162,7 @@ module WS
       # superより先にこれだけ作る。
       client = WSListViewClient.new(0, 16, width - 4 - 16, height - 4 - 16, titles)
       super(tx, ty, width, height, client)
-      self.image.bgcolor = [190,190,190]
+      self.image.bgcolor = C_GRAY
       @font = Font.new(12)
       @items = [] # リストの中身
       @cursor = 0 # カーソルの位置

@@ -75,7 +75,7 @@ module WS
 
     def initialize(tx, ty, sx, sy, caption = "WindowTitle")
       super(tx, ty, sx, sy)
-      self.image.bgcolor = [190,190,190]
+      self.image.bgcolor = C_GRAY
       @border_width = 3
 
       # ウィンドウタイトルはそれでひとつのコントロールを作る
@@ -129,8 +129,8 @@ module WS
       sy = @height
       self.image.draw_line(0,0,sx-1,0,[240,240,240])
       self.image.draw_line(0,0,0,sy-1,[240,240,240])
-      self.image.draw_line(1,1,sx-1,1,[200,200,200])
-      self.image.draw_line(1,1,1,sy-1,[200,200,200])
+      self.image.draw_line(1,1,sx-1,1,[220,220,220])
+      self.image.draw_line(1,1,1,sy-1,[220,220,220])
       self.image.draw_line(sx-1,0,sx-1,sy-1,[80,80,80])
       self.image.draw_line(0,sy-1,sx-1,sy-1,[80,80,80])
       self.image.draw_line(sx-2,1,sx-2,sy-2,[120,120,120])

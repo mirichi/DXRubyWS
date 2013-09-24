@@ -7,7 +7,7 @@ module WS
     def initialize(menuitems)
       super(0, 0, 10, 16) # 数字テキトー。オートレイアウトで設定する。
       @menuitems = menuitems
-      self.image.bgcolor = [190, 190, 190]
+      self.image.bgcolor = C_GRAY
       @font = Font.new(12)
       @selected = nil
       @popup = nil

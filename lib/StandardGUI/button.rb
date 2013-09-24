@@ -31,22 +31,22 @@ module WS
     # set_imageで@image[true](押された絵)と@image[false](通常の絵)を設定する。
     # オーバーライドしてこのメソッドを再定義することでボタンの絵を変更することができる。
     def set_image
-      @image[false] = Image.new(@width, @height, [190,190,190])
+      @image[false] = Image.new(@width, @height, C_GRAY)
                      .line(0,0,@width-1,0,[240,240,240])
                      .line(0,0,0,@height-1,[240,240,240])
-                     .line(1,1,@width-1,1,[200,200,200])
-                     .line(1,1,1,@height-1,[200,200,200])
+                     .line(1,1,@width-1,1,[220,220,220])
+                     .line(1,1,1,@height-1,[220,220,220])
                      .line(@width-1,0,@width-1,@height-1,[80,80,80])
                      .line(0,@height-1,@width-1,@height-1,[80,80,80])
                      .line(@width-2,1,@width-2,@height-2,[120,120,120])
                      .line(1,@height-2,@width-2,@height-2,[120,120,120])
-      @image[true] = Image.new(@width, @height, [190,190,190])
+      @image[true] = Image.new(@width, @height, C_GRAY)
                      .line(0,0,@width-1,0,[80,80,80])
                      .line(0,0,0,@height-1,[80,80,80])
                      .line(1,1,@width-1,1,[120,120,120])
                      .line(1,1,1,@height-1,[120,120,120])
-                     .line(@width-1,0,@width-1,@height-1,[200,200,200])
-                     .line(0,@height-1,@width-1,@height-1,[200,200,200])
+                     .line(@width-1,0,@width-1,@height-1,[220,220,220])
+                     .line(0,@height-1,@width-1,@height-1,[220,220,220])
                      .line(@width-2,1,@width-2,@height-2,[240,240,240])
                      .line(1,@height-2,@width-2,@height-2,[240,240,240])
     end

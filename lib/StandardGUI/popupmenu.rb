@@ -14,7 +14,7 @@ module WS
       height = @font.size * menuitems.size
 
       super(tx, ty, width + 10, height + 8)
-      self.image.bgcolor = [190, 190, 190]
+      self.image.bgcolor = C_GRAY
       
       # メニューアイテムの位置設定
       menuitems.each_with_index do |o, i|
@@ -110,8 +110,8 @@ module WS
       sy = @height
       self.image.draw_line(0,0,sx-1,0,[240,240,240])
       self.image.draw_line(0,0,0,sy-1,[240,240,240])
-      self.image.draw_line(1,1,sx-1,1,[200,200,200])
-      self.image.draw_line(1,1,1,sy-1,[200,200,200])
+      self.image.draw_line(1,1,sx-1,1,[220,220,220])
+      self.image.draw_line(1,1,1,sy-1,[220,220,220])
       self.image.draw_line(sx-1,0,sx-1,sy-1,[80,80,80])
       self.image.draw_line(0,sy-1,sx-1,sy-1,[80,80,80])
       self.image.draw_line(sx-2,1,sx-2,sy-2,[120,120,120])
