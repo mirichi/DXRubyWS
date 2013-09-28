@@ -401,14 +401,7 @@ module WS
       resize(@width, @height) unless @layout
 
       # ボーダーライン
-      self.image.draw_line(0,0,@width-1,0,[80,80,80])
-      self.image.draw_line(0,0,0,@height-1,[80,80,80])
-      self.image.draw_line(1,1,@width-1,1,[120,120,120])
-      self.image.draw_line(1,1,1,@height-1,[120,120,120])
-      self.image.draw_line(@width-1,0,@width-1,@height-1,[240,240,240])
-      self.image.draw_line(0,@height-1,@width-1,@height-1,[240,240,240])
-      self.image.draw_line(@width-2,1,@width-2,@height-2,[220,220,220])
-      self.image.draw_line(1,@height-2,@width-2,@height-2,[220,220,220])
+      draw_border(false)
       super
     end
   end
