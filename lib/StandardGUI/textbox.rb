@@ -42,16 +42,7 @@ module WS
 
     def initialize(tx, ty, sx, sy)
       super(tx, ty, sx, sy)
-      self.image = Image.new(sx, sy, C_WHITE)
-
-      self.image.line(0,0,@width-1,0,[80,80,80])
-                .line(0,0,0,@height-1,[80,80,80])
-                .line(1,1,@width-1,1,[120,120,120])
-                .line(1,1,1,@height-1,[120,120,120])
-                .line(@width-2,1,@width-2,@height-2,[220,220,220])
-                .line(1,@height-2,@width-2,@height-2,[220,220,220])
-                .line(@width-1,0,@width-1,@height-1,[240,240,240])
-                .line(0,@height-1,@width-1,@height-1,[240,240,240])
+      self.image = Image.new(sx, sy, C_WHITE).draw_border(false)
       @text = ""
       @cursor_count = 0 # カーソル点滅用カウント
       @cursor_pos = 0   # カーソル位置

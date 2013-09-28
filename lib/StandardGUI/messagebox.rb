@@ -83,16 +83,7 @@ module WS
     end
 
     def draw
-      sx = @width
-      sy = @height
-      self.image.draw_line(0,0,sx-1,0,[240,240,240])
-      self.image.draw_line(0,0,0,sy-1,[240,240,240])
-      self.image.draw_line(1,1,sx-1,1,[220,220,220])
-      self.image.draw_line(1,1,1,sy-1,[220,220,220])
-      self.image.draw_line(sx-1,0,sx-1,sy-1,[80,80,80])
-      self.image.draw_line(0,sy-1,sx-1,sy-1,[80,80,80])
-      self.image.draw_line(sx-2,1,sx-2,sy-2,[120,120,120])
-      self.image.draw_line(1,sy-2,sx-2,sy-2,[120,120,120])
+      draw_border(true)
       self.image.draw_font(10 + 3, 16 + 16, @message, @font, :color=>C_BLACK)
       super
     end

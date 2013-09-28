@@ -131,7 +131,7 @@ module WS
       if self.activated?
         self.window_title.image.bgcolor = [30, 30, 180]
       else
-        self.window_title.image.bgcolor = [120, 120, 120]
+        self.window_title.image.bgcolor = C_DARK_GRAY
       end
       super
     end

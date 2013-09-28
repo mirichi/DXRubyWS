@@ -20,15 +20,7 @@ module WS
         # スライダーの高さが変更された場合に画像を再生成する
         if @old_height != @height
           self.image.dispose if self.image
-          self.image = Image.new(@width, @height, C_GRAY)
-                            .line(0,0,@width-1,0,[240,240,240])
-                            .line(0,0,0,@height-1,[240,240,240])
-                            .line(1,1,@width-1,1,[200,200,200])
-                            .line(1,1,1,@height-1,[200,200,200])
-                            .line(@width-1,0,@width-1,@height-1,[80,80,80])
-                            .line(0,@height-1,@width-1,@height-1,[80,80,80])
-                            .line(@width-2,1,@width-2,@height-2,[120,120,120])
-                            .line(1,@height-2,@width-2,@height-2,[120,120,120])
+          self.image = Image.new(@width, @height, C_GRAY).draw_border(true)
           self.collision = [0, 0, @width-1, @height-1]
         end
         @old_height = @height
@@ -160,15 +152,7 @@ module WS
         # スライダーの幅が変更された場合に画像を再生成する
         if @old_width != @width
           self.image.dispose if self.image
-          self.image = Image.new(@width, @height, C_GRAY)
-                            .line(0,0,@width-1,0,[240,240,240])
-                            .line(0,0,0,@height-1,[240,240,240])
-                            .line(1,1,@width-1,1,[220,220,220])
-                            .line(1,1,1,@height-1,[220,220,220])
-                            .line(@width-1,0,@width-1,@height-1,[80,80,80])
-                            .line(0,@height-1,@width-1,@height-1,[80,80,80])
-                            .line(@width-2,1,@width-2,@height-2,[120,120,120])
-                            .line(1,@height-2,@width-2,@height-2,[120,120,120])
+          self.image = Image.new(@width, @height, C_GRAY).draw_border(true)
           self.collision = [0, 0, @width-1, @height-1]
         end
         @old_width = @width

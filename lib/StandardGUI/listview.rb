@@ -44,21 +44,18 @@ module WS
         end
 
         # ボーダー
-        sx = @width
-        sy = @height
-        self.image.draw_line(0,0,sx-1,0,[240,240,240])
-        self.image.draw_line(1,1,sx-1,1,[200,200,200])
-        self.image.draw_line(0,sy-1,sx-1,sy-1,[80,80,80])
-        self.image.draw_line(1,sy-2,sx-2,sy-2,[120,120,120])
+        self.draw_border(true)
 
         # セパレータ
+        sx = @width
+        sy = @height
         tx = 0
         ([["",0]]+@titles).each do |title|
           tx += title[1]
-          self.image.draw_line(tx-2-pos,1,tx-2-pos,sy-3,[80,80,80])
-          self.image.draw_line(tx-1-pos,0,tx-1-pos,sy-2,[120,120,120])
-          self.image.draw_line(tx-pos  ,0,tx-pos  ,sy-2,[240,240,240])
-          self.image.draw_line(tx+1-pos,1,tx+1-pos,sy-3,[200,200,200])
+          self.image.draw_line(tx-2-pos,1,tx-2-pos,sy-3,C_LIGHT_BLACK)
+          self.image.draw_line(tx-1-pos,0,tx-1-pos,sy-2,C_DARK_GRAY)
+          self.image.draw_line(tx-pos  ,0,tx-pos  ,sy-2,C_DARK_WHITE)
+          self.image.draw_line(tx+1-pos,1,tx+1-pos,sy-3,C_LIGHT_GRAY)
         end
 
         super
