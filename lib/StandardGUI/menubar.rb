@@ -1,5 +1,6 @@
 # coding: utf-8
 require_relative './popupmenu'
+require_relative './common'
 
 module WS
   # ウィンドウにくっつけるメニューバー

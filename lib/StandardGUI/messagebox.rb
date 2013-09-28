@@ -1,6 +1,7 @@
 # coding: utf-8
 require_relative './button'
 require_relative './label'
+require_relative './common'
 
 module WS
   # システムモーダルなメッセージボックス

@@ -1,5 +1,6 @@
 # coding: utf-8
 require_relative './scrollbar'
+require_relative './common'
 
 module WS
   # リストビュークラス

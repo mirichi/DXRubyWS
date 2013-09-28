@@ -2,6 +2,7 @@
 require_relative './button'
 require_relative './label'
 require_relative './menubar'
+require_relative './common'
 
 module WS
   # ウィンドウぽい動きを実現してみる

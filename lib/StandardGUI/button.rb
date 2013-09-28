@@ -1,4 +1,5 @@
 # coding: utf-8
+require_relative './common'
 
 module WS
   class WSButtonBase < WSControl

@@ -8,7 +8,3 @@ require_relative './standardgui/clickmenu'
 require_relative './standardgui/listview'
 require_relative './standardgui/textbox'
 require_relative './standardgui/messagebox'
-
-module WS
-  C_GRAY = [190, 190, 190]
-end

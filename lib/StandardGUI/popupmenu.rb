@@ -1,5 +1,6 @@
 # coding: utf-8
 require_relative './menuitem'
+require_relative './common'
 
 module WS
   # ポップアップメニュー
