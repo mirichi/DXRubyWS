@@ -7,10 +7,11 @@ module WS
     def initialize(tx, ty, width, height)
       super
       @content = []
+      @selected = 0
       @image = Image.new(@width, @height, C_WHITE).draw_border(true)
     end
     
-    def resize(width, height
+    def resize(width, height)
       super
       @image.dispose if @image
       @image = @image.new(@width, @height, C_WHITE).draw_border(true)
