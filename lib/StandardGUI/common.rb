@@ -55,3 +55,21 @@ class Image
     end
   end
 end
+
+#元々の文字列を、指定したfontで、max_width以下にギリギリ収まるように短くする
+#flagにfalseを指定すると、文字列の末尾の方を返す。
+class String
+  def within(font, max_width, flag = true)
+    str = ""
+    self.size.times do |i|
+      if flag
+        return str if font.getWidth(str + self[i]) > max_width
+        str += self[i]
+      else
+        return str if font.getWidth(self[self.size - i - 1] + str) > max_width
+        str = self[self.size - i - 1] + str
+      end
+    end
+    return self
+  end
+end
