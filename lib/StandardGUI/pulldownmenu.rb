@@ -75,6 +75,7 @@ module WS
     def on_mouse_push(tx, ty)
       super
       WS.desktop.add_control(@list)
+      WS.capture(@list)
     end
     
     def draw
@@ -82,6 +83,15 @@ module WS
       super
       lx, ly = self.get_global_vertex
       Window.drawFont(lx + 2, ly + 2, @list.content[@list.selected].to_s, font,{:color => [0,0,0],:z => self.z}) if @list.selected
+    end
+    
+    def value
+      return @list.content[@list.selected] if @list.selected
+      return nil
+    end
+    
+    def index
+      @list.selected
     end
   end
 end
