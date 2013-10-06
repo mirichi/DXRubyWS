@@ -5,13 +5,17 @@ require_relative './common'
 module WS
   class WSPullDownMenu < WSControl
     class WSPullDownList <WSControl
-      def initialize(tx, ty, width, content, form)
+      attr_accessor :content
+      attr_reader :selected
+      
+      def initialize(tx, ty, width, content, form, default = nil)
         @content = content #表示するリスト
-        super(tx, ty, width, content.size * @parent.font.size + 4)
+        @font = form.font
+        super(tx, ty, width, content.size * @font.size + 4)
         @image = Image.new(@width, @height, C_WHITE).draw_border(true)
         @old_cont = @content #リストが変更されたかの確認用
         @form = form #データの出力先
-        @selected = nil #選択されているもの(index)
+        @selected = default #選択されているもの(index)
       end
       
       #いつリストが変更されるか分からないので、
@@ -20,8 +24,10 @@ module WS
         if @content != @old_cont || changed
           @image.dispose
           @old_cont = @content
+          @selected = nil if @selected >= @content.size
           @image = Image.new(@width, @height, C_WHITE).draw_border(true)
         end
+        self.image = @image
       end
       
       def update
@@ -33,7 +39,7 @@ module WS
         update_image
         super
         @content.each_with_index do |str,i|
-          Window.drawFont(self.x + 2, self.y + @font.size * i, str, @font)
+          Window.drawFont(self.x + 2, self.y + @font.size * i, str.to_s.within(@font, @width - 4), @font,{:color => [0,0,0],:z => self.z})
         end
       end
       
@@ -45,7 +51,7 @@ module WS
     end
     
     def initialize(tx, ty, width, height, content = [])
-      super
+      super(tx, ty, width, height)
       @image = Image.new(@width, @height, C_LIGHT_GRAY).draw_border(true)
       lx, ly = self.get_global_vertex
       @list = WSPullDownList.new(lx, ly + height, width, content, self)
@@ -56,7 +62,6 @@ module WS
       @image = @image.new(@width, @height, C_LIGHT_GRAY).draw_border(true)
       lx, ly = self.get_global_vertex
       @list.x, @list.y = lx, ly + @height
-      @list.width = @width
       @list.resize(width, height)
       super
     end
@@ -69,11 +74,14 @@ module WS
     
     def on_mouse_push(tx, ty)
       super
+      WS.desktop.add_control(@list)
     end
     
     def draw
+      self.image = @image
       super
-      
+      lx, ly = self.get_global_vertex
+      Window.drawFont(lx + 2, ly + 2, @list.content[@list.selected].to_s, font,{:color => [0,0,0],:z => self.z}) if @list.selected
     end
   end
 end
