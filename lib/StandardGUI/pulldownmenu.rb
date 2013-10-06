@@ -3,6 +3,7 @@
 require_relative './common'
 
 module WS
+  #プルダウンメニューのクラス
   class WSPullDownMenu < WSControl
     class WSPullDownList <WSControl
       attr_accessor :content
@@ -103,4 +104,3 @@ module WS
     end
   end
 end
- 
