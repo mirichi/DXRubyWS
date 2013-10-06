@@ -48,6 +48,14 @@ module WS
         super
         update_image(true)
       end
+      
+      def on_mouse_push(tx,ty)
+        if tx >= 2 && tx <= @width - 2 && ty >= 2 && ty <= @height - 2
+          @selected = (ty - 2).div(@font.size)
+        end
+        WS.capture(nil)
+        WS.desktop.remove_control(self)
+      end
     end
     
     def initialize(tx, ty, width, height, content = [])
@@ -95,3 +103,4 @@ module WS
     end
   end
 end
+ 
