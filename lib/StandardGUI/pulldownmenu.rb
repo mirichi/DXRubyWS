@@ -3,7 +3,6 @@
 require_relative './common'
 
 module WS
-  #プルダウンメニューのクラス
   class WSPullDownMenu < WSControl
     class WSPullDownList <WSControl
       attr_accessor :content
@@ -33,11 +32,15 @@ module WS
       
       def update
         update_image
+        lx,ly = @form.get_global_vertex
+        self.x,self.y = lx,ly + @form.height
         super
       end
       
       def draw
         update_image
+        lx,ly = @form.get_global_vertex
+        self.x,self.y = lx,ly + @form.height
         super
         @content.each_with_index do |str,i|
           Window.drawFont(self.x + 2, self.y + @font.size * i, str.to_s.within(@font, @width - 4), @font,{:color => [0,0,0],:z => self.z})
@@ -75,7 +78,7 @@ module WS
       super
     end
     
-    def move
+    def move(tx,ty)
       super
       lx, ly = self.get_global_vertex
       @list.x, @list.y = lx, ly + @height
@@ -90,8 +93,7 @@ module WS
     def draw
       self.image = @image
       super
-      lx, ly = self.get_global_vertex
-      Window.drawFont(lx + 2, ly + 2, @list.content[@list.selected].to_s, font,{:color => [0,0,0],:z => self.z}) if @list.selected
+      self.target.draw_font(self.x + 2, self.y + 2, value, @font, {:color => [0,0,0],:z => self.z}) if index
     end
     
     def value
