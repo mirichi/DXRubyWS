@@ -54,11 +54,13 @@ module WS
       end
       
       def on_mouse_push(tx,ty)
+        old_select = @selected
         if tx >= 2 && tx <= @width - 2 && ty >= 2 && ty <= @height - 2
           @selected = (ty - 2).div(@font.size)
         end
         WS.capture(nil)
         WS.desktop.remove_control(self)
+        @form.change
       end
     end
     
@@ -103,6 +105,10 @@ module WS
     
     def index
       @list.selected
+    end
+    
+    def change #新しく別のものが選択されたら呼ばれる。
+      signal(:change,value,index)
     end
   end
 end
