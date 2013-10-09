@@ -4,6 +4,8 @@ require_relative './common'
 
 module WS
   class WSPullDownMenu < WSControl
+    attr_accessor :list
+    
     class WSPullDownList <WSControl
       attr_accessor :content
       attr_reader :selected
@@ -60,7 +62,13 @@ module WS
         end
         WS.capture(nil)
         WS.desktop.remove_control(self)
-        @form.change
+        @form.change if old_select != @selected
+      end
+      
+      def selected=(v)
+        old_select = @selected
+        @selected = v
+        @form.change if old_select != @selected
       end
     end
     
@@ -95,7 +103,7 @@ module WS
     def draw
       self.image = @image
       super
-      self.target.draw_font(self.x + 2, self.y + 2, value, @font, {:color => [0,0,0],:z => self.z}) if index
+      self.target.draw_font(self.x + 2, self.y + 2, value.to_s, @font, {:color => [0,0,0],:z => self.z}) if index
     end
     
     def value
@@ -112,3 +120,4 @@ module WS
     end
   end
 end
+ 
