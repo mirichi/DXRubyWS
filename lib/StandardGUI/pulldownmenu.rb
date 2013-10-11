@@ -27,7 +27,8 @@ module WS
           @image.dispose
           @old_cont = @content
           @selected = nil if @selected >= @content.size
-          @image = Image.new(@width, @height, C_WHITE).draw_border(true)
+          self.height = @content.size * @font.size + 4
+          @image = Image.new(self.width, self.height, C_WHITE).draw_border(true)
         end
         self.image = @image
       end
