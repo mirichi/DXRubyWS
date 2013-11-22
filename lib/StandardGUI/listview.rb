@@ -26,7 +26,7 @@ module WS
           @titles_image = []
           @titles.each do |title|
             img = Image.new(title[1], @height, C_GRAY)
-            img.draw_font_ex(3, 2, title[0].to_s, @font, :color=>C_BLACK)
+            img.draw_font_ex(3, 2, title[0].to_s, @font, color:C_BLACK, aa:false)
             @titles_image << img
           end
           signal(:title_resize)
