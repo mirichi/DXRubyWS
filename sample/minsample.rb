@@ -205,35 +205,70 @@ t = Test.new
 WS.desktop.add_control(t)
 
 
-# TestWindow1
-w = WS::WSWindow.new(100, 100, 300, 150, "Test")
-b = WS::WSButton.new(10, 10, 150, 20, "Show MessageBox")
-l = WS::WSLabel.new(10, 50, 100, 20, "label")
-w.client.add_control(b)
-w.client.add_control(l)
+# デザイン定義と動作定義のコードを分けるサンプル
 
-image1 = Image.new(30, 30, C_WHITE)
-image2 = Image.new(30, 30, C_BLACK)
-image3 = Image.new(30, 30, C_RED)
-image4 = Image.new(30, 30, C_BLUE)
-i = WS::WSImage.new(200, 10, 30, 30)
-i.image = image1
-i.add_handler(:mouse_over){|obj|obj.image = image2}
-i.add_handler(:mouse_out){|obj|obj.image = image1}
-i.add_handler(:mouse_push){|obj|obj.image = image3}
-i.add_handler(:mouse_r_push){|obj|obj.image = image4}
-w.client.add_control(i)
-b.add_handler(:click) do
-  WS.desktop.add_control(WS::WSMessageBox.new("MessageBoxTest", "メッセージボックステスト"))
+# フォーム定義(TestWindow1)
+class TestWindow1 < WS::WSWindow
+  attr_accessor :button1, :label1, :textbox1, :textbox2, :image1
+  def initialize(*param)
+    super
+    @button1 = WS::WSButton.new(10, 10, 150, 20, "Show MessageBox")
+    @label1 = WS::WSLabel.new(10, 50, 100, 20, "label")
+    @textbox1 = WS::WSTextBox.new(70, 45, 200, 20)
+    @textbox2 = WS::WSTextBox.new(70, 80, 200, 20)
+    @image1 = WS::WSImage.new(200, 10, 30, 30)
+
+    self.client.add_control(@button1)
+    self.client.add_control(@label1)
+    self.client.add_control(@textbox1)
+    self.client.add_control(@textbox2)
+    self.client.add_control(@image1)
+
+    @button1.add_handler(:click) {|obj, tx, ty|self.button1_click(tx, ty)}
+    @image1.add_handler(:mouse_over){|obj|self.image1_mouse_over}
+    @image1.add_handler(:mouse_out){|obj|self.image1_mouse_out}
+    @image1.add_handler(:mouse_push){|obj, tx, ty|self.image1_mouse_push(tx, ty)}
+    @image1.add_handler(:mouse_r_push){|obj, tx, ty|self.image1_mouse_r_push(tx, ty)}
+
+    init
+  end
 end
 
-tb1 = WS::WSTextBox.new(70, 45, 200, 20)
-w.client.add_control(tb1, :tb1)
-tb2 = WS::WSTextBox.new(70, 80, 200, 20)
-w.client.add_control(tb2, :tb2)
-b.activate
+# アプリコード
+class TestWindow1
+  def init
+    @image_white = Image.new(30, 30, C_WHITE)
+    @image_black = Image.new(30, 30, C_BLACK)
+    @image_red = Image.new(30, 30, C_RED)
+    @image_blue = Image.new(30, 30, C_BLUE)
+    @image1.image = @image_white
+  end
 
+  def image1_mouse_over
+    @image1.image = @image_black
+  end
+
+  def image1_mouse_out
+    @image1.image = @image_white
+  end
+
+  def image1_mouse_push(tx, ty)
+    @image1.image = @image_red
+  end
+
+  def image1_mouse_r_push(tx, ty)
+    @image1.image = @image_blue
+  end
+
+  def button1_click(tx, ty)
+    WS.desktop.add_control(WS::WSMessageBox.new("MessageBoxTest", "メッセージボックステスト"))
+  end
+end
+
+w = TestWindow1.new(100, 100, 300, 150, "Test")
 WS.desktop.add_control(w)
+w.button1.activate
+
 
 # とりあえずの右クリックメニューテスト
 # 仕様はこれから考える。
