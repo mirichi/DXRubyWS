@@ -25,6 +25,8 @@ module WS
       @mouse_wheel = Input.mouse_wheel_pos
       @old_keys = nil
       self.collision = [0, 0, Window.width-1, Window.height-1]
+      @width = Window.width
+      @height = Window.height
     end
 
     def add_control(obj, name=nil)
