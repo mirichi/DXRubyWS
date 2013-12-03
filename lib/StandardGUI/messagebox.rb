@@ -44,8 +44,8 @@ module WS
     def initialize(caption = "", message)
       @font = @@default_font
       size = @font.get_width(message)
-      tx = WS.desktop.width / 2 - size / 2 - (20 + 6) / 2
-      ty = WS.desktop.height / 2 - (@font.size + 16 + 32 + 20 + 6) / 2
+      tx = Window.width / 2 - size / 2 - (20 + 6) / 2
+      ty = Window.height / 2 - (@font.size + 16 + 32 + 20 + 6) / 2
       sx = size + 20 + 6
       sy = @font.size + 16 + 32 + 20 + 6
       super(tx, ty, sx, sy)
