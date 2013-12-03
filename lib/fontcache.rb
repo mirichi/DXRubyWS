@@ -24,7 +24,7 @@ class RenderTarget
     unless data2.has_key?(str)
       width = font.get_width(str)
       return if width == 0
-      data2[str] = Image.new(width, font.size).draw_font(0, 0, str, font, color)
+      data2[str] = Image.new(width, font.size).draw_font_ex(0, 0, str, font, color:color, aa:false)
     end
     self.draw(x, y, data2[str])
     GC.enable
