@@ -91,7 +91,7 @@ module WS
         @downcount -= 1
         if @downcount == 0
           @downcount = 5
-          on_click(self, @old_tx, @old_ty)
+          on_click(@old_tx, @old_ty)
         end
       end
       super
