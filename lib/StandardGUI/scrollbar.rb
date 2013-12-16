@@ -28,8 +28,7 @@ module WS
       end
     end
 
-    class WSScrollBarUpButton < WSButtonBase
-      include RepeatClickable # リピートクリック用モジュール
+    class WSScrollBarUpButton < WSSpinButton
       def set_image
         super
         @image[false].triangle_fill(7, 3, 3, 10, 11, 10, C_BLACK)
@@ -37,8 +36,7 @@ module WS
       end
     end
 
-    class WSScrollBarDownButton < WSButtonBase
-      include RepeatClickable # リピートクリック用モジュール
+    class WSScrollBarDownButton < WSSpinButton
       def set_image
         super
         @image[false].triangle_fill(7, 11, 3, 4, 11, 4, C_BLACK)
@@ -160,8 +158,7 @@ module WS
       end
     end
 
-    class WSScrollBarLeftButton < WSButtonBase
-      include RepeatClickable # リピートクリック用モジュール
+    class WSScrollBarLeftButton < WSSpinButton
       def set_image
         super
         @image[false].triangle_fill(3, 8, 10, 4, 10, 11, C_BLACK)
@@ -169,8 +166,7 @@ module WS
       end
     end
 
-    class WSScrollBarRightButton < WSButtonBase
-       include RepeatClickable # リピートクリック用モジュール
+    class WSScrollBarRightButton < WSSpinButton
       def set_image
         super
         @image[false].triangle_fill(11, 8, 4, 4, 4, 11, C_BLACK)

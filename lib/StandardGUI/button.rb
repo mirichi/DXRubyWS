@@ -72,4 +72,10 @@ module WS
       end
     end
   end
+
+  # スピンボタン
+  class WSSpinButton < WSButtonBase
+      include Focusable
+      include RepeatClickable # リピートクリック用モジュール
+  end
 end
