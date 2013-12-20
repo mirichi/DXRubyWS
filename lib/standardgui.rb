@@ -9,6 +9,6 @@ require_relative './standardgui/listview'
 require_relative './standardgui/textbox'
 require_relative './standardgui/messagebox'
 #require_relative './standardgui/pulldownmenu'
-#require_relative './standardgui/numberinput'
+require_relative './standardgui/numberinput'
 require_relative './standardgui/checkbox'
 
