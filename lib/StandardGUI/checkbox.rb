@@ -77,6 +77,7 @@ module WS
         @checked = !@checked
         signal(:changed, @checked)
       end
+      super
     end
 
     ### caption設定 ###
