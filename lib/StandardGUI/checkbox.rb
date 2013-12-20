@@ -83,7 +83,7 @@ module WS
     ### caption設定 ###
     def caption=(c)
       @caption = c
-      self.resize(@font.get_width(c) + 16, @font.size)
+      self.resize(@font.get_width(c) + 20, @font.size)
     end
 
     ### 描画 ###    
