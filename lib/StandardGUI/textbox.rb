@@ -54,6 +54,7 @@ module WS
 
       # 特殊キーのハンドラ
       add_key_handler(K_BACKSPACE) do
+        before = @text.dup
         if @selected_range.empty?
           if @cursor_pos > 0
             @text[@cursor_pos - 1] = ""
@@ -66,9 +67,11 @@ module WS
         end
 
         adjust_left
+        signal(:changed, @text) if before != @text
       end
 
       add_key_handler(K_DELETE) do
+        before = @text.dup
         if @selected_range.empty?
           @text[@cursor_pos] = ""
         else
@@ -78,6 +81,7 @@ module WS
         end
 
         adjust_left
+        signal(:changed, @text) if before != @text
       end
 
       add_key_handler(K_LEFT) do
@@ -151,6 +155,7 @@ module WS
       end
 
       add_key_handler(K_CTRL + K_X) do
+        before = @text.dup
         if !@selected_range.empty?
           Rclip.setData(@text[@selected_range.to_range])
           @text[@selected_range.to_range] = ""
@@ -158,6 +163,7 @@ module WS
           @selected_range.clear
           set_draw_range
         end
+        signal(:changed, @text) if before != @text
       end
 
       add_key_handler(K_CTRL + K_C) do
@@ -167,6 +173,7 @@ module WS
       end
 
       add_key_handler(K_CTRL + K_V) do
+        before = @text.dup
         str = Rclip.getData.encode("UTF-8").gsub(/\r\n/, "").gsub(/\r/, "").gsub(/\n/, "")
         if @selected_range.empty?
           @text[@cursor_pos, 0] = str
@@ -178,6 +185,7 @@ module WS
         @cursor_pos += str.length
         
         adjust_right
+        signal(:changed, @text) if before != @text
       end
     end
 
@@ -193,6 +201,7 @@ module WS
 
     # 文字が入力されたらカーソル位置に挿入
     def on_string(str)
+      before = @text.dup
       if @selected_range.empty?
         @text[@cursor_pos, 0] = str
       else
@@ -203,6 +212,9 @@ module WS
       @cursor_pos += str.length
 
       adjust_right
+      if before != @text
+        signal(:changed, @text)
+      end
     end
 
     def adjust_left
