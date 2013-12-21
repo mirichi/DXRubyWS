@@ -7,7 +7,7 @@ module WS
   # すべての基本、コントロールのクラス
   class WSControl < Sprite
     attr_accessor :parent, :font, :width, :height, :resizable_width, :resizable_height
-    attr_accessor :min_width, :min_height, :focusable, :active
+    attr_accessor :min_width, :min_height, :focusable, :active, :enable
     @@default_font = Font.new(16)
 
     def initialize(tx, ty, width, height)
@@ -24,6 +24,7 @@ module WS
       @resizable_height = false # オートレイアウト用設定
       @focusable = false
       @active = false
+      @enable = true
     end
 
     # マウスイベント
@@ -233,6 +234,11 @@ module WS
       @active
     end
 
+    # 有効かどうかを返す
+    def enabled?
+      @enable
+    end
+
     # コントロールを読める文字にする
     def inspect
       "#<" + self.class.name + ">"
@@ -240,7 +246,7 @@ module WS
 
     # フォーカスを受け取れるコントロールを配列にして返す
     def get_focusable_control_ary
-      if @focusable and self.visible
+      if @focusable and self.visible and self.enabled?
         [self]
       else
         []
@@ -249,7 +255,7 @@ module WS
 
     # フォーカスを受け取れるコントロールを返す
     def get_focusable_control(tx, ty)
-      if @focusable and self.visible
+      if @focusable and self.visible and self.enabled?
         self
       else
         nil
@@ -323,7 +329,7 @@ module WS
     def mouse_event_dispatch(event, tx, ty)
       if !WS.captured?(self) or WS.capture_notify # キャプチャしたのが自コンテナだった場合は配下コントロールにイベントを渡さない
         ctl = find_hit_object(tx, ty)
-        return ctl.mouse_event_dispatch(event, tx - ctl.x, ty - ctl.y) if ctl
+        return ctl.mouse_event_dispatch(event, tx - ctl.x, ty - ctl.y) if ctl and ctl.enabled?
       end
       super
     end
@@ -346,7 +352,7 @@ module WS
 
     # フォーカスを受け取れるコントロールを配列にして返す
     def get_focusable_control_ary
-      return [self] if @focusable and self.visible
+      return [self] if @focusable and self.visible and self.enabled?
       ary = []
       @childlen.each do |o|
         ary.concat(o.get_focusable_control_ary)
@@ -358,7 +364,7 @@ module WS
     def get_focusable_control(tx, ty)
       ctl = find_hit_object(tx, ty)
       return nil unless ctl
-      return ctl if ctl.focusable
+      return ctl if ctl.focusable and ctl.visible and ctl.enabled?
       return ctl.get_focusable_control(tx - ctl.x, ty - ctl.y)
     end
 
