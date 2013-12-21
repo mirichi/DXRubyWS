@@ -75,17 +75,6 @@ module WS
       else
         tx, ty = @cursor_x, @cursor_y
         tmp = self
-
-        # フォーカスを取得できるコントロールだった場合にフォーカスを設定する
-        if (Input.mouse_down?(M_LBUTTON) and @mouse_l_flag == false) or
-           (Input.mouse_down?(M_RBUTTON) and @mouse_r_flag == false)
-          focus_control = get_focusable_control(tx, ty)
-          if focus_control
-            focus_control.activate
-          else
-            self.activate
-          end
-        end
       end
 
       # ボタン押した
@@ -164,6 +153,20 @@ module WS
     def activate
       self.set_focus(nil)
     end
+
+    def mouse_event_dispatch(event, tx, ty)
+      # フォーカスを取得できるコントロールだった場合にフォーカスを設定する
+      if !@capture_object and (event == :mouse_push or event == :mouse_r_push or event == :mouse_m_push)
+        focus_control = get_focusable_control(tx, ty)
+        if focus_control
+          focus_control.activate
+        else
+          self.activate
+        end
+      end
+      super
+    end
+  
   end
 
   @@desktop = WSDesktop.new
