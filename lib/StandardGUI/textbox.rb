@@ -149,8 +149,7 @@ module WS
       end
 
       add_key_handler(K_CTRL + K_A) do
-        @selected_range.set(0, @text.length)
-        @cursor_pos = @text.length
+        self.all_select
         adjust_right
       end
 
@@ -187,6 +186,11 @@ module WS
         adjust_right
         signal(:changed, @text) if before != @text
       end
+    end
+
+    def all_select
+      @selected_range.set(0, @text.length)
+      @cursor_pos = @text.length
     end
 
     def size_limit

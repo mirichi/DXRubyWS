@@ -24,24 +24,28 @@ module WS
     # コントロールの作成
     def create_controls
       # テキストボックスの作成
-      c_numtext = WSTextBox.new(0, 0, width - 48, height)
+      c_numtext = WSTextBox.new(0, 0, width, height)
       c_numtext.add_handler(:changed, self.method(:text_changed))
       # スピンボタン変動小の作成
-      font_s = Font.new(8)
-      c_b_add_s = WSSpinButton.new(width - 48,          0, 24, height / 2, "▲")
+      font_s = Font.new(7)
+      c_b_add_s = WSSpinButton.new(width - 48 - 2,          2, 24, height / 2 - 2, "▲")
       c_b_add_s.font = font_s
       c_b_add_s.add_handler(:click, self.method(:click_add_button_s))
-      c_b_sub_s = WSSpinButton.new(width - 48, height / 2, 24, height / 2, "▼")
+      c_b_add_s.focusable = false
+      c_b_sub_s = WSSpinButton.new(width - 48 - 2, height / 2, 24, height / 2 - 2, "▼")
       c_b_sub_s.font = font_s  
       c_b_sub_s.add_handler(:click, self.method(:click_sub_button_s))
+      c_b_sub_s.focusable = false
       # スピンボタン変動大の作成
-      font_b = Font.new(10)
-      c_b_add_b = WSSpinButton.new(width - 24,          0, 24, height / 2, "▲")
+      font_b = Font.new(9)
+      c_b_add_b = WSSpinButton.new(width - 24 - 2,          2, 24, height / 2 - 2, "▲")
       c_b_add_b.font = font_b
       c_b_add_b.add_handler(:click, self.method(:click_add_button_b))
-      c_b_sub_b = WSSpinButton.new(width - 24, height / 2, 24, height / 2, "▼")
+      c_b_add_b.focusable = false
+      c_b_sub_b = WSSpinButton.new(width - 24 - 2, height / 2, 24, height / 2 - 2, "▼")
       c_b_sub_b.font = font_b  
       c_b_sub_b.add_handler(:click, self.method(:click_sub_button_b))
+      c_b_sub_b.focusable = false
 
       # コントロールの登録
       add_control(c_numtext, :c_numtext)
@@ -122,6 +126,8 @@ module WS
     # テキストボックスにテキストを設定
     def set_text
       self.c_numtext.text = @value.to_s
+      self.c_numtext.all_select
+      self.c_numtext.activate
     end
 				
   end
