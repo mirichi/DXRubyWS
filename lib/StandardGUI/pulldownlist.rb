@@ -137,6 +137,19 @@ module WS
       WS.desktop.add_control(@list)
       WS.capture(@list)
     end
+
+    def on_key_push(k)
+      if k == K_ESCAPE
+        if WS.captured?(@list)
+          WS.capture(nil)
+          WS.desktop.remove_control(@list)
+        else
+          super
+        end
+      else
+        super
+      end
+    end
     
     def draw
       self.image = @image
