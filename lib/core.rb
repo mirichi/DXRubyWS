@@ -240,7 +240,7 @@ module WS
 
     # フォーカスを受け取れるコントロールを配列にして返す
     def get_focusable_control_ary
-      if @focusable
+      if @focusable and self.visible
         [self]
       else
         []
@@ -249,7 +249,7 @@ module WS
 
     # フォーカスを受け取れるコントロールを返す
     def get_focusable_control(tx, ty)
-      if @focusable
+      if @focusable and self.visible
         self
       else
         nil
@@ -346,7 +346,7 @@ module WS
 
     # フォーカスを受け取れるコントロールを配列にして返す
     def get_focusable_control_ary
-      return [self] if @focusable
+      return [self] if @focusable and self.visible
       ary = []
       @childlen.each do |o|
         ary.concat(o.get_focusable_control_ary)
