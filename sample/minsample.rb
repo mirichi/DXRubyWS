@@ -215,20 +215,25 @@ class TestWindow1 < WS::WSWindow
     @button1 = WS::WSButton.new(10, 10, 150, 20, "Show MessageBox")
     @label1 = WS::WSLabel.new(10, 50, 100, 20, "label")
     @textbox1 = WS::WSTextBox.new(70, 45, 200, 20)
-    @textbox2 = WS::WSTextBox.new(70, 80, 200, 20)
+#    @textbox2 = WS::WSTextBox.new(70, 80, 200, 20)
     @image1 = WS::WSImage.new(200, 10, 30, 30)
+    @pulldown1 = WS::WSPullDownList.new(70, 80, 200, 20, ["てすと1","てすと2","テスト3"])
 
     self.client.add_control(@button1)
     self.client.add_control(@label1)
     self.client.add_control(@textbox1)
-    self.client.add_control(@textbox2)
+#    self.client.add_control(@textbox2)
     self.client.add_control(@image1)
+    self.client.add_control(@pulldown1)
 
     @button1.add_handler(:click) {|obj, tx, ty|self.button1_click(tx, ty)}
     @image1.add_handler(:mouse_over){|obj|self.image1_mouse_over}
     @image1.add_handler(:mouse_out){|obj|self.image1_mouse_out}
     @image1.add_handler(:mouse_push){|obj, tx, ty|self.image1_mouse_push(tx, ty)}
     @image1.add_handler(:mouse_r_push){|obj, tx, ty|self.image1_mouse_r_push(tx, ty)}
+
+    @chkbox = WS::WSCheckBox.new(10, 105, 200, "あいう")
+    self.client.add_control(@chkbox)
 
     init
   end
