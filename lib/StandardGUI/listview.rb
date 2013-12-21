@@ -277,9 +277,12 @@ module WS
           client.listview.image.draw(0 - hsb.pos, i * @font.size - vsb.pos, @cursor_image)
           color = C_WHITE
         end
+        tmp = Encoding.default_external # コケる現象回避
+        Encoding.default_external = Encoding::ASCII_8BIT
         item.each_with_index do |s, x|
           @client_tmp_rt[x].draw_font(2, i * @font.size - vsb.pos, s.inspect, @font, :color=>color)
         end
+        Encoding.default_external = tmp
       end
       tx = 0
       client.title.titles.size.times do |x|
