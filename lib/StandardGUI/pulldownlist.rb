@@ -61,6 +61,7 @@ module WS
       end
       
       def on_mouse_push(tx,ty)
+        super
         old_select = @selected
         if tx >= 2 && tx <= @width - 2 && ty >= 2 && ty <= @height - 2
           @selected = (ty - 2).div(@font.size)
@@ -70,6 +71,12 @@ module WS
         @form.change if old_select != @selected
       end
       
+      def on_mouse_r_push(tx, ty)
+        super
+        WS.capture(nil)
+        WS.desktop.remove_control(self)
+      end
+    
       def selected=(v)
         old_select = @selected
         @selected = v.clamp(0, @content.size-1)
@@ -139,7 +146,7 @@ module WS
         self.target.draw(self.x + 3, self.y + 3, @active_image, self.z)
       end
       self.target.draw_font(self.x + 2, self.y + 2, value.to_s, @font, {:color => C_BLACK,:z => self.z}) if self.index
-      self.target.draw(self.x + 2 + @width - @height, self.y + 2, @btn_image, self.z)# 暫定
+      self.target.draw(self.x + 2 + @width - @height, self.y + 2, @btn_image, self.z)
     end
     
     def value
