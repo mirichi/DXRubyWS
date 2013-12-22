@@ -174,6 +174,7 @@ module WS
     # キー押したイベント。引数はDXRubyのキー定数。
     # ハンドラを呼んだらtrue、何もなければfalseを返す。
     def on_key_push(key)
+      return false unless self.enabled?
       result = false
       key += 256 if Input.key_down?(K_LCONTROL) or Input.key_down?(K_RCONTROL)
       if @key_handler.has_key?(key)
@@ -236,7 +237,12 @@ module WS
 
     # 有効かどうかを返す
     def enabled?
-      @enable
+      @enable && self.visible && (self.parent ? self.parent.enabled? : true)
+    end
+
+    # 見えるかどうかを返す
+    def visible?
+      (self.visible && (self.parent ? self.parent.visible? : true))      
     end
 
     # コントロールを読める文字にする
