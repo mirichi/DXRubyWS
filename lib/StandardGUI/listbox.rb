@@ -96,6 +96,9 @@ module WS
         end
         signal(:select, @cursor) if old_cursor != @cursor
       end
+
+      # 一度resizeを呼んで初期化する
+      resize(width, height)
     end
 
     # resize時にカーソル位置の反転画像を再生成する
