@@ -7,7 +7,7 @@ module WS
   # すべての基本、コントロールのクラス
   class WSControl < Sprite
     attr_accessor :parent, :font, :width, :height, :resizable_width, :resizable_height
-    attr_accessor :min_width, :min_height, :focusable, :active, :enable
+    attr_accessor :min_width, :min_height, :focusable, :active, :enabled
     @@default_font = Font.new(16)
 
     def initialize(tx, ty, width, height)
@@ -24,7 +24,7 @@ module WS
       @resizable_height = false # オートレイアウト用設定
       @focusable = false
       @active = false
-      @enable = true
+      @enabled = true
     end
 
     # マウスイベント
@@ -237,7 +237,7 @@ module WS
 
     # 有効かどうかを返す
     def enabled?
-      @enable && self.visible && (self.parent ? self.parent.enabled? : true)
+      @enabled && self.visible && (self.parent ? self.parent.enabled? : true)
     end
 
     # 見えるかどうかを返す

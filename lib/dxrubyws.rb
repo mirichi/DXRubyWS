@@ -27,7 +27,7 @@ module WS
       self.collision = [0, 0, Window.width-1, Window.height-1]
       @width = Window.width
       @height = Window.height
-      @enable = true
+      @enabled = true
     end
 
     def add_control(obj, name=nil)
