@@ -294,6 +294,7 @@ module WS
       self.image = RenderTarget.new(width, height) # ContainerはRenderTargetを持つ
       @childlen = []
       @layout = nil
+      @to_image = nil
     end
 
     # 自身の配下にコントロールを追加する
@@ -332,10 +333,48 @@ module WS
       super
     end
 
-    # Sprite#draw時に配下のコントロールにもupdateを投げる
+    # Sprite#draw時に配下のコントロールにもdrawを投げる
     def draw
-      Sprite.draw(@childlen)
+      if @parent
+        # 誰も更新していなくて、かつ、画像を持ってる場合
+        if !@childlen.empty? and @childlen.all?{|s|!s.refreshed?} and @to_image
+          # RenderTargetオブジェクトがセットされていたら破棄
+          self.image.dispose if self.image.class === RenderTarget
+
+          # 描画済みオブジェクトのセット
+          self.image = @to_image
+        else
+          if @to_image
+            @to_image.dispose
+            @to_image = nil
+          end
+  
+          if self.image.disposed?
+            self.image = RenderTarget.new(@width, @height)
+          end
+
+          Sprite.draw(@childlen)
+  
+          # 配下のコントロールが全員更新しないと返事した場合にはto_imageして保持する
+          if !@childlen.empty? and @childlen.all?{|s|!s.likely_refresh?}
+            @to_image = self.image.to_image
+          end
+        end
+      else
+        Sprite.draw(@childlen)
+      end
+
       super
+    end
+
+    # 配下のコントロールのどれかが更新していたらtrueを返す
+    def refreshed?
+      @childlen.any?{|s|s.refreshed?}
+    end
+
+    # 配下のコントロールのどれかが更新しそうならtrueを返す
+    def likely_refresh?
+      @childlen.any?{|s|s.likely_refresh?}
     end
 
     # 引数の座標に存在する配下のコントロールを返す。無ければnil
