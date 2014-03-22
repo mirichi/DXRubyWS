@@ -1,73 +1,10 @@
 # coding: utf-8
-require_relative './button'
-require_relative './label'
+require_relative './windowbase'
 require_relative './menubar'
-require_relative './common'
 
 module WS
   # ウィンドウぽい動きを実現してみる
-  class WSWindow < WSContainer
-   class WSWindowCloseButton < WSButton
-     def initialize(*args)
-       super
-       @focusable = false
-     end
-
-     def set_image
-       super
-       @image[true].line(4, 4, @width-5, @height-5, C_BLACK)
-                   .line(5, 4, @width-4, @height-5, C_BLACK)
-                   .line(@width-5, 4, 4, @height-5, C_BLACK)
-                   .line(@width-4, 4, 5, @height-5, C_BLACK)
-       @image[false].line(4-1, 4-1, @width-5-1, @height-5-1, C_BLACK)
-                    .line(5-1, 4-1, @width-4-1, @height-5-1, C_BLACK)
-                    .line(@width-5-1, 4-1, 4-1, @height-5-1, C_BLACK)
-                    .line(@width-4-1, 4-1, 5-1, @height-5-1, C_BLACK)
-     end
-   end
-    
-    # ウィンドウのタイトルバー用クラス
-    class WSWindowTitle < WSContainer
-      include DoubleClickable # 最大化用
-      include Draggable       # ウィンドウのドラッグ用
-  
-      def initialize(tx, ty, width, height, title="")
-        super(tx, ty, width, height)
-        self.image.bgcolor = [0, 0, 160]
-  
-        # タイトルバーのクロースボタン
-        close_button = WSWindowCloseButton.new(0, 0, height-2, height-2, "")
-        close_button.fore_color = C_BLACK
-        add_control(close_button)
-        close_button.add_handler(:click) {signal(:close)}
-  
-        # ウィンドウタイトル
-        label = WSLabel.new(0, 0, width, height, title)
-        label.fore_color = C_WHITE
-        label.font = Font.new(14, nil, :weight=>true)
-        add_control(label)
-
-        add_handler(:doubleclick) do
-          @dragging_flag = false
-        end
-
-        # オートレイアウト
-        layout(:hbox) do
-          self.margin_top = self.margin_right = 1
-          self.margin_left = 2
-          add label, true
-          add close_button
-        end
-      end
-    end
-
-    class WSWindowClient < WSContainer
-      def add_control(obj, name=nil)
-        super
-        self.activate
-      end
-    end
-
+  class WSWindow < WSWindowBase
     attr_accessor :border_width # ウィンドウボーダーの幅
     attr_reader :window_focus # ウィンドウ上のフォーカスを持つコントロール
     include WindowFocus
@@ -125,6 +62,7 @@ module WS
       end
     end
 
+    # コントロール画像の描画
     def draw
       draw_border(true)
 

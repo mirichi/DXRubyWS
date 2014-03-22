@@ -86,7 +86,7 @@ module WS
       self.client.add_control(@label_d)
       self.client.add_control(@label_r)
 
-      @ni = WSNumberInput.new(120, 20, 80, 20)
+      @ni = WSNumberInputExt.new(120, 20, 80, 20)
       self.client.add_control(@ni)
       @ni.limit(1, 32)
       @ni.step(1, 8)

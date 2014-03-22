@@ -188,6 +188,16 @@ module WS
       end
     end
 
+    # コントロールの値を参照
+    def value
+      @text
+    end
+    
+    # コントロールに値を設定
+    def value=(v)
+      self.text = v
+    end
+    
     def all_select
       @selected_range.set(0, @text.length)
       @cursor_pos = @text.length
@@ -283,9 +293,10 @@ module WS
     def on_enter
 #      Input::IME.enable = true
       Input::IME.set_font(@font)
-      @selected_range.set(0, @text.length)
       @cursor_pos = @text.length
       @cursor_count = 0
+      @selected_range.set(0, @text.length)
+      @on_enter = true
       super
     end
 
@@ -298,6 +309,7 @@ module WS
 
     # マウス押したらカーソル移動
     def on_mouse_push(tx, ty)
+      unless @on_enter
       cx = 0
       tx += @font.get_width(@text[0...@draw_range.first])
       @cursor_pos = @text.length
@@ -317,6 +329,9 @@ module WS
       @drag_old_y = ty
       @selected_range.set(@cursor_pos, @cursor_pos)
       super
+      else
+        @on_enter = false
+      end
     end
 
     # 範囲選択終了

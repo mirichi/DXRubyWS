@@ -1,10 +1,12 @@
+# coding: utf-8
 module WS
   C_GRAY = [190, 190, 190]
   C_DARK_GRAY = [120,120,120]
   C_LIGHT_BLACK = [80,80,80]
   C_DARK_WHITE = [240,240,240]
   C_LIGHT_GRAY = [220,220,220]
-
+  IMG_CACHE    = {}
+    
   class WSContainer
     def draw_border(flag)
       sx = @width

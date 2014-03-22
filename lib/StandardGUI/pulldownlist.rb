@@ -84,7 +84,7 @@ module WS
       end
     end
     
-
+    ### ■プルダウンリストの設定■ ###
     def initialize(tx, ty, width, height, content = [])
       super(tx, ty, width, height)
       @image = Image.new(@width, @height, C_WHITE).draw_border(false)
@@ -158,11 +158,11 @@ module WS
       if self.activated?
         self.target.draw(self.x + 3, self.y + 3, @active_image, self.z)
       end
-      self.target.draw_font(self.x + 2, self.y + 2, value.to_s, @font, {:color => C_BLACK,:z => self.z}) if self.index
+      self.target.draw_font(self.x + 2, self.y + 2, item.to_s, @font, {:color => C_BLACK,:z => self.z}) if self.item
       self.target.draw(self.x + 2 + @width - @height, self.y + 2, @btn_image, self.z)
     end
     
-    def value
+    def item
       @list.content[@list.selected]
     end
     
@@ -170,8 +170,12 @@ module WS
       @list.selected
     end
     
+    def index=(v)
+      @list.selected = v
+    end
+    
     def change #新しく別のものが選択されたら呼ばれる。
-      signal(:change, self.value, self.index)
+      signal(:changed, self.item, self.index)
     end
 
     def on_leave

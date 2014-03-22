@@ -11,9 +11,14 @@ module WS
       include DoubleClickable
     end
 
+    # Mix-In
     include Focusable
+    
+    # 公開インスタンス
     attr_reader :items, :cursor
 
+       
+    # 初期化
     def initialize(tx, ty, width, height)
       # クライアント領域作成。WSScrollableContainerではsuperにクライアント領域コントロールを渡す必要があるので
       # superより先にこれだけ作る。
@@ -25,6 +30,8 @@ module WS
       @items = [] # リストの中身
       @cursor = 0 # カーソルの位置
 
+      resize(@width, @height)
+      
       add_control(client, :client)
       client.add_handler(:mouse_push) do |obj, tx, ty|
         tmp = ((vsb.pos + ty) / @font.size).to_i
@@ -45,60 +52,52 @@ module WS
 
       # キーボードイベント
       add_key_handler(K_UP) do
-        old_cursor = @cursor
-        @cursor -= 1
-        @cursor = @cursor.clamp(0, @items.length - 1)
-        if @cursor * @font.size < vsb.pos
-          vsb.pos = @cursor * @font.size
-        end
-        signal(:select, @cursor) if old_cursor != @cursor
+        set_cursor(@cursor - 1)
       end
+      
       add_key_handler(K_PGUP) do
-        old_cursor = @cursor
-        @cursor -= client.height / @font.size
-        @cursor = @cursor.clamp(0, @items.length - 1)
-        if @cursor * @font.size < vsb.pos
-          vsb.pos = @cursor * @font.size
+        set_cursor(@cursor - client.height / @font.size)
         end
-        signal(:select, @cursor) if old_cursor != @cursor
-      end
+      
       add_key_handler(K_HOME) do
-        old_cursor = @cursor
-        @cursor = 0
-        if @cursor * @font.size < vsb.pos
-          vsb.pos = @cursor * @font.size
-        end
-        signal(:select, @cursor) if old_cursor != @cursor
+        set_cursor(0)
       end
+      
       add_key_handler(K_DOWN) do
-        old_cursor = @cursor
-        @cursor += 1
-        @cursor = @cursor.clamp(0, @items.length - 1)
-        if @cursor * @font.size + (@font.size - 1) >= vsb.pos + client.height
-          vsb.pos = @cursor * @font.size + @font.size - client.height
+        set_cursor(@cursor + 1) 
         end
-        signal(:select, @cursor) if old_cursor != @cursor
-      end
+      
       add_key_handler(K_PGDN) do
-        old_cursor = @cursor
-        @cursor += client.height / @font.size
-        @cursor = @cursor.clamp(0, @items.length - 1)
-        if @cursor * @font.size + (@font.size - 1) >= vsb.pos + client.height
-          vsb.pos = @cursor * @font.size + @font.size - client.height
-        end
-        signal(:select, @cursor) if old_cursor != @cursor
+        set_cursor(@cursor + client.height / @font.size)
       end
-      add_key_handler(K_END) do
-        old_cursor = @cursor
-        @cursor = @items.length - 1
-        if @cursor * @font.size + (@font.size - 1) >= vsb.pos + client.height
-          vsb.pos = @cursor * @font.size + @font.size - client.height
+      
+      add_key_handler(K_END)  do
+        set_cursor(@cursor = @items.length - 1)
         end
-        signal(:select, @cursor) if old_cursor != @cursor
       end
 
-      # 一度resizeを呼んで初期化する
-      resize(width, height)
+    # カーソル位置設定
+    def set_cursor(index, event = true)
+        old_cursor = @cursor
+      @cursor = index
+        @cursor = @cursor.clamp(0, @items.length - 1)
+      if @cursor * @font.size < vsb.pos
+        vsb.pos = @cursor * @font.size
+      elsif @cursor * @font.size + (@font.size - 1) >= vsb.pos + client.height
+          vsb.pos = @cursor * @font.size + @font.size - client.height
+        end
+      signal(:select, @cursor) if old_cursor != @cursor && event     
+      end
+    
+    # 項目の設定
+    def set_items(value)
+      @items = value    
+      resize(@width, @height)  
+      end
+
+    # カーソル位置の項目を取得
+    def item
+      @items[@cursor]    
     end
 
     # resize時にカーソル位置の反転画像を再生成する
@@ -110,6 +109,7 @@ module WS
       vsb.view_size = client.height
     end
 
+    # 描画
     def draw
       vsb.total_size = @items.length * @font.size # itemsの配列はいつ書き換えられるかわからないからとりあえず再計算
 

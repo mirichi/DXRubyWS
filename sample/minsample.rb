@@ -61,12 +61,12 @@ module UseObjectBrowser
     WS.desktop.add_control(tmp)
   end
   def initialize(*args)
-    super
+    super(*args)
     self.m_menuitems = @@ary
   end
 end
 
-class WS::WSWindow::WSWindowClient
+class WS::WSWindowBase::WSWindowClient
   include UseObjectBrowser
   include WS::UseMiddleClickMenu
 end
@@ -88,7 +88,6 @@ w.client.layout(:vbox) do
 end
 
 WS::desktop.add_control(w)
-
 
 # ポップアップメニューのデータ
 submenu1 = []
