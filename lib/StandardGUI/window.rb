@@ -42,14 +42,6 @@ module WS
       # Escで閉じる
       add_key_handler(K_ESCAPE){self.close}
 
-      # Tabでフォーカス移動
-      add_key_handler(K_TAB) do
-        if @window_focus
-          tmp = client.get_focusable_control_ary
-          tmp.reverse! unless Input.shift?
-          tmp[tmp.index(@window_focus) - 1].activate
-        end
-      end
     end
 
     def add_menubar(menuitems)
