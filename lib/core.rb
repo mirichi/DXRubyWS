@@ -242,7 +242,7 @@ module WS
 
     # 見えるかどうかを返す
     def visible?
-      (self.visible && (self.parent ? self.parent.visible? : true))      
+      self.visible && (self.parent ? self.parent.visible? : true)
     end
 
     # コントロールを読める文字にする
@@ -266,24 +266,6 @@ module WS
       else
         nil
       end
-    end
-
-    # このフレームに更新があったかどうかを返す。あった場合にtrue。
-    # デフォルトではtrue固定なので、更新有無を返せるコントロールはオーバーライドすること。
-    # いまのところ未実装
-    def refreshed?
-      true
-    end
-
-    # 次のフレームに更新があることが予想できるかどうかを返す。更新がありそうならtrue。
-    # コンテナは配下の全てのコントロールがこのメソッドにfalseを返した場合にのみ描画結果をキャッシュする。
-    # 別に前回更新がないと返したのに実はありました(ﾃﾍﾍﾟﾛ)でもちょっと遅くなるかもしれないだけで実害は無いので、
-    # 確率がより高いほうに倒しておくような感じで。
-    # ひょっとしたら毎フレーム画像を更新するもの以外はfalseでいいのかもしれん。
-    # デフォルトではtrue固定なので、更新予定を返せるコントロールはオーバーライドすること。
-    # いまのところ未実装
-    def likely_refresh?
-      true
     end
   end
 
@@ -341,8 +323,10 @@ module WS
 
     # Sprite#draw時に配下のコントロールにもdrawを投げる
     def draw
-      Sprite.draw(@childlen)
-      super
+      if self.visible
+        Sprite.draw(@childlen)
+        super
+      end
     end
 
     # 配下のコントロールのどれかが更新していたらtrueを返す
@@ -389,10 +373,13 @@ module WS
 
     # フォーカスを受け取れるコントロールを配列にして返す
     def get_focusable_control_ary
-      return [self] if @focusable and self.visible and self.enabled?
       ary = []
       @childlen.each do |o|
-        ary.concat(o.get_focusable_control_ary)
+        if o.focusable and o.visible and o.enabled?
+          ary.push(o)
+        else 
+          ary.concat(o.get_focusable_control_ary)
+        end
       end
       ary
     end
