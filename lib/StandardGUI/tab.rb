@@ -32,57 +32,86 @@ module WS
   end
   
   
-  
-  
-  ### ■タブコントロールのクラス■ ###
+  ### ■タブコンテナクラスの定義■ ###
   class WSTab < WSContainer
-    
-    # 定数
-    C_LIGHT_BLACK = [ 40, 40, 40]
-    C_DARK_GRAY = [120,120,120]
-    C_LIGHT_GRAY = [240,240,240]
-    
-    ### ■タブコンテナクラスの定義■ ###
-    class WSTabContainer < WSContainer
-            
-      # 初期化
-      def initialize(sx, sy, width, height)
-        super(sx, sy, width, height)
-        self.z = 1
-        @tabs = []
-      end
-      
-      # コントロールの追加
-      def add_control(ctl, name=nil)
-        super(ctl, name)
-        @tabs << ctl
-      end    
-      
-      # タブの選択
-      def select_tab(name)
-        change_tab
-        method(name).call.select_tab
-      end 
-      
-      # 選択タブの変更
-      def change_tab
-        @tabs.each do |tab| tab.release_tab end
-      end 
-      
-      # タブの整理
-      def arrange_tabs
-        tx = 0
-        @tabs.each do |tab|
-          tab.x = tx
-          tx += tab.width - 4
-        end
-      end
-      
+          
+    # 初期化
+    def initialize(sx, sy, width, height, tab_height = 24)
+      super(sx, sy, width, height)
+      @tab_height = tab_height
+      @tabs  = {}
+      @panel = {}
     end
-
-
-
-
+    
+    # タブと標準パネルの作成
+    def create_tab_set(name, caption = "")
+      # パネルの作成
+      panel = WSTabPanel.new(0, panel_y, @width, panel_height)
+      create_tab(panel, name, caption)
+    end
+    
+    # タブの作成
+    def create_tab(panel, name, caption = "")
+      # パネル位置とサイズの修正
+      panel.y = panel_y
+      panel.resize(@width, panel_height)
+      # パネルの登録
+      self.add_control(panel, name)
+      @panel[name] = panel
+      # タブの作成
+      tab      = WSTabButton.new(0, 0, @width / 4, tab_height, caption)
+      tab.font = @font
+      tab.set_panel(panel)
+      self.add_control(tab)
+      @tabs[name] = tab
+      # ハンドラの作成
+      tab.add_handler(:click, method(:change_tab))
+      # タブの再配置
+      arrange_tabs
+      panel
+    end
+    
+    # パネルの参照
+    def panel(name)
+      @panel[name]
+    end
+    
+    # タブの高さ
+    def tab_height
+      @tab_height
+    end
+    
+    # パネルのY座標
+    def panel_y
+      tab_height - 1
+    end
+    
+    # パネルの高さ
+    def panel_height
+      @height - panel_y + 1
+    end
+    
+    ### タブの処理 ### 
+    # タブの選択
+    def select_tab(name)
+     change_tab(@tabs[name], 0, 0)
+    end 
+    
+    # 選択タブの変更
+    def change_tab(obj, sx, sy)
+      @tabs.each_value do |tab| tab.release_tab end
+      obj.select_tab
+    end 
+    
+    # タブの整理
+    def arrange_tabs
+      tx = 0
+      @tabs.each_value do |tab|
+        tab.x = tx
+        tx += tab.width - 4
+      end
+    end
+    
     ### ■タブクラスの定義■ ###
     class WSTabButton < WSControl
             
@@ -90,10 +119,14 @@ module WS
       include ButtonClickable
       include Focusable
       
+      ### 公開インデックス ###
+      attr_accessor :index
+      
       # 初期化
       def initialize(sx, sy, width, height, caption="")
         tw = [@@default_font.get_width(caption) + 16, width].min
         super(sx, sy, tw, height)
+        @index = 0
         @px = sx
         @py = sy
         @max_width = width
@@ -128,13 +161,6 @@ module WS
       # タブにパネルを関連付ける
       def set_panel(panel)
         @panel = panel
-      end
-      
-      ### イベント
-      # クリック時の処理
-      def on_click(tx, ty)
-        super
-        self.select_tab
       end
       
       ### 描画
@@ -174,122 +200,40 @@ module WS
                                 @caption, @font, :color=>@fore_color)
         end
       end
-      
     end
+  end
 
-
-
-
-    ### ■タブパネルクラスの定義■ ###
-    class WSTabPanel < WSContainer
-            
-      # 初期化
-      def initialize(sx, sy, width, height)
-        super(sx, sy, width, height)
-        self.visible = false
-      end      
-      
-      # 更新
-      def update
-        super if self.visible
-      end
-      
-      # 描画
-      def draw
-        if self.visible
-          # ボーダーの描画
-          self.image.draw_line( 1, @height-2, @width-2, @height-2, C_DARK_GRAY)
-                    .draw_line( @width-2, 1, @width-2, @height-2, C_DARK_GRAY)
-                    .draw_line( 0, 0, @width-1, 0, C_LIGHT_GRAY)
-                    .draw_line( 0, 0, 0, @height-1, C_LIGHT_GRAY)
-                    .draw_line( 0, @height-1, @width-1, @height-1, C_LIGHT_BLACK)
-                    .draw_line( @width-1, 1, @width-1, @height-1, C_LIGHT_BLACK)
-          super
-        end
-      end
-      
-    end
-    
-    
-    
-   
-    ### ■タブコントロールの定義■ ###
+  
+  
+  
+  ### ■タブパネルクラスの定義■ ###
+  class WSTabPanel < WSContainer
+          
     # 初期化
-    def initialize(sx, sy, width, height, tab_height = 24)
+    def initialize(sx, sy, width, height)
       super(sx, sy, width, height)
-      @tab_height = tab_height
-      @panel = {}
-      create_controls
+      self.visible = false
+    end      
+    
+    # 更新
+    def update
+      super if self.visible
     end
     
-    # コントロールの作成
-    def create_controls
-      @tabs = WSTabContainer.new(0, 0, @width, @tab_height)
-      self.add_control(@tabs)
-    end
-    
-    # タブと標準パネルの作成
-    def create_tab_set(name, caption = "")
-      # パネルの作成
-      panel = WSTabPanel.new(0, panel_y, @width, panel_height)
-      create_tab(panel, name, caption)
-    end
-    
-    # タブの作成
-    def create_tab(panel, name, caption = "")
-      # パネル位置とサイズの修正
-      panel.y = panel_y
-      panel.resize(@width, panel_height)
-      # パネルの登録
-      self.add_control(panel, name)
-      @panel[name] = panel
-      # タブの作成
-      tab      = WSTabButton.new(0, 0, @width / 4, tab_height, caption)
-      tab.font = @font
-      tab.set_panel(panel)
-      @tabs.add_control(tab, name)
-      # ハンドラの作成
-      tab.add_handler(:click, method(:change_tab))
-      # タブの再配置
-      arrange_tabs
-      panel
-    end
-    
-    # パネルの参照
-    def panel(name)
-      @panel[name]
-    end
-    
-    # タブの高さ
-    def tab_height
-      @tab_height
-    end
-    
-    # パネルのY座標
-    def panel_y
-      tab_height - 1
-    end
-    
-    # パネルの高さ
-    def panel_height
-      @height - panel_y + 1
-    end
-    
-    ### タブ関連
-    # タブの切り替え
-    def select_tab(name)
-      @tabs.select_tab(name)
-    end
-    
-    # タブの切り替え
-    def change_tab(tx, ty, obj)
-      @tabs.change_tab
-    end
-
-    # タブの再配置
-    def arrange_tabs
-      @tabs.arrange_tabs
+    # 描画
+    def draw
+      if self.visible
+        # ボーダーの描画
+        self.image.draw_line( 1, @height-2, @width-2, @height-2, C_DARK_GRAY)
+                  .draw_line( @width-2, 1, @width-2, @height-2, C_DARK_GRAY)
+                  .draw_line( 0, 0, @width-1, 0, C_LIGHT_GRAY)
+                  .draw_line( 0, 0, 0, @height-1, C_LIGHT_GRAY)
+                  .draw_line( 0, @height-1, @width-1, @height-1, C_LIGHT_BLACK)
+                  .draw_line( @width-1, 1, @width-1, @height-1, C_LIGHT_BLACK)
+        super
+      end
     end
     
   end
+
 end
