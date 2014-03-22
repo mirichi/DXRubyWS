@@ -65,6 +65,8 @@ module WS
 
       oldx, oldy = @cursor_x, @cursor_y
       @cursor_x, @cursor_y = Input.mouse_pos_x, Input.mouse_pos_y
+      @cursor_x = (@cursor_x / Window.scale).to_i #Window.scale対策
+      @cursor_y = (@cursor_y / Window.scale).to_i
 
       # キャプチャされてた場合にはそのコントロールに直接イベントを送る
       # そうじゃない場合はデスクトップから辿って検索する
