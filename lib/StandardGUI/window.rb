@@ -12,9 +12,7 @@ module WS
     include Focusable
 
     def initialize(tx, ty, sx, sy, caption = "WindowTitle")
-      super(tx, ty, sx, sy)
-      self.image.bgcolor = C_GRAY
-      @border_width = 3
+      super
 
       # ウィンドウタイトルはそれでひとつのコントロールを作る
       # メニューやツールバー、ステータスバーもたぶんそうなる

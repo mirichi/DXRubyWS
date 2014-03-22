@@ -85,29 +85,14 @@ module WS
       @caption      = caption
       @border_width = 3
       
-      create_client
-      
       # Tabでフォーカス移動(キーハンドラ)
       add_key_handler(K_TAB) do
         if @window_focus
-          tmp = client.get_focusable_control_ary
+          tmp = self.get_focusable_control_ary
           tmp.reverse! unless Input.shift?
           tmp[tmp.index(@window_focus) - 1].activate
         end
       end
     end
-    
-    # クライアント領域の作成
-    def create_client
-      # クライアント領域は単純なコンテナである
-      client = WSWindowClient.new(@border_width, @border_height, @width - @border_width * 2, @height - @border_width * 2)
-      add_control(client, :client)
-    end
-    
-    # コントロール画像の描画
-    def draw
-      super
-    end
-        
   end
 end
