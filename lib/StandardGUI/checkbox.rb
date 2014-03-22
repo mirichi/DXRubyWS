@@ -27,7 +27,7 @@ module WS
     
     # コントロールに値を設定
     def value=(v)
-      @checed = v
+      @checked = v
     end
         
     # チェックボックスの画像を設定
