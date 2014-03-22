@@ -270,12 +270,18 @@ module WS
 
     # このフレームに更新があったかどうかを返す。あった場合にtrue。
     # デフォルトではtrue固定なので、更新有無を返せるコントロールはオーバーライドすること。
+    # いまのところ未実装
     def refreshed?
       true
     end
 
     # 次のフレームに更新があることが予想できるかどうかを返す。更新がありそうならtrue。
+    # コンテナは配下の全てのコントロールがこのメソッドにfalseを返した場合にのみ描画結果をキャッシュする。
+    # 別に前回更新がないと返したのに実はありました(ﾃﾍﾍﾟﾛ)でもちょっと遅くなるかもしれないだけで実害は無いので、
+    # 確率がより高いほうに倒しておくような感じで。
+    # ひょっとしたら毎フレーム画像を更新するもの以外はfalseでいいのかもしれん。
     # デフォルトではtrue固定なので、更新予定を返せるコントロールはオーバーライドすること。
+    # いまのところ未実装
     def likely_refresh?
       true
     end
@@ -335,44 +341,18 @@ module WS
 
     # Sprite#draw時に配下のコントロールにもdrawを投げる
     def draw
-      if @parent
-        # 誰も更新していなくて、かつ、画像を持ってる場合
-        if !@childlen.empty? and @childlen.all?{|s|!s.refreshed?} and @to_image
-          # RenderTargetオブジェクトがセットされていたら破棄
-          self.image.dispose if self.image.class === RenderTarget
-
-          # 描画済みオブジェクトのセット
-          self.image = @to_image
-        else
-          if @to_image
-            @to_image.dispose
-            @to_image = nil
-          end
-  
-          if self.image.disposed?
-            self.image = RenderTarget.new(@width, @height)
-          end
-
-          Sprite.draw(@childlen)
-  
-          # 配下のコントロールが全員更新しないと返事した場合にはto_imageして保持する
-          if !@childlen.empty? and @childlen.all?{|s|!s.likely_refresh?}
-            @to_image = self.image.to_image
-          end
-        end
-      else
-        Sprite.draw(@childlen)
-      end
-
+      Sprite.draw(@childlen)
       super
     end
 
     # 配下のコントロールのどれかが更新していたらtrueを返す
+    # いまのところ未実装
     def refreshed?
       @childlen.any?{|s|s.refreshed?}
     end
 
     # 配下のコントロールのどれかが更新しそうならtrueを返す
+    # いまのところ未実装
     def likely_refresh?
       @childlen.any?{|s|s.likely_refresh?}
     end
