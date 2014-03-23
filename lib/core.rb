@@ -270,7 +270,7 @@ module WS
 
     # コントロールは単純に自分自身のdrawを呼ぶ
     def render
-      self.draw
+      self.draw if self.visible
     end
   end
 
@@ -326,13 +326,15 @@ module WS
       super
     end
 
-    # 
+    # 配下のオブジェクトをすべて描画してから自身を描画する
     def render
-      @childlen.each do |s|
-        s.render
-      end
+      if self.visible
+        @childlen.each do |s|
+          s.render
+        end
 
-      super
+        super
+      end
     end
 
     # 配下のコントロールのどれかが更新していたらtrueを返す
