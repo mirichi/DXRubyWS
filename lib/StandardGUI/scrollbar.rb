@@ -272,6 +272,8 @@ module WS
       @client = client
       @h_header_size = @v_header_size = 0
 
+      add_control(client, :client)
+
       # スクロールバー生成
       vsb = WSVScrollBar.new(0, 0, 16, height - 4)
       add_control(vsb, :vsb)

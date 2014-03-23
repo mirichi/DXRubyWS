@@ -166,8 +166,6 @@ module WS
       @cursor = 0 # カーソルの位置
       @v_header_size = 16
 
-      # クライアント領域作成
-      add_control(client, :client)
       client.listview.add_handler(:mouse_push) do |obj, tx, ty|
         tmp = ((vsb.pos + ty) / @font.size).to_i
         if tmp < @items.size

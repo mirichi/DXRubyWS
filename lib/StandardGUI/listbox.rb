@@ -32,7 +32,7 @@ module WS
 
       resize(@width, @height)
       
-      add_control(client, :client)
+#      add_control(client, :client)
       client.add_handler(:mouse_push) do |obj, tx, ty|
         tmp = ((vsb.pos + ty) / @font.size).to_i
         if tmp < @items.size
