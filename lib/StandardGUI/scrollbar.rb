@@ -264,7 +264,7 @@ module WS
 
   # スクロールバー付きコンテナ
   class WSScrollableContainer < WSContainer
-    attr_accessor :client, :h_header_size, :v_header_size
+    attr_accessor :client, :h_header_size, :v_header_size, :vsb, :hsb
 
     # 生成時にクライアント領域にするコントロールが必須
     def initialize(x, y, width, height, client)

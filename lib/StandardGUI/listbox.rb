@@ -9,13 +9,31 @@ module WS
     # マウスボタンに反応する必要がある。か？
     class WSListBoxClient < WSContainer
       include DoubleClickable
+
+      # 描画
+      def draw
+        @parent.vsb.total_size = @parent.items.length * @parent.font.size # itemsの配列はいつ書き換えられるかわからないからとりあえず再計算
+  
+        # リスト描画
+        @parent.items.each_with_index do |s, i|
+          if (i+1) * @parent.font.size - @parent.vsb.pos >= 0 and i * @parent.font.size - @parent.vsb.pos < @height
+            if @parent.cursor != i
+              self.image.draw_font(2, i * @parent.font.size - @parent.vsb.pos, s.to_s, @parent.font, :color=>C_BLACK)
+            else
+              self.image.draw(0, i * @parent.font.size - @parent.vsb.pos, @parent.cursor_image)
+              self.image.draw_font(2, i * @parent.font.size - @parent.vsb.pos, s.to_s, @parent.font, :color=>C_WHITE)
+            end
+          end
+        end
+        super
+      end
     end
 
     # Mix-In
     include Focusable
     
     # 公開インスタンス
-    attr_reader :items, :cursor
+    attr_reader :items, :cursor, :cursor_image
 
        
     # 初期化
@@ -107,24 +125,6 @@ module WS
       @cursor_image.dispose if @cursor_image
       @cursor_image = Image.new(width, @font.size, C_BLACK)
       vsb.view_size = client.height
-    end
-
-    # 描画
-    def draw
-      vsb.total_size = @items.length * @font.size # itemsの配列はいつ書き換えられるかわからないからとりあえず再計算
-
-      # リスト描画
-      @items.each_with_index do |s, i|
-        if (i+1) * @font.size - vsb.pos >= 0 and i * @font.size - vsb.pos < client.height
-          if @cursor != i
-            client.image.draw_font(2, i * @font.size - vsb.pos, s.to_s, @font, :color=>C_BLACK)
-          else
-            client.image.draw(0, i * @font.size - vsb.pos, @cursor_image)
-            client.image.draw_font(2, i * @font.size - vsb.pos, s.to_s, @font, :color=>C_WHITE)
-          end
-        end
-      end
-      super
     end
   end
 end

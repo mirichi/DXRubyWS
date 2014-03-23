@@ -267,6 +267,11 @@ module WS
         nil
       end
     end
+
+    # コントロールは単純に自分自身のdrawを呼ぶ
+    def render
+      self.draw
+    end
   end
 
   # 配下にコントロールを保持する機能を追加したコントロール
@@ -321,12 +326,13 @@ module WS
       super
     end
 
-    # Sprite#draw時に配下のコントロールにもdrawを投げる
-    def draw
-      if self.visible
-        Sprite.draw(@childlen)
-        super
+    # 
+    def render
+      @childlen.each do |s|
+        s.render
       end
+
+      super
     end
 
     # 配下のコントロールのどれかが更新していたらtrueを返す

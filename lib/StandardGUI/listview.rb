@@ -130,6 +130,36 @@ module WS
       end
     end
 
+    class WSListViewMain < WSContainer
+      def draw
+        @parent.parent.vsb.total_size = @parent.parent.items.length * @parent.parent.font.size
+        @parent.parent.hsb.total_size = @parent.title.titles.inject(0){|total, o| total += o[1]}
+  
+        # リスト描画
+        total = @parent.title.titles.inject(0){|t, o| t += o[1]}
+        @parent.parent.items.each_with_index do |item, i|
+          if @parent.parent.cursor != i
+            color = C_BLACK
+          else
+            self.image.draw(0 - @parent.parent.hsb.pos, i * @parent.parent.font.size - @parent.parent.vsb.pos, @parent.parent.cursor_image)
+            color = C_WHITE
+          end
+          tmp = Encoding.default_external # コケる現象回避
+          Encoding.default_external = Encoding::ASCII_8BIT
+          item.each_with_index do |s, x|
+            @parent.parent.client_tmp_rt[x].draw_font(2, i * @parent.parent.font.size - @parent.parent.vsb.pos, s.inspect, @parent.parent.font, :color=>color)
+          end
+          Encoding.default_external = tmp
+        end
+        tx = 0
+        @parent.title.titles.size.times do |x|
+          self.image.draw(tx - @parent.parent.hsb.pos, 0, @parent.parent.client_tmp_rt[x])
+          tx += @parent.title.titles[x][1]
+        end
+        super
+      end
+    end
+
     # リストビュー内のクライアント領域クラス
     class WSListViewClient < WSContainer
       include DoubleClickable
@@ -141,7 +171,7 @@ module WS
         add_control(title, :title)
 
         # リストビュー本体
-        listview = WSContainer.new(0, 0, width - 4 - 16, 16)
+        listview = WSListViewMain.new(0, 0, width - 4 - 16, 16)
         add_control(listview, :listview)
  
         self.image.bgcolor = C_WHITE
@@ -152,7 +182,8 @@ module WS
       end
     end
 
-    attr_reader :items, :cursor
+    attr_reader :items, :cursor, :client_tmp_rt
+    attr_accessor :cursor_image
     include Focusable
 
     def initialize(tx, ty, width, height, titles)
@@ -254,40 +285,12 @@ module WS
       vsb.view_size = client.listview.height
       hsb.view_size = client.width
       @client_tmp_rt.each_with_index{|rt, i|rt.resize(client.title.titles[i][1], client.listview.height)}
-    end
-
-    def draw
-      vsb.total_size = @items.length * @font.size
-      hsb.total_size = client.title.titles.inject(0){|total, o| total += o[1]}
 
       # カーソル位置の画像を生成する
       if !@cursor_image or @cursor_image.width != hsb.total_size
         @cursor_image.dispose if @cursor_image
         @cursor_image = Image.new(hsb.total_size, @font.size, C_BLACK)
       end
-
-      # リスト描画
-      total = client.title.titles.inject(0){|t, o| t += o[1]}
-      @items.each_with_index do |item, i|
-        if @cursor != i
-          color = C_BLACK
-        else
-          client.listview.image.draw(0 - hsb.pos, i * @font.size - vsb.pos, @cursor_image)
-          color = C_WHITE
-        end
-        tmp = Encoding.default_external # コケる現象回避
-        Encoding.default_external = Encoding::ASCII_8BIT
-        item.each_with_index do |s, x|
-          @client_tmp_rt[x].draw_font(2, i * @font.size - vsb.pos, s.inspect, @font, :color=>color)
-        end
-        Encoding.default_external = tmp
-      end
-      tx = 0
-      client.title.titles.size.times do |x|
-        client.listview.image.draw(tx - hsb.pos, 0, @client_tmp_rt[x])
-        tx += client.title.titles[x][1]
-      end
-      super
     end
   end
 end

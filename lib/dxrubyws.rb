@@ -177,7 +177,7 @@ module WS
   # ウィンドウシステムのメイン処理
   def self.update
     @@desktop.update
-    @@desktop.draw
+    @@desktop.render
   end
 
   # マウスキャプチャする。
