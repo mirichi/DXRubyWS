@@ -286,4 +286,5 @@ WS.desktop.add_key_handler(K_ESCAPE) do break end
 
 Window.loop do
   WS.update
+  Window.caption = Window.get_load.to_s
 end
