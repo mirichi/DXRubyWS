@@ -39,6 +39,7 @@ WS.desktop.add_control w
 Window.loop do
   WS.update
   break if Input.key_push?(K_ESCAPE)
+  Window.caption = Window.get_load.to_s
 end
 
 

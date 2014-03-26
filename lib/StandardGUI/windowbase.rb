@@ -58,6 +58,15 @@ module WS
           add close_button
         end
       end
+
+      def render
+        if parent.activated?
+          self.image.bgcolor = [30, 30, 180]
+        else
+          self.image.bgcolor = C_DARK_GRAY
+        end
+        super
+      end
     end
 
     ### ■ウィンドウ内容を描画するクライアント領域の定義■ ###

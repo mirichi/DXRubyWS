@@ -82,7 +82,7 @@ module WS
       WS.capture(self, true)
     end
 
-    def draw
+    def render
       draw_border(true)
       self.image.draw_font(10 + 3, 16 + 16, @message, @font, :color=>C_BLACK)
       super

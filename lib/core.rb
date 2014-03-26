@@ -268,9 +268,8 @@ module WS
       end
     end
 
-    # コントロールは単純に自分自身のdrawを呼ぶ
+    # drawで描画するためのself.imageを準備する
     def render
-      self.draw if self.visible
     end
   end
 
@@ -287,7 +286,6 @@ module WS
       self.image = RenderTarget.new(width, height) # ContainerはRenderTargetを持つ
       @childlen = []
       @layout = nil
-      @to_image = nil
     end
 
     # 自身の配下にコントロールを追加する
@@ -326,27 +324,18 @@ module WS
       super
     end
 
-    # 配下のオブジェクトをすべて描画してから自身を描画する
+    # 配下のオブジェクトをすべて描画する
+    # self.imageに描画する処理はすべてrenderをオーバーライドして書くこと。
+    # self.targetに対する描画はdrawをオーバーライドして書くこと。
+    # renderをsuperするタイミングによって描画順が変わる。先にsuperすると自分の描画が上になるるし、
+    # 後でsuperすると配下のオブジェクトによって上書きされる。
     def render
-      if self.visible
-        @childlen.each do |s|
+      @childlen.each do |s|
+        if s.visible
           s.render
+          s.draw
         end
-
-        super
       end
-    end
-
-    # 配下のコントロールのどれかが更新していたらtrueを返す
-    # いまのところ未実装
-    def refreshed?
-      @childlen.any?{|s|s.refreshed?}
-    end
-
-    # 配下のコントロールのどれかが更新しそうならtrueを返す
-    # いまのところ未実装
-    def likely_refresh?
-      @childlen.any?{|s|s.likely_refresh?}
     end
 
     # 引数の座標に存在する配下のコントロールを返す。無ければnil

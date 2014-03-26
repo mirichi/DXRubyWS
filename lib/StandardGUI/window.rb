@@ -53,14 +53,8 @@ module WS
     end
 
     # コントロール画像の描画
-    def draw
+    def render
       draw_border(true)
-
-      if self.activated?
-        self.window_title.image.bgcolor = [30, 30, 180]
-      else
-        self.window_title.image.bgcolor = C_DARK_GRAY
-      end
       super
     end
 

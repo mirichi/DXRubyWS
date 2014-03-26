@@ -62,7 +62,7 @@ module WS
       super
     end
 
-    def draw
+    def render
       x = 5
       @menuitems.each_with_index do |ary, i|
         tmp = @font.get_width(ary[0])

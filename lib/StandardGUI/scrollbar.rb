@@ -16,7 +16,7 @@ module WS
         end
       end
 
-      def draw
+      def render
         # スライダーの高さが変更された場合に画像を再生成する
         if @old_height != @height
           self.image.dispose if self.image
@@ -99,7 +99,7 @@ module WS
     end
 
     # 描画時にスライダーのサイズを再計算する
-    def draw
+    def render
       if self.visible # DXRubyのバグ回避
         self.slider.height = (@total_size > 0 ? @view_size.quo(@total_size) * (@height - 32) : 0)
         self.slider.height = self.slider.height.clamp(8, @height - 32)
@@ -146,7 +146,7 @@ module WS
         end
       end
 
-      def draw
+      def render
         # スライダーの幅が変更された場合に画像を再生成する
         if @old_width != @width
           self.image.dispose if self.image
@@ -229,7 +229,7 @@ module WS
     end
 
     # 描画時にスライダーのサイズを再計算する
-    def draw
+    def render
       if self.visible # DXRubyのバグ回避
         self.slider.width = (@total_size > 0 ? @view_size.quo(@total_size) * (@width - 32) : 0)
         self.slider.width = self.slider.width.clamp(8, @width - 32)
@@ -379,7 +379,7 @@ module WS
       vsb.view_size = client.height
     end
 
-    def draw
+    def render
       resize(@width, @height) unless @layout
 
       # ボーダーライン

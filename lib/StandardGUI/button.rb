@@ -36,8 +36,12 @@ module WS
       @image[true] = Image.new(@width, @height, C_GRAY).draw_border(false)
     end
 
-    def draw
+    def render
       self.image = @image[@image_flag]
+      super
+    end
+
+    def draw
       super
       if @caption.length > 0
         width = @font.get_width(@caption)

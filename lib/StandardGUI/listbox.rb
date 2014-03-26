@@ -11,9 +11,9 @@ module WS
       include DoubleClickable
 
       # 描画
-      def draw
+      def render
         @parent.vsb.total_size = @parent.items.length * @parent.font.size # itemsの配列はいつ書き換えられるかわからないからとりあえず再計算
-  
+
         # リスト描画
         @parent.items.each_with_index do |s, i|
           if (i+1) * @parent.font.size - @parent.vsb.pos >= 0 and i * @parent.font.size - @parent.vsb.pos < @height
@@ -75,7 +75,7 @@ module WS
       
       add_key_handler(K_PGUP) do
         set_cursor(@cursor - client.height / @font.size)
-        end
+      end
       
       add_key_handler(K_HOME) do
         set_cursor(0)
@@ -83,7 +83,7 @@ module WS
       
       add_key_handler(K_DOWN) do
         set_cursor(@cursor + 1) 
-        end
+      end
       
       add_key_handler(K_PGDN) do
         set_cursor(@cursor + client.height / @font.size)
@@ -91,27 +91,27 @@ module WS
       
       add_key_handler(K_END)  do
         set_cursor(@cursor = @items.length - 1)
-        end
       end
+    end
 
     # カーソル位置設定
     def set_cursor(index, event = true)
-        old_cursor = @cursor
+      old_cursor = @cursor
       @cursor = index
-        @cursor = @cursor.clamp(0, @items.length - 1)
+      @cursor = @cursor.clamp(0, @items.length - 1)
       if @cursor * @font.size < vsb.pos
         vsb.pos = @cursor * @font.size
       elsif @cursor * @font.size + (@font.size - 1) >= vsb.pos + client.height
-          vsb.pos = @cursor * @font.size + @font.size - client.height
-        end
-      signal(:select, @cursor) if old_cursor != @cursor && event     
+        vsb.pos = @cursor * @font.size + @font.size - client.height
       end
+      signal(:select, @cursor) if old_cursor != @cursor && event     
+    end
     
     # 項目の設定
     def set_items(value)
       @items = value    
       resize(@width, @height)  
-      end
+    end
 
     # カーソル位置の項目を取得
     def item
