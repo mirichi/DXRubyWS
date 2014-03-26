@@ -44,7 +44,7 @@ module WS
         end
 
         # ボーダー
-        self.draw_border(true)
+        self.render_border(true)
 
         # セパレータ
         sx = @width
@@ -191,7 +191,6 @@ module WS
       # superより先にこれだけ作る。
       client = WSListViewClient.new(0, 16, width - 4 - 16, height - 4 - 16, titles)
       super(tx, ty, width, height, client)
-      self.image.bgcolor = C_GRAY
       @font = Font.new(12)
       @items = [] # リストの中身
       @cursor = 0 # カーソルの位置

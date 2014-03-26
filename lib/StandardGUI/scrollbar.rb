@@ -263,7 +263,7 @@ module WS
   end
 
   # スクロールバー付きコンテナ
-  class WSScrollableContainer < WSContainer
+  class WSScrollableContainer < WSLightContainer
     attr_accessor :client, :h_header_size, :v_header_size, :vsb, :hsb
 
     # 生成時にクライアント領域にするコントロールが必須
@@ -271,7 +271,6 @@ module WS
       super(x, y, width, height)
       @client = client
       @h_header_size = @v_header_size = 0
-
       add_control(client, :client)
 
       # スクロールバー生成

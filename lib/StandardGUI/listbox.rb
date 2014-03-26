@@ -10,6 +10,11 @@ module WS
     class WSListBoxClient < WSContainer
       include DoubleClickable
 
+      def initialize(*)
+        super
+        self.image.bgcolor = C_WHITE
+      end
+
       # 描画
       def render
         @parent.vsb.total_size = @parent.items.length * @parent.font.size # itemsの配列はいつ書き換えられるかわからないからとりあえず再計算
@@ -43,7 +48,6 @@ module WS
       client = WSListBoxClient.new(0, 0, width - 4 - 16, height - 4)
       super(tx, ty, width, height, client)
 
-      self.image.bgcolor = C_WHITE
       @font = Font.new(12)
       @items = [] # リストの中身
       @cursor = 0 # カーソルの位置

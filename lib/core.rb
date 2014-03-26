@@ -276,14 +276,11 @@ module WS
   # 配下にコントロールを保持する機能を追加したコントロール
   # ウィンドウやリストボックスなど、自身の内部にコントロールを配置するものはWSContainerを使う。
   # マウスイベントやdraw/updateの伝播をしてくれる。
-  # imageにRenderTargetを持ち、配下のオブジェクトのtargetはそれが設定される。
-  # したがって、配下のオブジェクトの座標は親になるWSContainerの左上隅が0,0となる。
-  class WSContainer < WSControl
+  class WSContainerBase < WSControl
     attr_accessor :childlen
 
     def initialize(tx, ty, width, height)
       super(tx, ty, width, height)
-      self.image = RenderTarget.new(width, height) # ContainerはRenderTargetを持つ
       @childlen = []
       @layout = nil
     end
@@ -291,7 +288,6 @@ module WS
     # 自身の配下にコントロールを追加する
     # nameでシンボルを渡されるとその名前でgetterメソッドを追加する
     def add_control(obj, name=nil)
-      obj.target = self.image # 子コントロールの描画先は親のRenderTargetである
       obj.parent = self
       
       @childlen << obj
@@ -324,20 +320,6 @@ module WS
       super
     end
 
-    # 配下のオブジェクトをすべて描画する
-    # self.imageに描画する処理はすべてrenderをオーバーライドして書くこと。
-    # self.targetに対する描画はdrawをオーバーライドして書くこと。
-    # renderをsuperするタイミングによって描画順が変わる。先にsuperすると自分の描画が上になるるし、
-    # 後でsuperすると配下のオブジェクトによって上書きされる。
-    def render
-      @childlen.each do |s|
-        if s.visible
-          s.render
-          s.draw
-        end
-      end
-    end
-
     # 引数の座標に存在する配下のコントロールを返す。無ければnil
     def find_hit_object(tx, ty)
       @hit_cursor.x, @hit_cursor.y = tx, ty
@@ -360,7 +342,6 @@ module WS
 
     # サイズの変更でRenderTargetをresizeし、オートレイアウトを起動する
     def resize(width, height)
-      self.image.resize(width, height) if width != @width or height != @height
       super
       if @layout
         @layout.width, @layout.height = width, height
@@ -393,6 +374,101 @@ module WS
     def set_focus(obj)
       self.parent.set_focus(obj) if self.parent
       obj
+    end
+  end
+
+  class WSLightContainer < WSContainerBase
+    def target=(v)
+      @childlen.each do |s|
+        s.target = v
+      end
+      super
+    end
+    
+    # 自身の配下にコントロールを追加する
+    # nameでシンボルを渡されるとその名前でgetterメソッドを追加する
+    def add_control(obj, name=nil)
+      obj.target = self.target # 子コントロールの描画先は親の親
+      super
+    end
+
+    def render
+      @childlen.each do |s|
+        s.render if s.visible
+      end
+    end
+
+    def draw
+      tmpbasex = self.basex
+      tmpbasey = self.basey
+
+      @childlen.each do |s|
+        if s.visible
+          s.x += tmpbasex
+          s.y += tmpbasey
+          s.draw
+          s.x -= tmpbasex
+          s.y -= tmpbasey
+        end
+      end
+    end
+
+    # 子コントロールの描画位置補正。
+    # RenderTargetなしコンテナの場合は親のbase+自分の位置
+    def basex
+      @parent.basex + self.x
+    end
+    def basey
+      @parent.basey + self.y
+    end
+  end
+
+
+  # self.imageにRenderTargetを持つコンテナ。
+  # 配下のオブジェクトのtargetはそれが設定される。
+  # したがって、配下のオブジェクトの座標は親になるWSContainerの左上隅が0,0となる。
+  class WSContainer < WSContainerBase
+    attr_accessor :childlen
+
+    def initialize(tx, ty, width, height)
+      super(tx, ty, width, height)
+      self.image = RenderTarget.new(width, height) # ContainerはRenderTargetを持つ
+    end
+
+    # 自身の配下にコントロールを追加する
+    # nameでシンボルを渡されるとその名前でgetterメソッドを追加する
+    def add_control(obj, name=nil)
+      obj.target = self.image # 子コントロールの描画先は親のRenderTargetである
+      super
+    end
+
+    # 配下のオブジェクトをすべて自身に描画する
+    # self.imageに描画する処理はすべてrenderをオーバーライドして書くこと。
+    # self.targetに対する描画はdrawをオーバーライドして書くこと。
+    # renderをsuperするタイミングによって描画順が変わる。先にsuperすると自分の描画が上になるるし、
+    # 後でsuperすると配下のオブジェクトによって上書きされる。
+    def render
+      @childlen.each do |s|
+        if s.visible
+          s.render
+          s.draw
+        end
+      end
+    end
+
+    # サイズの変更でRenderTargetをresizeし、オートレイアウトを起動する
+    def resize(width, height)
+      self.image.resize(width, height) if width != @width or height != @height
+      super
+    end
+
+    # 子コントロールの描画位置補正。
+    # RenderTarget有コンテナの場合は0固定
+    def basex
+      0
+    end
+    def basey
+      0
     end
   end
 

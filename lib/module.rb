@@ -211,8 +211,8 @@ module WS
         border_width = @border_width ? @border_width : 2
         @resize_top = ty < border_width
         @resize_left = tx < border_width
-        @resize_right = self.image.width - tx <= border_width
-        @resize_bottom = self.image.height - ty <= border_width
+        @resize_right = self.width - tx <= border_width
+        @resize_bottom = self.height - ty <= border_width
         case true
         when @resize_top
           case true

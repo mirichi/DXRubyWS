@@ -94,7 +94,7 @@ module WS
       end
     end
 
-    def draw
+    def render
       # メニュー描画
       @menuitems.each_with_index do |s, i|
         if s == nil # nilの場合はセパレータを描画する
@@ -102,18 +102,23 @@ module WS
           self.image.draw_line(5, tmp,  @width - 7, tmp,[80,80,80])
           self.image.draw_line(5, tmp + 1,  @width - 7, tmp + 1,[240,240,240])
         else         
+          s.render
           s.draw
         end
       end
 
       # ボーダーライン
-      draw_border(true)
+      render_border(true)
 
-      super
+    super
+    end
 
+    def draw
       if @submenu
+        @submenu.render
         @submenu.draw
       end
+      super
     end
   end
 end

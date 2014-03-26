@@ -11,6 +11,70 @@ module WS
     include Resizable
     include Focusable
 
+    ### ■ウィンドウのクローズボタン用クラス■ ###
+    class WSWindowCloseButton < WSButton
+      def initialize(*args)
+        super
+        @focusable = false
+      end
+
+      def set_image
+        super
+        @image[true].line(4, 4, @width-5, @height-5, C_BLACK)
+                    .line(5, 4, @width-4, @height-5, C_BLACK)
+                    .line(@width-5, 4, 4, @height-5, C_BLACK)
+                    .line(@width-4, 4, 5, @height-5, C_BLACK)
+        @image[false].line(4-1, 4-1, @width-5-1, @height-5-1, C_BLACK)
+                    .line(5-1, 4-1, @width-4-1, @height-5-1, C_BLACK)
+                    .line(@width-5-1, 4-1, 4-1, @height-5-1, C_BLACK)
+                    .line(@width-4-1, 4-1, 5-1, @height-5-1, C_BLACK)
+      end
+    end
+    
+    ### ■ウィンドウのタイトルバー用クラス■ ###
+    class WSWindowTitle < WSContainer
+      include DoubleClickable # 最大化用
+      include Draggable # ウィンドウのドラッグ用
+  
+      def initialize(tx, ty, width, height, title="")
+        super(tx, ty, width, height)
+        self.image.bgcolor = [0, 0, 160]
+  
+        # タイトルバーのクロースボタン
+        close_button = WSWindowCloseButton.new(0, 0, height-2, height-2, "")
+        close_button.fore_color = C_BLACK
+        add_control(close_button)
+        close_button.add_handler(:click) {signal(:close)}
+  
+        # ウィンドウタイトル
+        label = WSLabel.new(0, 0, width, height, title)
+        label.fore_color = C_WHITE
+        label.font = Font.new(14, nil, :weight=>true)
+        add_control(label)
+
+        add_handler(:doubleclick) do
+          @dragging_flag = false
+        end
+
+        # オートレイアウト
+        layout(:hbox) do
+          self.margin_top = self.margin_right = 1
+          self.margin_left = 2
+          add label, true
+          add close_button
+        end
+      end
+
+      def render
+        if parent.activated?
+          self.image.bgcolor = [30, 30, 180]
+        else
+          self.image.bgcolor = C_DARK_GRAY
+        end
+        super
+      end
+    end
+
     def initialize(tx, ty, sx, sy, caption = "WindowTitle")
       super
 
@@ -25,16 +89,12 @@ module WS
       @maximize_flag = false
       window_title.add_handler(:doubleclick, self.method(:on_maximize))
 
-      # クライアント領域は単純なコンテナである
-      client = WSWindowClient.new(0, 0, sx - @border_width * 2, sy - @border_width * 2 - 16)
-      add_control(client, :client)
-
       # オートレイアウトでコントロールの位置を決める
       # Layout#objで元のコンテナを参照できる
       layout(:vbox) do
         self.margin_top = self.margin_left = self.margin_right = self.margin_bottom = self.obj.border_width
         add window_title, true
-        add client, true, true
+        add self.obj.client, true, true
       end
 
       # Escで閉じる

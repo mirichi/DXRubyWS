@@ -5,7 +5,7 @@ require_relative './common'
 
 module WS
   # システムモーダルなメッセージボックス
-  class WSMessageBox < WSContainer
+  class WSMessageBox < WSLightContainer
     # ウィンドウのタイトルバー用クラス
     class WSMessageBoxTitle < WSContainer
       include Draggable       # ウィンドウのドラッグ用
@@ -30,14 +30,24 @@ module WS
     end
 
     class WSMessageBoxClient < WSContainer
+      def initialize(*)
+        super
+        self.image.bgcolor = C_GRAY
+      end
+      
       def add_control(obj, name=nil)
         super
         self.parent.set_focus(obj) if obj.focusable
       end
+
+      def render
+        self.image.draw_font(10, 16, @parent.message, @parent.font, :color=>C_BLACK)
+        super
+      end
     end
 
     attr_accessor :border_width # ウィンドウボーダーの幅
-    attr_reader :window_focus # ウィンドウ上のフォーカスを持つコントロール
+    attr_reader :window_focus, :message # ウィンドウ上のフォーカスを持つコントロール
     include WindowFocus
     include Focusable
 
@@ -49,7 +59,6 @@ module WS
       sx = size + 20 + 6
       sy = @font.size + 16 + 32 + 20 + 6
       super(tx, ty, sx, sy)
-      self.image.bgcolor = C_GRAY
       @border_width = 3
       @message = message
 
@@ -82,10 +91,9 @@ module WS
       WS.capture(self, true)
     end
 
-    def render
-      draw_border(true)
-      self.image.draw_font(10 + 3, 16 + 16, @message, @font, :color=>C_BLACK)
+    def draw
       super
+      draw_border(true)
     end
 
     def on_drag_move(obj, dx, dy)
