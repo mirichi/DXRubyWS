@@ -11,6 +11,19 @@ module WS
     include Resizable
     include Focusable
 
+    ### ■ウィンドウ内容を描画するクライアント領域の定義■ ###
+    class WSWindowClient < WSContainer
+      def initialize(*)
+        super
+        self.image.bgcolor = C_GRAY
+      end
+
+      def add_control(obj, name=nil)
+        super
+        self.activate
+      end
+    end
+
     ### ■ウィンドウのクローズボタン用クラス■ ###
     class WSWindowCloseButton < WSButton
       def initialize(*args)
@@ -88,6 +101,10 @@ module WS
       # タイトルバーのダブルクリックで最大化する
       @maximize_flag = false
       window_title.add_handler(:doubleclick, self.method(:on_maximize))
+
+      # クライアント領域は単純なコンテナである
+      client = WSWindowClient.new(0, 0, sx - @border_width * 2, sy - @border_width * 2 - 16)
+      add_control(client, :client)
 
       # オートレイアウトでコントロールの位置を決める
       # Layout#objで元のコンテナを参照できる
