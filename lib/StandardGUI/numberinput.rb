@@ -42,7 +42,7 @@ module WS
   
     
   ### ■NumberInput ■ ###
-  class WSNumberInput < WSContainer
+  class WSNumberInput < WSLightContainer
 		
 	  ### 公開インスタンス ###
     attr_accessor :min, :max, :small, :big
