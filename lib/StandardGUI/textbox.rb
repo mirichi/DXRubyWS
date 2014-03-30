@@ -167,13 +167,13 @@ module WS
 
       add_key_handler(K_CTRL + K_C) do
         if !@selected_range.empty?
-          Rclip.setData(@text[@selected_range.to_range])
+          Rclip.setData(@text[@selected_range.to_range].encode("SJIS"))
         end
       end
 
       add_key_handler(K_CTRL + K_V) do
         before = @text.dup
-        str = Rclip.getData.encode("UTF-8").gsub(/\r\n/, "").gsub(/\r/, "").gsub(/\n/, "")
+        str = Rclip.getData.force_encoding("SJIS").encode("UTF-8").gsub(/\r\n/, "").gsub(/\r/, "").gsub(/\n/, "")
         if @selected_range.empty?
           @text[@cursor_pos, 0] = str
         else
@@ -285,13 +285,13 @@ module WS
       if self.activated?
         @cursor_count += 1
         tx, ty = self.get_global_vertex
-#        Input::IME.set_cursor(tx + @font.get_width(@text[0, @cursor_pos]) + @border_width * 2, ty + @border_width * 2)
+        Input::IME.set_cursor(tx + @font.get_width(@text[0, @cursor_pos]) + @border_width * 2, ty + @border_width * 2)
       end
     end
 
     # フォーカス取得
     def on_enter
-#      Input::IME.enable = true
+      Input::IME.enable = true
       Input::IME.set_font(@font)
       @cursor_pos = @text.length
       @cursor_count = 0
@@ -302,7 +302,7 @@ module WS
 
     # フォーカス喪失
     def on_leave
-#      Input::IME.enable = false
+      Input::IME.enable = false
       @selected_range.clear
       super
     end
