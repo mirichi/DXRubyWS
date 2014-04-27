@@ -154,11 +154,6 @@ module WS
       @refresh = true
     end
     
-    # リフレッシュするか？
-    def refresh?
-      @refresh || c_numtext.active
-    end
-    
     # 描画継続中か？
     def rendering?
       c_numtext.activated? || c_add_s.activated? || c_sub_s.activated?
@@ -167,14 +162,14 @@ module WS
     # 画像の作成
     def render
  
-      if refresh?
+      if @refresh
         self.image = @render_target
         super
         # 描画を継続しない場合イメージ化して終了
         if !rendering?
           @image.dispose if @image    
           @image = @render_target.to_image
-          refreshed 
+          @refresh = false
         end
       else
         self.image = @image
