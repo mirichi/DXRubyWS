@@ -305,6 +305,7 @@ module WS
       Input::IME.enable = false
       @selected_range.clear
       super
+      signal(:leave)
     end
 
     # マウス押したらカーソル移動

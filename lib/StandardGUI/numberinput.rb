@@ -42,7 +42,7 @@ module WS
   
     
   ### ■NumberInput ■ ###
-  class WSNumberInput < WSLightContainer
+  class WSNumberInput < WSContainer
 		
 	  ### 公開インスタンス ###
     attr_accessor :min, :max, :small, :big
@@ -54,11 +54,12 @@ module WS
     # 初期化
     def initialize(tx, ty, width, height)
 			super(tx, ty, [width, 48].max, [height, 20].max)
+			@render_target = self.image
+			@refresh = true
       @value  = 0
       @min   = 0
       @max   = 99999
       @small = 1
-      @repeat_count = 0
       create_controls
       set_text
     end
@@ -68,6 +69,8 @@ module WS
       # テキストボックスの作成
 		  c_numtext = WSTextBox.new(0, 0, width - 18, height)
 		  c_numtext.add_handler(:changed, method(:text_changed))
+      c_numtext.add_handler(:leave){ check_text }
+      c_numtext.add_key_handler(K_RETURN){ check_text }
       # スピンボタン変動小の作成
 		  font_s = Font.new(8)
 		  c_b_add_s = WSSpinButton.new(width - 18,          0, 16, height / 2 - 2, "▲")
@@ -98,7 +101,7 @@ module WS
 
     # テキスト変更
     def text_changed(obj, text)
-      check_text
+      refresh
       signal(:changed, @value)
     end
 
@@ -125,7 +128,6 @@ module WS
     # 更新
     def update
       super
-      check_text
     end
     
     # テキストに数字以外のものが入っていないかをチェックし、データに反映する
@@ -143,8 +145,43 @@ module WS
     # テキストボックスにテキストを設定
     def set_text
       self.c_numtext.text = @value.to_s
+      refresh
     end
-				
+    
+    ### 描画 ###
+    # リフレッシュ
+    def refresh
+      @refresh = true
+    end
+    
+    # リフレッシュするか？
+    def refresh?
+      @refresh || c_numtext.active
+    end
+    
+    # 描画継続中か？
+    def rendering?
+      c_numtext.activated? || c_add_s.activated? || c_sub_s.activated?
+    end
+    
+    # 画像の作成
+    def render
+ 
+      if refresh?
+        self.image = @render_target
+        super
+        # 描画を継続しない場合イメージ化して終了
+        if !rendering?
+          @image.dispose if @image    
+          @image = @render_target.to_image
+          refreshed 
+        end
+      else
+        self.image = @image
+      end
+      
+    end
+
   end
 
 
@@ -164,6 +201,8 @@ module WS
      # テキストボックスの作成
      c_numtext = WSTextBox.new(0, 0, width, height)
      c_numtext.add_handler(:changed, method(:text_changed))
+     c_numtext.add_handler(:leave){ check_text }
+     c_numtext.add_key_handler(K_RETURN){ check_text }
      # スピンボタン変動小の作成
      font_s = Font.new(6)
      c_b_add_s = WSSpinButton.new(width - 34,          2, 16, height / 2 - 2, "▲")
@@ -206,6 +245,11 @@ module WS
    def step(small , big)
      @small = small
      @big   = big
+   end
+   
+   # 描画継続中か？
+   def rendering?
+     c_numtext.activated? || c_add_s.activated? || c_sub_s.activated? || c_add_l.activated? || c_sub_l.activated?
    end
    
   end
