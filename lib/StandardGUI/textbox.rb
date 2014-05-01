@@ -156,7 +156,7 @@ module WS
       add_key_handler(K_CTRL + K_X) do
         before = @text.dup
         if !@selected_range.empty?
-          Rclip.setData(@text[@selected_range.to_range])
+          Rclip.setData(@text[@selected_range.to_range].encode("SJIS"))
           @text[@selected_range.to_range] = ""
           @cursor_pos = @selected_range.min
           @selected_range.clear
