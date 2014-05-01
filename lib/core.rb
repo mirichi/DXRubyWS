@@ -421,8 +421,32 @@ module WS
     def basey
       @parent.basey + self.y
     end
-  end
 
+    # 自身のtargetに枠を描画する
+    def draw_border(flag)
+      sx = @width
+      sy = @height
+      if flag
+        self.target.draw_line(basex,basey,basex+sx-1,basey,C_DARK_WHITE)
+        self.target.draw_line(basex,basey,basex,basey+sy-1,C_DARK_WHITE)
+        self.target.draw_line(basex+1,basey+1,basex+sx-1,basey+1,C_LIGHT_GRAY)
+        self.target.draw_line(basex+1,basey+1,basex+1,basey+sy-1,C_LIGHT_GRAY)
+        self.target.draw_line(basex+sx-1,basey,basex+sx-1,basey+sy-1,C_LIGHT_BLACK)
+        self.target.draw_line(basex,basey+sy-1,basex+sx-1,basey+sy-1,C_LIGHT_BLACK)
+        self.target.draw_line(basex+sx-2,basey+1,basex+sx-2,basey+sy-2,C_DARK_GRAY)
+        self.target.draw_line(basex+1,basey+sy-2,basex+sx-2,basey+sy-2,C_DARK_GRAY)
+      else
+        self.target.draw_line(basex,basey,basex+sx-1,basey,C_LIGHT_BLACK)
+        self.target.draw_line(basex,basey,basex,basey+sy-1,C_LIGHT_BLACK)
+        self.target.draw_line(basex+1,basey+1,basex+sx-1,basey+1,C_DARK_GRAY)
+        self.target.draw_line(basex+1,basey+1,basex+1,basey+sy-1,C_DARK_GRAY)
+        self.target.draw_line(basex+sx-1,basey,basex+sx-1,basey+sy-1,C_DARK_WHITE)
+        self.target.draw_line(basex,basey+sy-1,basex+sx-1,basey+sy-1,C_DARK_WHITE)
+        self.target.draw_line(basex+sx-2,basey+1,basex+sx-2,basey+sy-2,C_LIGHT_GRAY)
+        self.target.draw_line(basex+1,basey+sy-2,basex+sx-2,basey+sy-2,C_LIGHT_GRAY)
+      end
+    end
+  end
 
   # self.imageにRenderTargetを持つコンテナ。
   # 配下のオブジェクトのtargetはそれが設定される。
@@ -469,6 +493,31 @@ module WS
     end
     def basey
       0
+    end
+
+    # 自身のimgaeに枠を描画する
+    def render_border(flag)
+      sx = @width
+      sy = @height
+      if flag
+        self.image.draw_line(0,0,sx-1,0,C_DARK_WHITE)
+        self.image.draw_line(0,0,0,sy-1,C_DARK_WHITE)
+        self.image.draw_line(1,1,sx-1,1,C_LIGHT_GRAY)
+        self.image.draw_line(1,1,1,sy-1,C_LIGHT_GRAY)
+        self.image.draw_line(sx-1,0,sx-1,sy-1,C_LIGHT_BLACK)
+        self.image.draw_line(0,sy-1,sx-1,sy-1,C_LIGHT_BLACK)
+        self.image.draw_line(sx-2,1,sx-2,sy-2,C_DARK_GRAY)
+        self.image.draw_line(1,sy-2,sx-2,sy-2,C_DARK_GRAY)
+      else
+        self.image.draw_line(0,0,sx-1,0,C_LIGHT_BLACK)
+        self.image.draw_line(0,0,0,sy-1,C_LIGHT_BLACK)
+        self.image.draw_line(1,1,sx-1,1,C_DARK_GRAY)
+        self.image.draw_line(1,1,1,sy-1,C_DARK_GRAY)
+        self.image.draw_line(sx-1,0,sx-1,sy-1,C_DARK_WHITE)
+        self.image.draw_line(0,sy-1,sx-1,sy-1,C_DARK_WHITE)
+        self.image.draw_line(sx-2,1,sx-2,sy-2,C_LIGHT_GRAY)
+        self.image.draw_line(1,sy-2,sx-2,sy-2,C_LIGHT_GRAY)
+      end
     end
   end
 
