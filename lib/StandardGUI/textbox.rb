@@ -399,6 +399,43 @@ module WS
           else
             str = str1 + str2 + str3
           end
+
+# とりあえず適当に表示してみたテスト
+          if info.can_list.size > 0
+            gx, gy = get_global_vertex
+            wx = gx + @border_width + 2 + @font.get_width(str1)
+            wy = gy + @border_width + 2 + @font.size
+            sx = @font.get_width(info.comp_str)
+            
+            info.can_list.each do |s|
+              tlen = @font.get_width(s)
+              if sx < tlen
+                sx = tlen
+              end
+            end
+
+            sx += 8
+            sy = @font.size * info.page_size + 8
+
+            Window.draw_line(wx, wy, wx+sx-1, wy, C_DARK_WHITE, WS::default_z + 1)
+            Window.draw_line(wx, wy, wx, wy+sy-1, C_DARK_WHITE, WS::default_z + 1)
+            Window.draw_line(wx+1, wy+1, wx+sx-1, wy+1, C_LIGHT_GRAY, WS::default_z + 1)
+            Window.draw_line(wx+1, wy+1, wx+1, wy+sy-1, C_LIGHT_GRAY, WS::default_z + 1)
+            Window.draw_line(wx+sx-1, wy, wx+sx-1, wy+sy-1, C_LIGHT_BLACK, WS::default_z + 1)
+            Window.draw_line(wx,wy+sy-1,  wx+sx-1, wy+sy-1, C_LIGHT_BLACK, WS::default_z + 1)
+            Window.draw_line(wx+sx-2, wy+1, wx+sx-2, wy+sy-2, C_DARK_GRAY, WS::default_z + 1)
+            Window.draw_line(wx+1, wy+sy-2, wx+sx-2, wy+sy-2, C_DARK_GRAY, WS::default_z + 1)
+            Window.draw_box_fill(wx+2, wy+2, wx + sx - 2, wy + sy - 2, C_GRAY, WS::default_z + 1)
+
+            info.can_list.each_with_index do |c, i|
+              if info.selection == i
+                Window.draw_box_fill(wx + 3, wy + @font.size * i + 3, wx + sx - 3, wy + @font.size * (i+1) + 3, C_BLUE, WS::default_z + 1)
+                Window.draw_font(wx + 4, wy + @font.size * i + 4, c, @font, :color=>C_WHITE, :z=>WS::default_z + 1)
+              else
+                Window.draw_font(wx + 4, wy + @font.size * i + 4, c, @font, :color=>C_BLACK, :z=>WS::default_z + 1)
+              end
+            end
+          end
         else
           str = @text[@draw_range.to_range]
         end
@@ -406,14 +443,6 @@ module WS
         # 文字列表示
         self.target.draw_font(self.x + @border_width + 2, self.y + @border_width + 2, str, @font, :color=>C_BLACK, :z=>self.z)
 
-# とりあえず適当に表示してみたテスト
-#        if info.can_list.size > 0
-#          gx, gy = get_global_vertex
-#          info.can_list.each_with_index do |c, i|
-#            Window.draw_font(gx + @border_width + 2, gy + @border_width + 2 + @font.size * i, c, @font, :color=>C_WHITE, :z=>WS::default_z + 1)
-#          end
-#        end
-      
       else
         # 選択範囲表示
         if !@selected_range.empty? and self.activated?
