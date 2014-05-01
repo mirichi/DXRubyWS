@@ -365,22 +365,73 @@ module WS
     def draw
       super
 
-      # 選択範囲表示
-      if !@selected_range.empty? and self.activated?
-        tx1 = self.x + @border_width + 2 + @font.get_width(@text[@draw_range.first...@selected_range.min])
-        tx2 = self.x + @border_width + 2 + @font.get_width(@text[0, [@selected_range.max, @draw_range.last].min]) - @font.get_width(@text[0, @draw_range.first])
-        (0..(@font.size+1)).each do |ty|
-          self.target.draw_line(tx1, self.y + ty + @border_width + 1, tx2, self.y + ty + @border_width + 1, [200, 200, 255], self.z)
+      if Input::IME.compositing? and self.activated?
+        info = Input::IME.get_comp_info
+        if info.comp_str.size > 0
+          # 変換入力中
+          str1 = @text[@draw_range.first...@cursor_pos]
+          str2 = info.comp_str
+          str3 = @text[@cursor_pos...@draw_range.last]
+          size1 = @font.get_width(str1)
+          size2 = @font.get_width(str2)
+          size3 = @font.get_width(str3)
+          limit = size_limit
+          str = ""
+
+          if size2 > limit
+            # 入力中文字列だけで範囲を超える
+            begin
+              str2 = str2[1..-1]
+            end while @font.get_width(str2) > limit
+            str = str2
+          elsif size1 + size2 > limit
+            # 前部分と入力中文字列だけで範囲を超える
+            begin
+              str1 = str1[1..-1]
+            end while @font.get_width(str1) + size2 > limit
+            str = str1 + str2
+          elsif size1 + size2 + size3 > limit
+            # 全体で範囲を超える
+            begin
+              str3 = str3[0..-2]
+            end while size1 + size2 + @font.get_width(str3) > limit
+            str = str1 + str2 + str3
+          else
+            str = str1 + str2 + str3
+          end
+        else
+          str = @text[@draw_range.to_range]
         end
-      end
 
-      # 文字列表示
-      self.target.draw_font(self.x + @border_width + 2, self.y + @border_width + 2, @text[@draw_range.to_range], @font, :color=>C_BLACK, :z=>self.z)
+        # 文字列表示
+        self.target.draw_font(self.x + @border_width + 2, self.y + @border_width + 2, str, @font, :color=>C_BLACK, :z=>self.z)
 
-      # カーソル表示
-      if self.activated? and (@cursor_count / 30) % 2 == 0
-        tx = self.x + @font.get_width(@text[@draw_range.first, @cursor_pos - @draw_range.first]) + @border_width + 2
-        self.target.draw_line(tx, self.y + @border_width + 1, tx, self.y + @border_width + @font.size, C_BLACK, self.z)
+# とりあえず適当に表示してみたテスト
+#        if info.can_list.size > 0
+#          gx, gy = get_global_vertex
+#          info.can_list.each_with_index do |c, i|
+#            Window.draw_font(gx + @border_width + 2, gy + @border_width + 2 + @font.size * i, c, @font, :color=>C_WHITE, :z=>WS::default_z + 1)
+#          end
+#        end
+      
+      else
+        # 選択範囲表示
+        if !@selected_range.empty? and self.activated?
+          tx1 = self.x + @border_width + 2 + @font.get_width(@text[@draw_range.first...@selected_range.min])
+          tx2 = self.x + @border_width + 2 + @font.get_width(@text[0, [@selected_range.max, @draw_range.last].min]) - @font.get_width(@text[0, @draw_range.first])
+          (0..(@font.size+1)).each do |ty|
+            self.target.draw_line(tx1, self.y + ty + @border_width + 1, tx2, self.y + ty + @border_width + 1, [200, 200, 255], self.z)
+          end
+        end
+  
+        # 文字列表示
+        self.target.draw_font(self.x + @border_width + 2, self.y + @border_width + 2, @text[@draw_range.to_range], @font, :color=>C_BLACK, :z=>self.z)
+  
+        # カーソル表示
+        if self.activated? and (@cursor_count / 30) % 2 == 0
+          tx = self.x + @font.get_width(@text[@draw_range.first, @cursor_pos - @draw_range.first]) + @border_width + 2
+          self.target.draw_line(tx, self.y + @border_width + 1, tx, self.y + @border_width + @font.size, C_BLACK, self.z)
+        end
       end
     end
 
