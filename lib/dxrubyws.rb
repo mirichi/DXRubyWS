@@ -6,7 +6,7 @@ require_relative './module'
 # ウィンドウシステム
 module WS
   class WSDesktop < WSContainer
-    attr_accessor :capture_object, :system_focus, :capture_notify
+    attr_accessor :capture_object, :system_focus, :capture_notify, :capture_target, :capture_target_notify
 
     def initialize
       @childlen = []
@@ -180,13 +180,28 @@ module WS
     @@desktop.render
   end
 
-  # マウスキャプチャする。
-  # notifyをtrueにするとコンテナをキャプチャした際に配下にイベントが流れる。
-  def self.capture(obj, notify=false)
-    @@desktop.capture_object = obj
-    @@desktop.capture_notify = notify
+  # マウスキャプチャする
+  # notifyをtrueにするとコンテナをキャプチャした際に配下にイベントが流れる
+  # lockをtrueにするとobjがnilの場合キャプチャ先を@@capture_targetに差し替える
+  # release_captrurでlockされた状態を解除する
+  def self.capture(obj, notify=false, lock=false)
+    # フォーカスをロックする場合フォーカス情報を記憶する
+    if lock
+      @@desktop.capture_target = obj
+      @@desktop.capture_target_notify = notify
+    end
+    @@desktop.capture_object = obj || @@desktop.capture_target
+    @@desktop.capture_notify = @@desktop.capture_target ? @@desktop.capture_target_notify : notify
   end
-
+  
+  # マウスキャプチャを解除する
+  def self.release_capture
+    @@desktop.capture_object = nil
+    @@desktop.capture_target = nil
+    @@desktop.capture_notify = false
+    @@desktop.capture_target_notify = false
+  end
+  
   # 配下にイベントを流すかどうかを返す。
   def self.capture_notify
     @@desktop.capture_notify
