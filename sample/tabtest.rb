@@ -20,6 +20,8 @@ module WS
       b1.add_handler(:click) {|obj, tx, ty|self.button1_click(tx, ty)}
       b2.add_handler(:click) {|obj, tx, ty|self.button2_click(tx, ty)}
 
+      panel1.add_control(b1 = WSTextBox.new(50,130,100,20))
+
       tab.select_tab :test1
     
     end
