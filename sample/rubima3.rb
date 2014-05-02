@@ -597,7 +597,7 @@ module WS
       end
     end
 
-    def draw
+    def render
       # マップ描画
       client.wsimage.image.draw_tile(0, 0, @mapdata, @images, 0, @position*32, 16, 30)
 
