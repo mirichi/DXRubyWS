@@ -33,31 +33,40 @@ module WS
   
   
   ### ■タブコンテナクラスの定義■ ###
-  class WSTab < WSContainer
+  class WSTab < WSLightContainer
           
     # 初期化
     def initialize(sx, sy, width, height, tab_height = 24)
       super(sx, sy, width, height)
       @tab_height = tab_height
-      @tabs  = {}
-      @panel = {}
+      @tabs   = {}
+      @panels = {}
+      create_controls
     end
-    
+
+    # コントロールの作成
+    def create_controls
+      panel_container = WSTabPanelContainer.new(0, tab_height - 1, width, panel_height + 1)
+      add_control(panel_container, :panel_container)
+    end
+        
     # タブと標準パネルの作成
-    def create_tab_set(name, caption = "")
+    def create_tab_set(name, caption = "", pw = nil, ph = nil)
+      tw = pw || @width
+      th = ph || panel_height
       # パネルの作成
-      panel = WSTabPanel.new(0, panel_y, @width, panel_height)
+      panel = WSTabPanel.new(0, panel_y, tw, th)
       create_tab(panel, name, caption)
     end
     
     # タブの作成
     def create_tab(panel, name, caption = "")
       # パネル位置とサイズの修正
-      panel.y = panel_y
-      panel.resize(@width, panel_height)
+      panel.y = 0#panel_y
+      #panel.resize(@width, panel_height)
       # パネルの登録
-      self.add_control(panel, name)
-      @panel[name] = panel
+      panel_container.add_panel(panel, name)
+      @panels[name] = panel
       # タブの作成
       tab      = WSTabButton.new(0, 0, @width / 4, tab_height, caption)
       tab.font = @font
@@ -73,7 +82,7 @@ module WS
     
     # パネルの参照
     def panel(name)
-      @panel[name]
+      @panels[name]
     end
     
     # タブの高さ
@@ -101,6 +110,7 @@ module WS
     def change_tab(obj, sx, sy)
       @tabs.each_value do |tab| tab.release_tab end
       obj.select_tab
+      panel_container.activate_panel(obj.panel)
     end 
     
     # タブの整理
@@ -112,7 +122,7 @@ module WS
       end
     end
     
-    ### ■タブクラスの定義■ ###
+    ### ■タブボタンクラスの定義■ ###
     class WSTabButton < WSControl
             
       ### Mix-In ###
@@ -120,13 +130,12 @@ module WS
       include Focusable
       
       ### 公開インデックス ###
-      attr_accessor :index
+      attr_accessor :panel 
       
       # 初期化
       def initialize(sx, sy, width, height, caption="")
         tw = [@@default_font.get_width(caption) + 16, width].min
         super(sx, sy, tw, height)
-        @index = 0
         @px = sx
         @py = sy
         @max_width = width
@@ -143,14 +152,14 @@ module WS
       def select_tab
         @selection = true
         @panel.show if @panel
-        self.z = 0
+        self.z = 1
       end
     
       # タブを選択解除する
       def release_tab
         @selection = false
         @panel.hide if @panel
-        self.z = -1
+        self.z = 0
       end
       
       # タブが選択されているか？
@@ -168,6 +177,7 @@ module WS
       def set_image
         w = @width
         h = @height
+        # 通常時の画像を作成
         @image[false] = Image.new(w, h)
                              .box_fill( 3, 3, w-4, h-2, C_GRAY)
                              .line( 4, 2, w-5, 2, C_LIGHT_GRAY)
@@ -177,7 +187,7 @@ module WS
                              .line( w-3, 4, w-3, h-2, C_LIGHT_BLACK)
                              .line( w-4, 4, w-4, h-2, C_DARK_GRAY)                             
                  
-        
+        # 押下時の画像を作成
         @image[true]  = Image.new(w, h)
                              .box_fill( 1, 1, w-1, h-1, C_GRAY)
                              .line( 2, 0, w-3, 0, C_LIGHT_GRAY)
@@ -186,54 +196,131 @@ module WS
                              .line( w-2, 1, w-2, 1, C_LIGHT_BLACK)
                              .line( w-1, 2, w-1, h-1, C_LIGHT_BLACK)
                              .line( w-2, 2, w-2, h-1, C_DARK_GRAY) 
-      end
-      
-      # 描画
-      def draw
-        self.image = @image[self.selected?]
-        super
         # 見出しの描画
         if @caption.length > 0
           width = @font.get_width(@caption)
-          self.target.draw_font(self.image.width / 2 - width / 2 + self.x,
-                                self.image.height / 2 - @font.size / 2 + self.y,
-                                @caption, @font, :color=>@fore_color)
+          @image[false].draw_font_ex(@width / 2 - width / 2,
+                                @height / 2 - @font.size / 2,
+                                @caption, @font, {:color=>@fore_color, :aa =>false})
+
+          @image[true].draw_font_ex(@width / 2 - width / 2,
+                                @height / 2 - @font.size / 2 - 1,
+                                @caption, @font, {:color=>@fore_color, :aa =>false})
+          
         end
       end
+      
+      # 画像の作成
+      def render
+        self.image = @image[self.selected?]
+        super
+      end
     end
+    
+    
+    
+    ### ■タブパネルコンテナの定義■ ###
+    class WSTabPanelContainer < WSScrollableContainer
+      
+      ### ■クライアント■ ###
+      class WSTabPanelClient < WSContainer
+        
+        ### 公開インスタンス ###
+        attr_accessor :panel
+        
+        # 初期化
+        def initialize(sx, sy, width, height)
+          super
+        end
+        
+        # 画像の作成
+        def render
+          
+          if @panel
+            @panel.x = -@parent.hsb.pos
+            @panel.y = -@parent.vsb.pos
+          end
+          
+          super
+          
+        end
+        
+      end
+      
+      # 初期化
+      def initialize(sx, sy, width, height)
+        client = WSTabPanelClient.new(sx, sy, width, height)
+        super(sx, sy, width, height, client)
+
+        # スクロールバーを使うための設定。
+        hsb.total_size = 1440
+        hsb.view_size = client.width              
+        hsb.shift_qty = 24                  
+        vsb.total_size = 960
+        vsb.view_size = client.height               
+        vsb.shift_qty = 24                  
+        
+      end
+      
+      # パネルの登録
+      def add_panel(panel, name)
+        client.add_control(panel, name)
+      end
+      
+      # パネルの選択
+      def activate_panel(panel)
+        client.panel = panel
+        hsb.pos = -panel.x
+        vsb.pos = -panel.y
+        resize(@width, @height)
+      end
+      
+      # リサイズ
+      def resize(width, height)
+        hsb.total_size = client.panel.width  if client.panel
+        vsb.total_size = client.panel.height if client.panel
+        super(width, height)
+        hsb.view_size = client.width
+        vsb.view_size = client.height
+      end
+      
+      ### 描画
+      # 枠の描画
+      def draw_border(f)
+        sx = self.x
+        sy = self.y
+        ex = sx + @width - 1
+        ey = sy + @height - 1
+        self.target.draw_line( sx+1 , ey-1, ex-1, ey-1, C_DARK_GRAY)
+                   .draw_line( ex-1, sy+1, ex-1, ey-1, C_DARK_GRAY)
+                   .draw_line( sx, sy, ex, sy, C_LIGHT_GRAY)
+                   .draw_line( sx, sy, sx, ey, C_LIGHT_GRAY)
+                   .draw_line( sx, ey, ex, ey, C_LIGHT_BLACK)
+                   .draw_line( ex, sy+1, ex, ey, C_LIGHT_BLACK)
+      end  
+      
+    end
+    
   end
 
   
   
   
   ### ■タブパネルクラスの定義■ ###
-  class WSTabPanel < WSContainer
+  class WSTabPanel < WSLightContainer
           
     # 初期化
     def initialize(sx, sy, width, height)
       super(sx, sy, width, height)
       self.visible = false
-    end      
+  end      
     
     # 更新
     def update
       super if self.visible
     end
     
-    # 描画
-    def draw
-      if self.visible
-        # ボーダーの描画
-        self.image.draw_line( 1, @height-2, @width-2, @height-2, C_DARK_GRAY)
-                  .draw_line( @width-2, 1, @width-2, @height-2, C_DARK_GRAY)
-                  .draw_line( 0, 0, @width-1, 0, C_LIGHT_GRAY)
-                  .draw_line( 0, 0, 0, @height-1, C_LIGHT_GRAY)
-                  .draw_line( 0, @height-1, @width-1, @height-1, C_LIGHT_BLACK)
-                  .draw_line( @width-1, 1, @width-1, @height-1, C_LIGHT_BLACK)
-        super
-      end
-    end
-    
+
   end
 
 end
