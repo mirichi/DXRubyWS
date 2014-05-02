@@ -136,6 +136,9 @@ module WS
 
     def draw
       draw_border(true)
+      (@border_width-2).times do |i|
+        self.target.draw_box(self.x + i + 2, self.y + i + 2, self.x + self.width - i - 2 - 1, self.y + self.height - i - 2 - 1, self.client.image.bgcolor)
+      end
       super
     end
 

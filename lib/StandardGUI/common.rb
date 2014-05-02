@@ -8,6 +8,24 @@ module WS
   IMG_CACHE    = {}
 end
 
+module Window
+  def self.draw_box(x1, y1, x2, y2, c, z=0)
+    self.draw_line(x1, y1, x2, y1, c, z)
+    self.draw_line(x2, y1, x2, y2, c, z)
+    self.draw_line(x2, y2, x1, y2, c, z)
+    self.draw_line(x1, y2, x1, y1, c, z)
+  end
+end
+
+class RenderTarget
+  def draw_box(x1, y1, x2, y2, c, z=0)
+    self.draw_line(x1, y1, x2, y1, c, z)
+    self.draw_line(x2, y1, x2, y2, c, z)
+    self.draw_line(x2, y2, x1, y2, c, z)
+    self.draw_line(x1, y2, x1, y1, c, z)
+  end
+end
+
 class Image
   def draw_border(flag)
     if flag
