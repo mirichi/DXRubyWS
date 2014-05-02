@@ -5,7 +5,7 @@ require_relative './module'
 
 # ウィンドウシステム
 module WS
-  class WSDesktop < WSContainer
+  class WSDesktop < WSLightContainer
     attr_accessor :capture_object, :system_focus, :capture_notify, :capture_target, :capture_target_notify
 
     def initialize
@@ -28,6 +28,7 @@ module WS
       @width = Window.width
       @height = Window.height
       @enabled = true
+      self.target = Window
     end
 
     def add_control(obj, name=nil)
@@ -178,6 +179,7 @@ module WS
   def self.update
     @@desktop.update
     @@desktop.render
+    @@desktop.draw
   end
 
   # マウスキャプチャする
@@ -201,7 +203,7 @@ module WS
     @@desktop.capture_notify = false
     @@desktop.capture_target_notify = false
   end
-  
+
   # 配下にイベントを流すかどうかを返す。
   def self.capture_notify
     @@desktop.capture_notify
