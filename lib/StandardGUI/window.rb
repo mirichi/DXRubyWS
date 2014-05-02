@@ -131,9 +131,14 @@ module WS
 
     # コントロール画像の描画
     def render
+      super
+    end
+
+    def draw
       draw_border(true)
       super
     end
+
 
     def on_drag_move(obj, dx, dy)
       move(self.x + dx, self.y + dy) unless @maximize_flag

@@ -380,8 +380,10 @@ module WS
 
     def render
       resize(@width, @height) unless @layout
+      super
+    end
 
-      # ボーダーライン
+    def draw
       draw_border(false)
       super
     end
