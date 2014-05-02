@@ -11,7 +11,7 @@ module WS
       super(100,100,400,300)
       tab = WSTab.new(30,30,300, 200)
 
-      add_control tab
+      client.add_control tab
       panel1 = tab.create_tab_set :test1, "テスト１"
       panel2 = tab.create_tab_set :test2, "テスト２"
     
