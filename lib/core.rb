@@ -399,33 +399,25 @@ module WS
     end
 
     def draw
-      tmpbasex = self.basex
-      tmpbasey = self.basey
+      self.target.ox -= self.x
+      self.target.oy -= self.y
 
       @childlen.each do |s|
         if s.visible
-          s.x += tmpbasex
-          s.y += tmpbasey
           s.draw
-          s.x -= tmpbasex
-          s.y -= tmpbasey
         end
       end
-    end
 
-    # 子コントロールの描画位置補正。
-    # RenderTargetなしコンテナの場合は親のbase+自分の位置
-    def basex
-      @parent.basex + self.x
-    end
-    def basey
-      @parent.basey + self.y
+      self.target.ox += self.x
+      self.target.oy += self.y
     end
 
     # 自身のtargetに枠を描画する
     def draw_border(flag)
       sx = @width
       sy = @height
+      basex = self.x
+      basey = self.y
       if flag
         self.target.draw_line(basex,basey,basex+sx-1,basey,C_DARK_WHITE)
         self.target.draw_line(basex,basey,basex,basey+sy-1,C_DARK_WHITE)
@@ -484,15 +476,6 @@ module WS
     def resize(width, height)
       self.image.resize(width, height) if width != @width or height != @height
       super
-    end
-
-    # 子コントロールの描画位置補正。
-    # RenderTarget有コンテナの場合は0固定
-    def basex
-      0
-    end
-    def basey
-      0
     end
 
     # 自身のimgaeに枠を描画する
