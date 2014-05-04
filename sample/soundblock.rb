@@ -15,7 +15,7 @@ module WS
       include Draggable
       def initialize(x, y, width, height)
         super
-        self.image = Image.new(width, height, C_GRAY).draw_border(true)
+        self.image = Image.new(width, height, COLOR[:base]).draw_border(true)
       end
     end
 
