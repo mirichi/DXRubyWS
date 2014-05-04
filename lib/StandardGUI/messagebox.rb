@@ -32,7 +32,7 @@ module WS
     class WSMessageBoxClient < WSContainer
       def initialize(*)
         super
-        self.image.bgcolor = C_GRAY
+        self.image.bgcolor = COLOR[:base]
       end
       
       def add_control(obj, name=nil)
@@ -41,7 +41,7 @@ module WS
       end
 
       def render
-        self.image.draw_font(10, 16, @parent.message, @parent.font, :color=>C_BLACK)
+        self.image.draw_font(10, 16, @parent.message, @parent.font, :color=>COLOR[:font])
         super
       end
     end

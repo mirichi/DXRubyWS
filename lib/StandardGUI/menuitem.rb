@@ -33,9 +33,9 @@ module WS
     def draw
       if @select
         self.target.draw_scale(self.x, self.y, @@select_bg_pixel, @width, @height, 0, 0)
-        self.target.draw_font(self.x, self.y, @str, @font, :color=>C_WHITE)
+        self.target.draw_font(self.x, self.y, @str, @font, :color=>COLOR[:font_reverse])
       else
-        self.target.draw_font(self.x, self.y, @str, @font, :color=>C_BLACK)
+        self.target.draw_font(self.x, self.y, @str, @font, :color=>COLOR[:font])
       end
     end
   end

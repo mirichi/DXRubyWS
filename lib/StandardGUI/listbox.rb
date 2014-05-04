@@ -12,7 +12,7 @@ module WS
 
       def initialize(*)
         super
-        self.image.bgcolor = C_WHITE
+        self.image.bgcolor = COLOR[:background]
       end
 
       # 描画
@@ -23,10 +23,10 @@ module WS
         @parent.items.each_with_index do |s, i|
           if (i+1) * @parent.font.size - @parent.vsb.pos >= 0 and i * @parent.font.size - @parent.vsb.pos < @height
             if @parent.cursor != i
-              self.image.draw_font(2, i * @parent.font.size - @parent.vsb.pos, s.to_s, @parent.font, :color=>C_BLACK)
+              self.image.draw_font(2, i * @parent.font.size - @parent.vsb.pos, s.to_s, @parent.font, :color=>COLOR[:font])
             else
               self.image.draw(0, i * @parent.font.size - @parent.vsb.pos, @parent.cursor_image)
-              self.image.draw_font(2, i * @parent.font.size - @parent.vsb.pos, s.to_s, @parent.font, :color=>C_WHITE)
+              self.image.draw_font(2, i * @parent.font.size - @parent.vsb.pos, s.to_s, @parent.font, :color=>COLOR[:font_reverse])
             end
           end
         end
@@ -127,7 +127,7 @@ module WS
       vsb.total_size = @items.length * @font.size # itemsの配列はいつ書き換えられるかわからないからとりあえず再計算
       super
       @cursor_image.dispose if @cursor_image
-      @cursor_image = Image.new(width, @font.size, C_BLACK)
+      @cursor_image = Image.new(width, @font.size, COLOR[:select])
       vsb.view_size = client.height
     end
   end

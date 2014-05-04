@@ -2,19 +2,40 @@
 
 module WS
   class WSLabel < WSControl
-    attr_accessor :caption, :fore_color
+    
+    # 公開インスタンス
+    attr_reader :caption, :fore_color
+    
+    # 初期化
     def initialize(tx, ty, width, height, caption = "")
       super(tx, ty, width, height)
+      self.image = Image.new(width, height)
       self.collision_enable = false
-      @caption = caption
-      @fore_color = C_BLACK
+      self.caption = caption
+      @fore_color = COLOR[:font]
+     end
+ 
+    # キャプションの設定
+    def caption=(text)
+      @caption = text
+      refresh     
     end
-
-    def draw
-      width = @font.get_width(@caption)
-      self.target.draw_font(self.x,
-                            self.height / 2 - @font.size / 2 + self.y - 1,
-                            @caption, @font, :color=>@fore_color)
+    
+    # 文字色の設定
+    def fore_color=(color)
+      @fore_color = color
+      refresh     
+    end
+    
+    # 画像の作成
+    def render
+      if refresh?
+        width = @font.get_width(@caption)
+        self.image.clear
+        self.image.draw_font_ex(0, @height / 2 - @font.size / 2 - 1,
+                                @caption, @font, {:color=>@fore_color, :aa=>false})
+        refreshed
+      end
     end
   end
 end

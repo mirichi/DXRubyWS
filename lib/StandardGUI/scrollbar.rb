@@ -20,7 +20,7 @@ module WS
         # スライダーの高さが変更された場合に画像を再生成する
         if @old_height != @height
           self.image.dispose if self.image
-          self.image = Image.new(@width, @height, C_GRAY).draw_border(true)
+          self.image = Image.new(@width, @height, COLOR[:base]).draw_border(true)
           self.collision = [0, 0, @width-1, @height-1]
         end
         @old_height = @height
@@ -31,16 +31,16 @@ module WS
     class WSScrollBarUpButton < WSSpinButton
       def set_image
         super
-        @image[false].triangle_fill(7, 3, 3, 10, 11, 10, C_BLACK)
-        @image[true].triangle_fill(8, 4, 4, 11, 12, 11, C_BLACK)
+        @image[false].triangle_fill(7, 3, 3, 10, 11, 10, COLOR[:font])
+        @image[true].triangle_fill(8, 4, 4, 11, 12, 11, COLOR[:font])
       end
     end
 
     class WSScrollBarDownButton < WSSpinButton
       def set_image
         super
-        @image[false].triangle_fill(7, 11, 3, 4, 11, 4, C_BLACK)
-        @image[true].triangle_fill(8, 12, 4, 5, 12, 5, C_BLACK)
+        @image[false].triangle_fill(7, 11, 3, 4, 11, 4, COLOR[:font])
+        @image[true].triangle_fill(8, 12, 4, 5, 12, 5, COLOR[:font])
       end
     end
     
@@ -150,7 +150,7 @@ module WS
         # スライダーの幅が変更された場合に画像を再生成する
         if @old_width != @width
           self.image.dispose if self.image
-          self.image = Image.new(@width, @height, C_GRAY).draw_border(true)
+          self.image = Image.new(@width, @height, COLOR[:base]).draw_border(true)
           self.collision = [0, 0, @width-1, @height-1]
         end
         @old_width = @width
@@ -161,16 +161,16 @@ module WS
     class WSScrollBarLeftButton < WSSpinButton
       def set_image
         super
-        @image[false].triangle_fill(3, 8, 10, 4, 10, 11, C_BLACK)
-        @image[true].triangle_fill(4, 9, 11, 5, 11, 12, C_BLACK)
+        @image[false].triangle_fill(3, 8, 10, 4, 10, 11, COLOR[:font])
+        @image[true].triangle_fill(4, 9, 11, 5, 11, 12, COLOR[:font])
       end
     end
 
     class WSScrollBarRightButton < WSSpinButton
       def set_image
         super
-        @image[false].triangle_fill(11, 8, 4, 4, 4, 11, C_BLACK)
-        @image[true].triangle_fill(12, 9, 5, 5, 5, 12, C_BLACK)
+        @image[false].triangle_fill(11, 8, 4, 4, 4, 11, COLOR[:font])
+        @image[true].triangle_fill(12, 9, 5, 5, 5, 12, COLOR[:font])
       end
     end
     

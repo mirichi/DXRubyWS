@@ -8,8 +8,9 @@ module WS
   class WSControl < Sprite
     attr_accessor :parent, :font, :width, :height, :resizable_width, :resizable_height
     attr_accessor :min_width, :min_height, :focusable, :active, :enabled
+    # デフォルトフォントオブジェクト
     @@default_font = Font.new(16)
-
+    
     def initialize(tx, ty, width, height)
       super(tx, ty)
       @width, @height = width, height
@@ -26,7 +27,7 @@ module WS
       @active = false
       @enabled = true
     end
-
+    
     # マウスイベント
     # ユーザはこれをオーバーライドして使う。
     # ありがちな処理なら自分で書かなくてもmodule.rbのモジュールをincludeすれば、
@@ -268,6 +269,21 @@ module WS
       end
     end
 
+    # リフレッシュ
+    def refresh
+      @refresh = true
+    end
+    
+    # リフレッシュするか？
+    def refresh?
+      @refresh
+    end
+    
+    # リフレッシュの終了
+    def refreshed
+      @refresh = false
+    end
+    
     # drawで描画するためのself.imageを準備する
     def render
     end
@@ -419,23 +435,23 @@ module WS
       basex = self.x
       basey = self.y
       if flag
-        self.target.draw_line(basex,basey,basex+sx-1,basey,C_DARK_WHITE)
-        self.target.draw_line(basex,basey,basex,basey+sy-1,C_DARK_WHITE)
-        self.target.draw_line(basex+1,basey+1,basex+sx-1,basey+1,C_LIGHT_GRAY)
-        self.target.draw_line(basex+1,basey+1,basex+1,basey+sy-1,C_LIGHT_GRAY)
-        self.target.draw_line(basex+sx-1,basey,basex+sx-1,basey+sy-1,C_LIGHT_BLACK)
-        self.target.draw_line(basex,basey+sy-1,basex+sx-1,basey+sy-1,C_LIGHT_BLACK)
-        self.target.draw_line(basex+sx-2,basey+1,basex+sx-2,basey+sy-2,C_DARK_GRAY)
-        self.target.draw_line(basex+1,basey+sy-2,basex+sx-2,basey+sy-2,C_DARK_GRAY)
+        self.target.draw_line(basex,basey,basex+sx-1,basey,COLOR[:highlight])
+        self.target.draw_line(basex,basey,basex,basey+sy-1,COLOR[:highlight])
+        self.target.draw_line(basex+1,basey+1,basex+sx-1,basey+1,COLOR[:light])
+        self.target.draw_line(basex+1,basey+1,basex+1,basey+sy-1,COLOR[:light])
+        self.target.draw_line(basex+sx-1,basey,basex+sx-1,basey+sy-1,COLOR[:darkshadow])
+        self.target.draw_line(basex,basey+sy-1,basex+sx-1,basey+sy-1,COLOR[:darkshadow])
+        self.target.draw_line(basex+sx-2,basey+1,basex+sx-2,basey+sy-2,COLOR[:shadow])
+        self.target.draw_line(basex+1,basey+sy-2,basex+sx-2,basey+sy-2,COLOR[:shadow])
       else
-        self.target.draw_line(basex,basey,basex+sx-1,basey,C_LIGHT_BLACK)
-        self.target.draw_line(basex,basey,basex,basey+sy-1,C_LIGHT_BLACK)
-        self.target.draw_line(basex+1,basey+1,basex+sx-1,basey+1,C_DARK_GRAY)
-        self.target.draw_line(basex+1,basey+1,basex+1,basey+sy-1,C_DARK_GRAY)
-        self.target.draw_line(basex+sx-1,basey,basex+sx-1,basey+sy-1,C_DARK_WHITE)
-        self.target.draw_line(basex,basey+sy-1,basex+sx-1,basey+sy-1,C_DARK_WHITE)
-        self.target.draw_line(basex+sx-2,basey+1,basex+sx-2,basey+sy-2,C_LIGHT_GRAY)
-        self.target.draw_line(basex+1,basey+sy-2,basex+sx-2,basey+sy-2,C_LIGHT_GRAY)
+        self.target.draw_line(basex,basey,basex+sx-1,basey,COLOR[:darkshadow])
+        self.target.draw_line(basex,basey,basex,basey+sy-1,COLOR[:darkshadow])
+        self.target.draw_line(basex+1,basey+1,basex+sx-1,basey+1,COLOR[:shadow])
+        self.target.draw_line(basex+1,basey+1,basex+1,basey+sy-1,COLOR[:shadow])
+        self.target.draw_line(basex+sx-1,basey,basex+sx-1,basey+sy-1,COLOR[:highlight])
+        self.target.draw_line(basex,basey+sy-1,basex+sx-1,basey+sy-1,COLOR[:highlight])
+        self.target.draw_line(basex+sx-2,basey+1,basex+sx-2,basey+sy-2,COLOR[:light])
+        self.target.draw_line(basex+1,basey+sy-2,basex+sx-2,basey+sy-2,COLOR[:light])
       end
     end
   end
@@ -483,23 +499,23 @@ module WS
       sx = @width
       sy = @height
       if flag
-        self.image.draw_line(0,0,sx-1,0,C_DARK_WHITE)
-        self.image.draw_line(0,0,0,sy-1,C_DARK_WHITE)
-        self.image.draw_line(1,1,sx-1,1,C_LIGHT_GRAY)
-        self.image.draw_line(1,1,1,sy-1,C_LIGHT_GRAY)
-        self.image.draw_line(sx-1,0,sx-1,sy-1,C_LIGHT_BLACK)
-        self.image.draw_line(0,sy-1,sx-1,sy-1,C_LIGHT_BLACK)
-        self.image.draw_line(sx-2,1,sx-2,sy-2,C_DARK_GRAY)
-        self.image.draw_line(1,sy-2,sx-2,sy-2,C_DARK_GRAY)
+        self.image.draw_line(0,0,sx-1,0,COLOR[:highlight])
+        self.image.draw_line(0,0,0,sy-1,COLOR[:highlight])
+        self.image.draw_line(1,1,sx-1,1,COLOR[:light])
+        self.image.draw_line(1,1,1,sy-1,COLOR[:light])
+        self.image.draw_line(sx-1,0,sx-1,sy-1,COLOR[:darkshadow])
+        self.image.draw_line(0,sy-1,sx-1,sy-1,COLOR[:darkshadow])
+        self.image.draw_line(sx-2,1,sx-2,sy-2,COLOR[:shadow])
+        self.image.draw_line(1,sy-2,sx-2,sy-2,COLOR[:shadow])
       else
-        self.image.draw_line(0,0,sx-1,0,C_LIGHT_BLACK)
-        self.image.draw_line(0,0,0,sy-1,C_LIGHT_BLACK)
-        self.image.draw_line(1,1,sx-1,1,C_DARK_GRAY)
-        self.image.draw_line(1,1,1,sy-1,C_DARK_GRAY)
-        self.image.draw_line(sx-1,0,sx-1,sy-1,C_DARK_WHITE)
-        self.image.draw_line(0,sy-1,sx-1,sy-1,C_DARK_WHITE)
-        self.image.draw_line(sx-2,1,sx-2,sy-2,C_LIGHT_GRAY)
-        self.image.draw_line(1,sy-2,sx-2,sy-2,C_LIGHT_GRAY)
+        self.image.draw_line(0,0,sx-1,0,COLOR[:darkshadow])
+        self.image.draw_line(0,0,0,sy-1,COLOR[:darkshadow])
+        self.image.draw_line(1,1,sx-1,1,COLOR[:shadow])
+        self.image.draw_line(1,1,1,sy-1,COLOR[:shadow])
+        self.image.draw_line(sx-1,0,sx-1,sy-1,COLOR[:highlight])
+        self.image.draw_line(0,sy-1,sx-1,sy-1,COLOR[:highlight])
+        self.image.draw_line(sx-2,1,sx-2,sy-2,COLOR[:light])
+        self.image.draw_line(1,sy-2,sx-2,sy-2,COLOR[:light])
       end
     end
   end

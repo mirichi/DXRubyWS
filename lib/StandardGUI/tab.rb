@@ -140,7 +140,7 @@ module WS
         @py = sy
         @max_width = width
         @caption = caption
-        @fore_color = C_BLACK
+        @fore_color = COLOR[:font]
         @image = {}
         @selection = false
         release_tab
@@ -179,23 +179,23 @@ module WS
         h = @height
         # 通常時の画像を作成
         @image[false] = Image.new(w, h)
-                             .box_fill( 3, 3, w-4, h-2, C_GRAY)
-                             .line( 4, 2, w-5, 2, C_LIGHT_GRAY)
-                             .line( 3, 3, 3, 3, C_LIGHT_GRAY)
-                             .line( 2, 4, 2, h-2, C_LIGHT_GRAY)
-                             .line( w-4, 3, w-4, 3, C_LIGHT_BLACK)
-                             .line( w-3, 4, w-3, h-2, C_LIGHT_BLACK)
-                             .line( w-4, 4, w-4, h-2, C_DARK_GRAY)                             
+                             .box_fill( 3, 3, w-4, h-2, COLOR[:base])
+                             .line( 4, 2, w-5, 2, COLOR[:light])
+                             .line( 3, 3, 3, 3, COLOR[:light])
+                             .line( 2, 4, 2, h-2, COLOR[:light])
+                             .line( w-4, 3, w-4, 3, COLOR[:darkshadow])
+                             .line( w-3, 4, w-3, h-2, COLOR[:darkshadow])
+                             .line( w-4, 4, w-4, h-2, COLOR[:shadow])                             
                  
         # 押下時の画像を作成
         @image[true]  = Image.new(w, h)
-                             .box_fill( 1, 1, w-1, h-1, C_GRAY)
-                             .line( 2, 0, w-3, 0, C_LIGHT_GRAY)
-                             .line( 1, 1, 1, 1, C_LIGHT_GRAY)
-                             .line( 0, 2, 0, h-1, C_LIGHT_GRAY)
-                             .line( w-2, 1, w-2, 1, C_LIGHT_BLACK)
-                             .line( w-1, 2, w-1, h-1, C_LIGHT_BLACK)
-                             .line( w-2, 2, w-2, h-1, C_DARK_GRAY) 
+                             .box_fill( 1, 1, w-1, h-1, COLOR[:base])
+                             .line( 2, 0, w-3, 0, COLOR[:light])
+                             .line( 1, 1, 1, 1, COLOR[:light])
+                             .line( 0, 2, 0, h-1, COLOR[:light])
+                             .line( w-2, 1, w-2, 1, COLOR[:darkshadow])
+                             .line( w-1, 2, w-1, h-1, COLOR[:darkshadow])
+                             .line( w-2, 2, w-2, h-1, COLOR[:shadow]) 
         # 見出しの描画
         if @caption.length > 0
           width = @font.get_width(@caption)
@@ -291,12 +291,12 @@ module WS
         sy = self.y
         ex = sx + @width - 1
         ey = sy + @height - 1
-        self.target.draw_line( sx+1 , ey-1, ex-1, ey-1, C_DARK_GRAY)
-                   .draw_line( ex-1, sy+1, ex-1, ey-1, C_DARK_GRAY)
-                   .draw_line( sx, sy, ex, sy, C_LIGHT_GRAY)
-                   .draw_line( sx, sy, sx, ey, C_LIGHT_GRAY)
-                   .draw_line( sx, ey, ex, ey, C_LIGHT_BLACK)
-                   .draw_line( ex, sy+1, ex, ey, C_LIGHT_BLACK)
+        self.target.draw_line( sx+1 , ey-1, ex-1, ey-1, COLOR[:shadow])
+                   .draw_line( ex-1, sy+1, ex-1, ey-1, COLOR[:shadow])
+                   .draw_line( sx, sy, ex, sy, COLOR[:light])
+                   .draw_line( sx, sy, sx, ey, COLOR[:light])
+                   .draw_line( sx, ey, ex, ey, COLOR[:darkshadow])
+                   .draw_line( ex, sy+1, ex, ey, COLOR[:darkshadow])
       end  
       
     end

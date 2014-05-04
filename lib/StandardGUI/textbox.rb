@@ -42,7 +42,7 @@ module WS
 
     def initialize(tx, ty, sx, sy)
       super(tx, ty, sx, sy)
-      self.image = Image.new(sx, sy, C_WHITE).draw_border(false)
+      self.image = Image.new(sx, sy, COLOR[:background]).draw_border(false)
       @text = ""
       @cursor_count = 0 # カーソル点滅用カウント
       @cursor_pos = 0   # カーソル位置
@@ -417,22 +417,22 @@ module WS
             sx += 8
             sy = @font.size * info.page_size + 8
 
-            Window.draw_line(wx, wy, wx+sx-1, wy, C_DARK_WHITE, WS::default_z + 1)
-            Window.draw_line(wx, wy, wx, wy+sy-1, C_DARK_WHITE, WS::default_z + 1)
-            Window.draw_line(wx+1, wy+1, wx+sx-1, wy+1, C_LIGHT_GRAY, WS::default_z + 1)
-            Window.draw_line(wx+1, wy+1, wx+1, wy+sy-1, C_LIGHT_GRAY, WS::default_z + 1)
-            Window.draw_line(wx+sx-1, wy, wx+sx-1, wy+sy-1, C_LIGHT_BLACK, WS::default_z + 1)
-            Window.draw_line(wx,wy+sy-1,  wx+sx-1, wy+sy-1, C_LIGHT_BLACK, WS::default_z + 1)
-            Window.draw_line(wx+sx-2, wy+1, wx+sx-2, wy+sy-2, C_DARK_GRAY, WS::default_z + 1)
-            Window.draw_line(wx+1, wy+sy-2, wx+sx-2, wy+sy-2, C_DARK_GRAY, WS::default_z + 1)
-            Window.draw_box_fill(wx+2, wy+2, wx + sx - 2, wy + sy - 2, C_GRAY, WS::default_z + 1)
+            Window.draw_line(wx, wy, wx+sx-1, wy, COLOR[:highlight], WS::default_z + 1)
+            Window.draw_line(wx, wy, wx, wy+sy-1, COLOR[:highlight], WS::default_z + 1)
+            Window.draw_line(wx+1, wy+1, wx+sx-1, wy+1, COLOR[:light], WS::default_z + 1)
+            Window.draw_line(wx+1, wy+1, wx+1, wy+sy-1, COLOR[:light], WS::default_z + 1)
+            Window.draw_line(wx+sx-1, wy, wx+sx-1, wy+sy-1, COLOR[:darkshadow], WS::default_z + 1)
+            Window.draw_line(wx,wy+sy-1,  wx+sx-1, wy+sy-1, COLOR[:darkshadow], WS::default_z + 1)
+            Window.draw_line(wx+sx-2, wy+1, wx+sx-2, wy+sy-2, COLOR[:shadow], WS::default_z + 1)
+            Window.draw_line(wx+1, wy+sy-2, wx+sx-2, wy+sy-2, COLOR[:shadow], WS::default_z + 1)
+            Window.draw_box_fill(wx+2, wy+2, wx + sx - 2, wy + sy - 2, COLOR[:base], WS::default_z + 1)
 
             info.can_list.each_with_index do |c, i|
               if info.selection == i
                 Window.draw_box_fill(wx + 3, wy + @font.size * i + 3, wx + sx - 3, wy + @font.size * (i+1) + 3, C_BLUE, WS::default_z + 1)
-                Window.draw_font(wx + 4, wy + @font.size * i + 4, c, @font, :color=>C_WHITE, :z=>WS::default_z + 1)
+                Window.draw_font(wx + 4, wy + @font.size * i + 4, c, @font, :color=>COLOR[:font_reverse], :z=>WS::default_z + 1)
               else
-                Window.draw_font(wx + 4, wy + @font.size * i + 4, c, @font, :color=>C_BLACK, :z=>WS::default_z + 1)
+                Window.draw_font(wx + 4, wy + @font.size * i + 4, c, @font, :color=>COLOR[:font], :z=>WS::default_z + 1)
               end
             end
           end
@@ -441,7 +441,7 @@ module WS
         end
 
         # 文字列表示
-        self.target.draw_font(self.x + @border_width + 2, self.y + @border_width + 2, str, @font, :color=>C_BLACK, :z=>self.z)
+        self.target.draw_font(self.x + @border_width + 2, self.y + @border_width + 2, str, @font, :color=>COLOR[:font], :z=>self.z)
 
       else
         # 選択範囲表示
@@ -454,12 +454,12 @@ module WS
         end
   
         # 文字列表示
-        self.target.draw_font(self.x + @border_width + 2, self.y + @border_width + 2, @text[@draw_range.to_range], @font, :color=>C_BLACK, :z=>self.z)
+        self.target.draw_font(self.x + @border_width + 2, self.y + @border_width + 2, @text[@draw_range.to_range], @font, :color=>COLOR[:font], :z=>self.z)
   
         # カーソル表示
         if self.activated? and (@cursor_count / 30) % 2 == 0
           tx = self.x + @font.get_width(@text[@draw_range.first, @cursor_pos - @draw_range.first]) + @border_width + 2
-          self.target.draw_line(tx, self.y + @border_width + 1, tx, self.y + @border_width + @font.size, C_BLACK, self.z)
+          self.target.draw_line(tx, self.y + @border_width + 1, tx, self.y + @border_width + @font.size, COLOR[:font], self.z)
         end
       end
     end

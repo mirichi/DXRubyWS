@@ -4,8 +4,8 @@ module WS
   class WSCheckBox < WSControl
     
     # 公開インスタンス
-    attr_accessor :fore_color, :checked
-    attr_reader :caption
+    attr_accessor :fore_color
+    attr_reader :caption, :checked
 
     # Mix-In
     include Focusable
@@ -15,7 +15,7 @@ module WS
       @image = {}
       @checked = false
       self.caption = caption
-      @fore_color = C_BLACK
+      @fore_color = COLOR[:marker]
       # 画像を作成する
       set_image
     end
@@ -27,13 +27,24 @@ module WS
     
     # コントロールに値を設定
     def value=(v)
-      @checked = v
+      self.checked = v
     end
         
-    # チェックボックスの画像を設定
+    def checked=(v)
+      @checked = v
+      refresh
+    end
+    
+    # 画像をセット
     def set_image
-      @image[false] = image_checkbox_false
-      @image[true]  = image_checkbox_true
+      unless @image.has_key?(true)
+        @image[false] = image_checkbox_false
+        @image[true]  = image_checkbox_true
+      end
+      # 画像の張りなおし  
+      self.image.dispose if self.image
+      self.image = Image.new(self.width, self.height)
+      refresh
     end
     
     ### チェックボックス画像(true) ###
@@ -44,23 +55,23 @@ module WS
         ex = 14
         ey = 14
         IMG_CACHE[:checkbox_true] = Image.new(16, 16)
-                             .line(sx, sy, sx, ey, C_LIGHT_BLACK)
-                             .line(sx, sy+1 , ex, sy+1 , C_LIGHT_BLACK)
-                             .line(sx, sy , ex, sy, C_LIGHT_BLACK)
-                             .line(sx+1, sy ,sx+1, ey, C_LIGHT_BLACK)
-                             .line(sx+1,ey-1,ex-1,ey-1, C_DARK_GRAY)
-                             .line(sx, ey, ex, ey, C_DARK_WHITE)
-                             .line(ex-1, sy+1, ex-1, ey-1, C_GRAY)
-                             .line(ex, sy, ex, ey, C_DARK_WHITE)
-                             .box_fill(sx+2, sy+2, ex-2, ey-2, C_WHITE)
-                             .line(sx+3, ey-5, sx+5, ey-3, C_BLACK)
-                             .line(sx+3, ey-6, sx+5, ey-4, C_BLACK)
-                             .line(sx+3, ey-7, sx+5, ey-5, C_BLACK)
-                             .line(sx+3, ey-8, sx+5, ey-6, C_BLACK)
-                             .line(sx+6, ey-4, ex-3, ey-8, C_BLACK)
-                             .line(sx+6, ey-5, ex-3, ey-9, C_BLACK)
-                             .line(sx+6, ey-6, ex-3, ey-10, C_BLACK)
-                             .line(sx+6, ey-7, ex-3, ey-11, C_BLACK)
+                             .line(sx, sy, sx, ey, COLOR[:darkshadow])
+                             .line(sx, sy+1 , ex, sy+1 , COLOR[:darkshadow])
+                             .line(sx, sy , ex, sy, COLOR[:darkshadow])
+                             .line(sx+1, sy ,sx+1, ey, COLOR[:darkshadow])
+                             .line(sx+1,ey-1,ex-1,ey-1, COLOR[:shadow])
+                             .line(sx, ey, ex, ey, COLOR[:highlight])
+                             .line(ex-1, sy+1, ex-1, ey-1, COLOR[:base])
+                             .line(ex, sy, ex, ey, COLOR[:highlight])
+                             .box_fill(sx+2, sy+2, ex-2, ey-2, COLOR[:background])
+                             .line(sx+3, ey-5, sx+5, ey-3, COLOR[:marker])
+                             .line(sx+3, ey-6, sx+5, ey-4, COLOR[:marker])
+                             .line(sx+3, ey-7, sx+5, ey-5, COLOR[:marker])
+                             .line(sx+3, ey-8, sx+5, ey-6, COLOR[:marker])
+                             .line(sx+6, ey-4, ex-3, ey-8, COLOR[:marker])
+                             .line(sx+6, ey-5, ex-3, ey-9, COLOR[:marker])
+                             .line(sx+6, ey-6, ex-3, ey-10, COLOR[:marker])
+                             .line(sx+6, ey-7, ex-3, ey-11, COLOR[:marker])
       end
       IMG_CACHE[:checkbox_true]
     end
@@ -73,15 +84,15 @@ module WS
         ex = 14
         ey = 14
         IMG_CACHE[:checkbox_false] = Image.new(16, 16)
-                             .line(sx, sy, sx, ey, C_LIGHT_BLACK)
-                             .line(sx, sy+1 , ex, sy+1 , C_LIGHT_BLACK)
-                             .line(sx, sy , ex, sy, C_LIGHT_BLACK)
-                             .line(sx+1, sy ,sx+1, ey, C_LIGHT_BLACK)
-                             .line(sx+1,ey-1,ex-1,ey-1, C_DARK_GRAY)
-                             .line(sx, ey, ex, ey, C_DARK_WHITE)
-                             .line(ex-1, sy+1, ex-1, ey-1, C_GRAY)
-                             .line(ex, sy, ex, ey, C_DARK_WHITE)
-                             .box_fill(sx+2, sy+2, ex-2, ey-2, C_WHITE)
+                             .line(sx, sy, sx, ey, COLOR[:darkshadow])
+                             .line(sx, sy+1 , ex, sy+1 , COLOR[:darkshadow])
+                             .line(sx, sy , ex, sy, COLOR[:darkshadow])
+                             .line(sx+1, sy ,sx+1, ey, COLOR[:darkshadow])
+                             .line(sx+1,ey-1,ex-1,ey-1, COLOR[:shadow])
+                             .line(sx, ey, ex, ey, COLOR[:highlight])
+                             .line(ex-1, sy+1, ex-1, ey-1, COLOR[:base])
+                             .line(ex, sy, ex, ey, COLOR[:highlight])
+                             .box_fill(sx+2, sy+2, ex-2, ey-2, COLOR[:background])
       end
       IMG_CACHE[:checkbox_false]
     end
@@ -89,14 +100,14 @@ module WS
     ### イベント ###
     # クリックされた場合真偽値を入れ替える
     def on_mouse_push(tx, ty)
-      @checked = !@checked
+      self.checked = !@checked
       signal(:changed, @checked)
       super
     end
 
     def on_key_push(key)
       if key == K_SPACE
-        @checked = !@checked
+        self.checked = !@checked
         signal(:changed, @checked)
       end
       super
@@ -107,17 +118,30 @@ module WS
       @caption = c
       self.resize(@font.get_width(c) + 20, @font.size)
     end
-
+    
+    def resize(width, height)
+      super(width, height)
+      set_image
+    end
+    
     ### 描画 ###
-    def draw
-      # コントロールの状態を参照して画像を変更
-      self.image = @image[@checked]
-      super
-      # キャプションを描画
-      if @caption.length > 0
-        width = @font.get_width(@caption)
-        self.target.draw_font(self.x + 20 , self.y , @caption, @font, :color=>@fore_color)
+    def render
+      if refresh?
+        # コントロールの状態を参照して画像を変更
+        self.image.clear
+        self.image.draw(0, 0, @image[@checked])
+        # キャプションを描画
+        if @caption.length > 0
+          width = @font.get_width(@caption)
+          ty = self.height / 2 - @font.size / 2 + 1
+          self.image.draw_font_ex(20 , ty, @caption, @font, {:aa =>false, :color=>@fore_color})
+        end
+        refreshed
       end
+    end
+    
+    def draw
+      super
       if self.activated?
         tmp = @font.get_width(@caption)
         self.target.draw_line(self.x + 18, self.y - 2, self.x + tmp + 20, self.y - 2, C_BLACK)

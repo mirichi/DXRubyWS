@@ -11,7 +11,7 @@ module WS
 
       def initialize(tx, ty, width, height, titles)
         super(tx, ty, width, height)
-        self.image.bgcolor = C_GRAY
+        self.image.bgcolor = COLOR[:base]
         @font = Font.new(12)
         @titles = titles
         @titles_bak = nil
@@ -25,8 +25,8 @@ module WS
           @titles_bak = @titles.map {|title| title.dup}
           @titles_image = []
           @titles.each do |title|
-            img = Image.new(title[1], @height, C_GRAY)
-            img.draw_font_ex(3, 2, title[0].to_s, @font, color:C_BLACK, aa:false)
+            img = Image.new(title[1], @height, COLOR[:base])
+            img.draw_font_ex(3, 2, title[0].to_s, @font, color:COLOR[:font], aa:false)
             @titles_image << img
           end
           signal(:title_resize)
@@ -52,10 +52,10 @@ module WS
         tx = 0
         ([["",0]]+@titles).each do |title|
           tx += title[1]
-          self.image.draw_line(tx-2-pos,1,tx-2-pos,sy-3,C_LIGHT_BLACK)
-          self.image.draw_line(tx-1-pos,0,tx-1-pos,sy-2,C_DARK_GRAY)
-          self.image.draw_line(tx-pos  ,0,tx-pos  ,sy-2,C_DARK_WHITE)
-          self.image.draw_line(tx+1-pos,1,tx+1-pos,sy-3,C_LIGHT_GRAY)
+          self.image.draw_line(tx-2-pos,1,tx-2-pos,sy-3,COLOR[:darkshadow])
+          self.image.draw_line(tx-1-pos,0,tx-1-pos,sy-2,COLOR[:shadow])
+          self.image.draw_line(tx-pos  ,0,tx-pos  ,sy-2,COLOR[:highlight])
+          self.image.draw_line(tx+1-pos,1,tx+1-pos,sy-3,COLOR[:light])
         end
 
         super
@@ -139,10 +139,10 @@ module WS
         total = @parent.title.titles.inject(0){|t, o| t += o[1]}
         @parent.parent.items.each_with_index do |item, i|
           if @parent.parent.cursor != i
-            color = C_BLACK
+            color = COLOR[:font]
           else
             self.image.draw(0 - @parent.parent.hsb.pos, i * @parent.parent.font.size - @parent.parent.vsb.pos, @parent.parent.cursor_image)
-            color = C_WHITE
+            color = COLOR[:font_reverse]
           end
           tmp = Encoding.default_external # コケる現象回避
           Encoding.default_external = Encoding::ASCII_8BIT
@@ -174,7 +174,7 @@ module WS
         listview = WSListViewMain.new(0, 0, width - 4 - 16, 16)
         add_control(listview, :listview)
  
-        self.image.bgcolor = C_WHITE
+        self.image.bgcolor = COLOR[:background]
         layout(:vbox) do
           add title, true, false
           add listview, true, true
@@ -288,7 +288,7 @@ module WS
       # カーソル位置の画像を生成する
       if !@cursor_image or @cursor_image.width != hsb.total_size
         @cursor_image.dispose if @cursor_image
-        @cursor_image = Image.new(hsb.total_size, @font.size, C_BLACK)
+        @cursor_image = Image.new(hsb.total_size, @font.size, COLOR[:select])
       end
     end
   end

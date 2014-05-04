@@ -15,8 +15,8 @@ module WS
         @content = content #表示するリスト
         @font = form.font
         super(tx, ty, width, content.size * @font.size + 4)
-        @image = Image.new(@width, @height, C_WHITE).draw_border(true)
-        @active_image = Image.new(@width - 6, @font.size, [200, 200, 255])
+        @image = Image.new(@width, @height, COLOR[:background]).draw_border(true)
+        @active_image = Image.new(@width - 6, @font.size, COLOR[:select])
         @old_cont = @content #リストが変更されたかの確認用
         @form = form #データの出力先
         @selected = default #選択されているもの(index)
@@ -30,8 +30,8 @@ module WS
           @old_cont = @content
           @selected = 0 if @selected >= @content.size
           self.height = @content.size * @font.size + 4
-          @image = Image.new(self.width, self.height, C_WHITE).draw_border(true)
-          @active_image = Image.new(@width - 6, @font.size, [200, 200, 255])
+          @image = Image.new(self.width, self.height, COLOR[:background]).draw_border(true)
+          @active_image = Image.new(@width - 6, @font.size, COLOR[:select])
         end
         self.image = @image
       end
@@ -50,7 +50,7 @@ module WS
         super
         @content.each_with_index do |str,i|
           self.target.draw(self.x + 3, self.y + @font.size * i + 3, @active_image, self.z) if @selected == i
-          self.target.drawFont(self.x + 2, self.y + @font.size * i + 2, str.to_s.within(@font, @width - 4), @font,{:color => C_BLACK,:z => self.z})
+          self.target.drawFont(self.x + 2, self.y + @font.size * i + 2, str.to_s.within(@font, @width - 4), @font,{:color => COLOR[:font],:z => self.z})
         end
       end
       
@@ -87,9 +87,9 @@ module WS
     ### ■プルダウンリストの設定■ ###
     def initialize(tx, ty, width, height, content = [])
       super(tx, ty, width, height)
-      @image = Image.new(@width, @height, C_WHITE).draw_border(false)
-      @btn_image =Image.new(@height - 4, @height - 4, C_GRAY).triangle_fill(7, 11, 3, 4, 11, 4, C_BLACK).draw_border(true) # 暫定
-      @active_image = Image.new(@width - 6, @height - 6, [200, 200, 255])
+      @image = Image.new(@width, @height, COLOR[:background]).draw_border(false)
+      @btn_image =Image.new(@height - 4, @height - 4, COLOR[:base]).triangle_fill(7, 11, 3, 4, 11, 4, COLOR[:font]).draw_border(true) # 暫定
+      @active_image = Image.new(@width - 6, @height - 6, COLOR[:select])
       lx, ly = self.get_global_vertex
       @list = WSPullDownPopup.new(lx, ly + height, width, content, self)
 
@@ -117,9 +117,9 @@ module WS
     
     def resize(width, height)
       @image.dispose if @image
-      @image = @image.new(@width, @height, C_WHITE).draw_border(true)
-      @btn_image =Image.new(@height-4, @height-4, C_GRAY).triangle_fill(7, 11, 3, 4, 11, 4, C_BLACK).draw_border(true) # 暫定
-      @active_image = Image.new(@width - 6, @height - 6, [200, 200, 255])
+      @image = @image.new(@width, @height, COLOR[:background]).draw_border(true)
+      @btn_image =Image.new(@height-4, @height-4, COLOR[:base]).triangle_fill(7, 11, 3, 4, 11, 4, COLOR[:font]).draw_border(true) # 暫定
+      @active_image = Image.new(@width - 6, @height - 6, COLOR[:select])
       lx, ly = self.get_global_vertex
       @list.x, @list.y = lx, ly + @height
       @list.resize(width, height)
@@ -158,7 +158,7 @@ module WS
       if self.activated?
         self.target.draw(self.x + 3, self.y + 3, @active_image, self.z)
       end
-      self.target.draw_font(self.x + 2, self.y + 2, item.to_s, @font, {:color => C_BLACK,:z => self.z}) if self.item
+      self.target.draw_font(self.x + 2, self.y + 2, item.to_s, @font, {:color => COLOR[:font],:z => self.z}) if self.item
       self.target.draw(self.x + 2 + @width - @height, self.y + 2, @btn_image, self.z)
     end
     

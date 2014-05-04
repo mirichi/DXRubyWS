@@ -8,7 +8,7 @@ module WS
     def initialize(menuitems)
       super(0, 0, 10, 16) # 数字テキトー。オートレイアウトで設定する。
       @menuitems = menuitems
-      self.image.bgcolor = C_GRAY
+      self.image.bgcolor = COLOR[:base]
       @font = Font.new(12)
       @selected = nil
       @popup = nil
@@ -70,7 +70,7 @@ module WS
           image = Image.new(tmp + 2, 16, [150, 150, 150])
           self.image.draw(x - 1, 0, image)
         end
-        self.image.draw_font(x, 2, ary[0], @font, :color=>C_BLACK)
+        self.image.draw_font(x, 2, ary[0], @font, :color=>COLOR[:font])
         x += tmp + 10
       end
       super

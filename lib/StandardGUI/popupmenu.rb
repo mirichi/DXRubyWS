@@ -15,7 +15,7 @@ module WS
       height = @font.size * menuitems.size
 
       super(tx, ty, width + 10, height + 8)
-      self.image.bgcolor = C_GRAY
+      self.image.bgcolor = COLOR[:base]
       
       # メニューアイテムの位置設定
       menuitems.each_with_index do |o, i|

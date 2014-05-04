@@ -15,7 +15,7 @@ module WS
     class WSWindowClient < WSContainer
       def initialize(*)
         super
-        self.image.bgcolor = C_GRAY
+        self.image.bgcolor = COLOR[:base]
       end
 
       def add_control(obj, name=nil)
@@ -55,7 +55,7 @@ module WS
   
         # タイトルバーのクロースボタン
         close_button = WSWindowCloseButton.new(0, 0, height-2, height-2, "")
-        close_button.fore_color = C_BLACK
+        close_button.fore_color = COLOR[:font]
         add_control(close_button)
         close_button.add_handler(:click) {signal(:close)}
   
@@ -82,7 +82,7 @@ module WS
         if parent.activated?
           self.image.bgcolor = [30, 30, 180]
         else
-          self.image.bgcolor = C_DARK_GRAY
+          self.image.bgcolor = COLOR[:shadow]
         end
         super
       end

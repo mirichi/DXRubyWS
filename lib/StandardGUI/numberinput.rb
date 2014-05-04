@@ -73,11 +73,13 @@ module WS
       c_numtext.add_key_handler(K_RETURN){ check_text }
       # スピンボタン変動小の作成
 		  font_s = Font.new(8)
-		  c_b_add_s = WSSpinButton.new(width - 18,          0, 16, height / 2 - 2, "▲")
+		  c_b_add_s = WSSpinButton.new(width - 18,          0, 16, height / 2 - 2)
       c_b_add_s.font = font_s
+      c_b_add_s.caption = "▲"
       c_b_add_s.add_handler(:click, self.method(:click_add_button_s))
-      c_b_sub_s = WSSpinButton.new(width - 18, height / 2, 16, height / 2 - 2, "▼")
+      c_b_sub_s = WSSpinButton.new(width - 18, height / 2, 16, height / 2 - 2)
       c_b_sub_s.font = font_s  
+      c_b_sub_s.caption = "▼"
       c_b_sub_s.add_handler(:click, self.method(:click_sub_button_s))
       # コントロールの登録
       add_control(c_numtext, :c_numtext)
@@ -149,9 +151,9 @@ module WS
     end
     
     ### 描画 ###
-    # リフレッシュ
-    def refresh
-      @refresh = true
+    # リフレッシュするか？
+    def refresh?
+      @refresh || c_numtext.active
     end
     
     # 描画継続中か？
@@ -162,14 +164,14 @@ module WS
     # 画像の作成
     def render
  
-      if @refresh
+      if refresh?
         self.image = @render_target
         super
         # 描画を継続しない場合イメージ化して終了
         if !rendering?
           @image.dispose if @image    
           @image = @render_target.to_image
-          @refresh = false
+          refreshed 
         end
       else
         self.image = @image
@@ -200,19 +202,23 @@ module WS
      c_numtext.add_key_handler(K_RETURN){ check_text }
      # スピンボタン変動小の作成
      font_s = Font.new(6)
-     c_b_add_s = WSSpinButton.new(width - 34,          2, 16, height / 2 - 2, "▲")
+     c_b_add_s = WSSpinButton.new(width - 34,          2, 16, height / 2 - 2)
      c_b_add_s.font = font_s
+     c_b_add_s.caption = "▲"
      c_b_add_s.add_handler(:click, self.method(:click_add_button_s))
-     c_b_sub_s = WSSpinButton.new(width - 34, height / 2, 16, height / 2 - 2, "▼")
+     c_b_sub_s = WSSpinButton.new(width - 34, height / 2, 16, height / 2 - 2)
      c_b_sub_s.font = font_s  
+     c_b_sub_s.caption = "▼"
      c_b_sub_s.add_handler(:click, self.method(:click_sub_button_s))
      # スピンボタン変動大の作成
      font_b = Font.new(8)
-     c_b_add_b = WSSpinButton.new(width - 18,          2, 16, height / 2 - 2, "▲")
+     c_b_add_b = WSSpinButton.new(width - 18,          2, 16, height / 2 - 2)
      c_b_add_b.font = font_b
+     c_b_add_b.caption = "▲"
      c_b_add_b.add_handler(:click, self.method(:click_add_button_b))
-     c_b_sub_b = WSSpinButton.new(width - 18, height / 2, 16, height / 2 - 2, "▼")
+     c_b_sub_b = WSSpinButton.new(width - 18, height / 2, 16, height / 2 - 2)
      c_b_sub_b.font = font_b  
+     c_b_sub_b.caption = "▼"
      c_b_sub_b.add_handler(:click, self.method(:click_sub_button_b))
      # コントロールの登録
      add_control(c_numtext, :c_numtext)
