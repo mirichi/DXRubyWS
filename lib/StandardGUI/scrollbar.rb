@@ -49,7 +49,7 @@ module WS
 
     def initialize(tx, ty, width, height)
       super
-      self.image.bgcolor = [220, 220, 220]
+      self.image.bgcolor = COLOR[:light]
       @pos = 0
       @view_size = height - 32
       @total_size = 0
@@ -179,7 +179,7 @@ module WS
 
     def initialize(tx, ty, width, height)
       super
-      self.image.bgcolor = [220, 220, 220]
+      self.image.bgcolor = COLOR[:light]
       @pos = 0
       @view_size = width - 32
       @total_size = 0
