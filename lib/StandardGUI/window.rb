@@ -33,14 +33,16 @@ module WS
 
       def set_image
         super
-        @image[true].line(4, 4, @width-5, @height-5, C_BLACK)
-                    .line(5, 4, @width-4, @height-5, C_BLACK)
-                    .line(@width-5, 4, 4, @height-5, C_BLACK)
-                    .line(@width-4, 4, 5, @height-5, C_BLACK)
-        @image[false].line(4-1, 4-1, @width-5-1, @height-5-1, C_BLACK)
-                    .line(5-1, 4-1, @width-4-1, @height-5-1, C_BLACK)
-                    .line(@width-5-1, 4-1, 4-1, @height-5-1, C_BLACK)
-                    .line(@width-4-1, 4-1, 5-1, @height-5-1, C_BLACK)
+        self.animation_image[0..3].each do |img|
+          img.line(4-1, 4-1, @width-5-1, @height-5-1, C_BLACK)
+             .line(5-1, 4-1, @width-4-1, @height-5-1, C_BLACK)
+             .line(@width-5-1, 4-1, 4-1, @height-5-1, C_BLACK)
+             .line(@width-4-1, 4-1, 5-1, @height-5-1, C_BLACK)
+        end
+        self.animation_image[4].line(4, 4, @width-5, @height-5, C_BLACK)
+                               .line(5, 4, @width-4, @height-5, C_BLACK)
+                               .line(@width-5, 4, 4, @height-5, C_BLACK)
+                               .line(@width-4, 4, 5, @height-5, C_BLACK)
       end
     end
     

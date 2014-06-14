@@ -11,18 +11,21 @@ module WS
   module ButtonClickable
     def initialize(*args)
       super
-      @image_flag = false
+      @pushed = false
+      set_animation
     end
 
     def on_mouse_push(tx, ty)
       WS.capture(self)
-      @image_flag = true
+      @pushed = true
+      set_animation
       super
     end
 
     def on_mouse_release(tx, ty)
       @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
-      @image_flag = false
+      @pushed = false
+      set_animation
       if @hit_cursor === self and WS.captured?(self)
         WS.capture(nil)
         on_click(tx, ty)
@@ -40,7 +43,8 @@ module WS
     def on_mouse_move(tx, ty)
       @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
       if WS.captured?(self)
-        @image_flag = @hit_cursor === self
+        @pushed = @hit_cursor === self
+        set_animation
       end
       super
     end
@@ -60,28 +64,31 @@ module WS
     def initialize(*args)
       super
       @downcount = 0
-      @image_flag = false
+      @pushed = false
     end
     def on_mouse_push(tx, ty)
       @old_tx, @old_ty = tx, ty
       WS.capture(self)
       @downcount = 20
-      @image_flag = true
+      @pushed = true
+      set_animation
       super
       on_click(tx, ty)
     end
 
     def on_mouse_release(tx, ty)
-      @image_flag = false
+      @pushed = false
       WS.capture(nil)
       @downcount = 0
       super
+      set_animation
     end
 
     def on_mouse_move(tx, ty)
       @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
       if WS.captured?(self)
-        @image_flag = @hit_cursor === self
+        @pushed = @hit_cursor === self
+        set_animation
       end
       super
     end
