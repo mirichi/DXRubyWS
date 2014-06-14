@@ -31,16 +31,20 @@ module WS
     class WSScrollBarUpButton < WSSpinButton
       def set_image
         super
-        @image[false].triangle_fill(7, 3, 3, 10, 11, 10, COLOR[:font])
-        @image[true].triangle_fill(8, 4, 4, 11, 12, 11, COLOR[:font])
+        self.animation_image[0..3].each do |img|
+          img.triangle_fill(7, 3, 3, 10, 11, 10, COLOR[:font])
+        end
+        self.animation_image[4].triangle_fill(8, 4, 4, 11, 12, 11, COLOR[:font])
       end
     end
 
     class WSScrollBarDownButton < WSSpinButton
       def set_image
         super
-        @image[false].triangle_fill(7, 11, 3, 4, 11, 4, COLOR[:font])
-        @image[true].triangle_fill(8, 12, 4, 5, 12, 5, COLOR[:font])
+        self.animation_image[0..3].each do |img|
+          img.triangle_fill(7, 11, 3, 4, 11, 4, COLOR[:font])
+        end
+        self.animation_image[4].triangle_fill(8, 12, 4, 5, 12, 5, COLOR[:font])
       end
     end
     
@@ -161,16 +165,20 @@ module WS
     class WSScrollBarLeftButton < WSSpinButton
       def set_image
         super
-        @image[false].triangle_fill(3, 8, 10, 4, 10, 11, COLOR[:font])
-        @image[true].triangle_fill(4, 9, 11, 5, 11, 12, COLOR[:font])
+        self.animation_image[0..3].each do |img|
+          img.triangle_fill(3, 8, 10, 4, 10, 11, COLOR[:font])
+        end
+        self.animation_image[4].triangle_fill(4, 9, 11, 5, 11, 12, COLOR[:font])
       end
     end
 
     class WSScrollBarRightButton < WSSpinButton
       def set_image
         super
-        @image[false].triangle_fill(11, 8, 4, 4, 4, 11, COLOR[:font])
-        @image[true].triangle_fill(12, 9, 5, 5, 5, 12, COLOR[:font])
+        self.animation_image[0..3].each do |img|
+          img.triangle_fill(11, 8, 4, 4, 4, 11, COLOR[:font])
+        end
+        self.animation_image[4].triangle_fill(12, 9, 5, 5, 5, 12, COLOR[:font])
       end
     end
     
