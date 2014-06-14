@@ -1,11 +1,14 @@
 # coding: utf-8
 
+require_relative './animation'
+
 # ウィンドウシステム
 module WS
   K_CTRL = 256
   
   # すべての基本、コントロールのクラス
-  class WSControl < Sprite
+  class WSControl < AnimeSprite
+    
     attr_accessor :parent, :font, :width, :height, :resizable_width, :resizable_height
     attr_accessor :min_width, :min_height, :focusable, :active, :enabled
     # デフォルトフォントオブジェクト
