@@ -6,6 +6,7 @@ module WS
   
   # すべての基本、コントロールのクラス
   class WSControl < Sprite
+    
     attr_accessor :parent, :font, :width, :height, :resizable_width, :resizable_height
     attr_accessor :min_width, :min_height, :focusable, :active, :enabled
     # デフォルトフォントオブジェクト
@@ -25,6 +26,7 @@ module WS
       @resizable_height = false # オートレイアウト用設定
       @focusable = false
       @active = false
+      @mouse_over = false
       @enabled = true
     end
     
@@ -79,12 +81,14 @@ module WS
     # コントロールにマウスカーソルが乗ったときに呼ばれる
     def on_mouse_over
       signal(:mouse_over)
+      @mouse_over = true
       self
     end
-
+    
     # コントロールからマウスカーソルが離れたときに呼ばれる
     def on_mouse_out
       signal(:mouse_out)
+      @mouse_over = false
       self
     end
 
@@ -246,6 +250,17 @@ module WS
       self.visible && (self.parent ? self.parent.visible? : true)
     end
 
+    # コントロールの状態を判定しシンボルを返す
+    # 特殊な状態は継承先で個別に定義する
+    # :usual            通常状態
+    # :disable          使用不可状態
+    # :active           フォーカスを得ている
+    # :mouseover        マウスが乗っている
+    # :mouseover_active フォーカスを得ていてマウスが乗っている
+    def state
+      :usual
+    end    
+    
     # コントロールを読める文字にする
     def inspect
       "#<" + self.class.name + ">"
@@ -287,7 +302,11 @@ module WS
     # drawで描画するためのself.imageを準備する
     def render
     end
+    
   end
+
+
+
 
   # 配下にコントロールを保持する機能を追加したコントロール
   # ウィンドウやリストボックスなど、自身の内部にコントロールを配置するものはWSContainerを使う。

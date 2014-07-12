@@ -33,11 +33,11 @@ module WS
 
       def set_image
         super
-        @image[true].line(4, 4, @width-5, @height-5, C_BLACK)
+        @image[:pushed].line(4, 4, @width-5, @height-5, C_BLACK)
                     .line(5, 4, @width-4, @height-5, C_BLACK)
                     .line(@width-5, 4, 4, @height-5, C_BLACK)
                     .line(@width-4, 4, 5, @height-5, C_BLACK)
-        @image[false].line(4-1, 4-1, @width-5-1, @height-5-1, C_BLACK)
+        @image[:usual].line(4-1, 4-1, @width-5-1, @height-5-1, C_BLACK)
                     .line(5-1, 4-1, @width-4-1, @height-5-1, C_BLACK)
                     .line(@width-5-1, 4-1, 4-1, @height-5-1, C_BLACK)
                     .line(@width-4-1, 4-1, 5-1, @height-5-1, C_BLACK)

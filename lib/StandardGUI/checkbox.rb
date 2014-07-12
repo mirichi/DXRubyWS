@@ -15,7 +15,7 @@ module WS
       @image = {}
       @checked = false
       self.caption = caption
-      @fore_color = COLOR[:marker]
+      @fore_color = COLOR[:font]
       # 画像を作成する
       set_image
     end
@@ -125,19 +125,21 @@ module WS
     end
     
     ### 描画 ###
-    def render
-      if refresh?
-        # コントロールの状態を参照して画像を変更
-        self.image.clear
-        self.image.draw(0, 0, @image[@checked])
-        # キャプションを描画
-        if @caption.length > 0
-          width = @font.get_width(@caption)
-          ty = self.height / 2 - @font.size / 2 + 1
-          self.image.draw_font_ex(20 , ty, @caption, @font, {:aa =>false, :color=>@fore_color})
-        end
-        refreshed
+    def refresh
+      # コントロールの状態を参照して画像を変更
+      self.image.clear
+      self.image.draw(0, 0, @image[@checked])
+      # キャプションを描画
+      if @caption.length > 0
+        width = @font.get_width(@caption)
+        ty = self.height / 2 - @font.size / 2 + 1
+        self.image.draw_font_ex(20 , ty, @caption, @font, {:aa =>false, :color=>@fore_color})
       end
+      refreshed
+    end
+    
+    def render
+      refresh if refresh?
     end
     
     def draw

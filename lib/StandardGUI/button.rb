@@ -21,6 +21,15 @@ module WS
       @caption = text
     end
     
+    # コントロールの状態を判定しシンボルを返す
+    def state
+      if @pushed
+        :pushed
+      else  
+        super
+      end
+    end
+    
     # オートレイアウトなどでサイズが変更されたときに呼ばれる
     def resize(width, height)
       super
@@ -32,23 +41,23 @@ module WS
     # オーバーライドしてこのメソッドを再定義することでボタンの絵を変更することができる。
     def set_image
       # 画像を再作成する前にdisposeする
-      if @image.has_key?(true)
-        @image[false].dispose
-        @image[true].dispose
+      if @image.has_key?(:usual)
+        @image[:usual].dispose
+        @image[:pushed].dispose
       end
       
       # 通常時の画像を作成
-      @image[false] = Image.new(@width, @height, COLOR[:base]).draw_border(true)
+      @image[:usual] = Image.new(@width, @height, COLOR[:base]).draw_border(true)
       # 押下時の画像を作成
-      @image[true] = Image.new(@width, @height, COLOR[:base]).draw_border(false)
+      @image[:pushed] = Image.new(@width, @height, COLOR[:base]).draw_border(false)
       # キャプションの描画
       if @caption.length > 0
         width = @font.get_width(@caption)
-        @image[false].draw_font_ex(@width / 2 - width / 2 ,
+        @image[:usual].draw_font_ex(@width / 2 - width / 2 ,
                              @height / 2 - @font.size / 2 ,
                              @caption, @font, {:color => @fore_color, :aa => false})
       
-        @image[true].draw_font_ex(@width / 2 - width / 2 + 1,
+        @image[:pushed].draw_font_ex(@width / 2 - width / 2 + 1,
                              @height / 2 - @font.size / 2 + 1,
                              @caption, @font, {:color => @fore_color, :aa => false})
       end
@@ -57,7 +66,7 @@ module WS
 
     def render
       set_image if refresh?
-      self.image = @image[@image_flag]
+      self.image = @image[state]
     end
 
     def draw
@@ -79,13 +88,13 @@ module WS
 
     def on_key_push(key)
       if key == K_SPACE
-        @image_flag = true
+        @pushed = true
       end
     end
 
     def on_key_release(key)
       if key == K_SPACE
-        @image_flag = false
+        @pushed = false
         on_click(0, 0)
       end
     end
@@ -93,7 +102,7 @@ module WS
 
   # スピンボタン
   class WSSpinButton < WSButtonBase
-      include Focusable
-      include RepeatClickable # リピートクリック用モジュール
+    include Focusable
+    include RepeatClickable # リピートクリック用モジュール
   end
 end

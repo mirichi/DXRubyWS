@@ -69,8 +69,8 @@ module WS
       # テキストボックスの作成
 		  c_numtext = WSTextBox.new(0, 0, width - 18, height)
 		  c_numtext.add_handler(:changed, method(:text_changed))
-      c_numtext.add_handler(:leave){ check_text }
-      c_numtext.add_key_handler(K_RETURN){ check_text }
+      c_numtext.add_handler(:leave){ check_text; signal(:changed, @value) }
+      c_numtext.add_key_handler(K_RETURN){ check_text; signal(:changed, @value) }
       # スピンボタン変動小の作成
 		  font_s = Font.new(8)
 		  c_b_add_s = WSSpinButton.new(width - 18,          0, 16, height / 2 - 2)
@@ -108,11 +108,9 @@ module WS
     end
 
     def value=(v)
-      before = @value
       @value = v.clamp(@min, @max)
       set_text
       check_text
-      signal(:changed, @value) if before != @value
     end
     
     ### スタイル ###
@@ -120,6 +118,7 @@ module WS
     def limit(min , max)
       @min = min
       @max = max
+      self.value = @value
     end
     
     # ステップ値の設定
@@ -198,8 +197,8 @@ module WS
      # テキストボックスの作成
      c_numtext = WSTextBox.new(0, 0, width, height)
      c_numtext.add_handler(:changed, method(:text_changed))
-     c_numtext.add_handler(:leave){ check_text }
-     c_numtext.add_key_handler(K_RETURN){ check_text }
+     c_numtext.add_handler(:leave){ check_text; signal(:changed, @value) }
+     c_numtext.add_key_handler(K_RETURN){ check_text; signal(:changed, @value) }
      # スピンボタン変動小の作成
      font_s = Font.new(6)
      c_b_add_s = WSSpinButton.new(width - 34,          2, 16, height / 2 - 2)
