@@ -87,12 +87,11 @@ module WS
     ### ■プルダウンリストの設定■ ###
     def initialize(tx, ty, width, height, content = [])
       super(tx, ty, width, height)
-      @image = Image.new(@width, @height, COLOR[:background]).draw_border(false)
-      @btn_image =Image.new(@height - 4, @height - 4, COLOR[:base]).triangle_fill(7, 11, 3, 4, 11, 4, COLOR[:font]).draw_border(true) # 暫定
-      @active_image = Image.new(@width - 6, @height - 6, COLOR[:select])
       lx, ly = self.get_global_vertex
       @list = WSPullDownPopup.new(lx, ly + height, width, content, self)
-
+      @image = {}
+      refresh
+      
       self.add_key_handler(K_UP) do
         @list.selected -= 1
         unless WS.captured?(@list)
@@ -115,11 +114,20 @@ module WS
       end
     end
     
+    def refresh
+      @image.each{|image| image.dispose if image.disposed?}
+      
+      @btn_image =Image.new(@height - 4, @height - 4, COLOR[:base]).triangle_fill(7, 11, 3, 4, 11, 4, COLOR[:font]).draw_border(true) # 暫定
+      @active_image = Image.new(@width - @height - 2, @height - 6, COLOR[:select])
+      
+      @image[:usual] = Image.new(@width, @height, COLOR[:background]).draw_border(false)
+      @image[:usual].draw(2 + @width - @height, 2, @btn_image)
+      @image[:active] = @image[:usual].dup
+      @image[:active].draw(3, 3, @active_image)
+    end
+    
     def resize(width, height)
-      @image.dispose if @image
-      @image = @image.new(@width, @height, COLOR[:background]).draw_border(true)
-      @btn_image =Image.new(@height-4, @height-4, COLOR[:base]).triangle_fill(7, 11, 3, 4, 11, 4, COLOR[:font]).draw_border(true) # 暫定
-      @active_image = Image.new(@width - 6, @height - 6, COLOR[:select])
+      refresh
       lx, ly = self.get_global_vertex
       @list.x, @list.y = lx, ly + @height
       @list.resize(width, height)
@@ -151,15 +159,20 @@ module WS
       end
     end
     
-    def draw
-      self.image = @image
+    def render
+      self.image = @image[state] || @image[:usual]
       super
-
-      if self.activated?
-        self.target.draw(self.x + 3, self.y + 3, @active_image, self.z)
-      end
-      self.target.draw_font(self.x + 2, self.y + 2, item.to_s, @font, {:color => COLOR[:font],:z => self.z}) if self.item
-      self.target.draw(self.x + 2 + @width - @height, self.y + 2, @btn_image, self.z)
+    end
+    
+    def draw
+      super
+      draw_caption
+    end
+    
+    def draw_caption
+      if self.item
+        self.target.draw_font(self.x + 3, self.y + 3, item.to_s, @font, {:color => activated? ? COLOR[:font_reverse] : COLOR[:font],:z => self.z})
+      end 
     end
     
     def item

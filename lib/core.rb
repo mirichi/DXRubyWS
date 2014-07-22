@@ -255,10 +255,14 @@ module WS
     # :usual            通常状態
     # :disable          使用不可状態
     # :active           フォーカスを得ている
-    # :mouseover        マウスが乗っている
-    # :mouseover_active フォーカスを得ていてマウスが乗っている
     def state
-      :usual
+      if !@enabled
+        :disable    
+      elsif @active
+        :active
+      else
+        :usual
+      end
     end    
     
     # コントロールを読める文字にする

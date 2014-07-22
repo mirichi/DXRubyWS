@@ -43,7 +43,7 @@ module WS
     
   ### ■NumberInput ■ ###
   class WSNumberInput < WSContainer
-		
+    
 	  ### 公開インスタンス ###
     attr_accessor :min, :max, :small, :big
     attr_reader :value
@@ -152,7 +152,7 @@ module WS
     ### 描画 ###
     # リフレッシュするか？
     def refresh?
-      @refresh || c_numtext.active
+      @refresh || c_numtext.activated?
     end
     
     # 描画継続中か？

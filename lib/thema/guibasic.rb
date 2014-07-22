@@ -152,8 +152,11 @@ EOS
     
     # 更新
     def update
-      @count = (@count + 2) % 360
-      self.level = 0.5 + Math::sin((@count / 180.0) * Math::PI) / 2
+      if @running_time != Window.running_time
+        @running_time = Window.running_time
+        @count = (@count + 2) % 360
+        self.level = 0.5 + Math::sin((@count / 180.0) * Math::PI) / 2
+      end
     end
     
   end  
@@ -228,48 +231,69 @@ EOS
   
   
 
-  
-  ### ■コントロール■ ###
-  class WSControl
-    @@shader_mouse_over = Shader_MouseOver.new(COLOR[:mouse_over])
-    @@shader_active     = Shader_Active.new(COLOR[:mouse_over])
+  module ButtonGradation
+    @@shader_image      = RenderTarget.new(32, 32)
+    @@shader_button     = Shader_Button.new(COLOR[:button_high], COLOR[:button_low])
+    
+    def set_border(image, state=:usual, round=false)
+      w = self.width-1
+      h = self.height-1
+      image.line(0,0,w,0,COLOR[:border])
+           .line(0,h,w,h,COLOR[:border])
+           .line(0,0,0,h,COLOR[:border])
+           .line(w,0,w,h,COLOR[:border])
+      if state != :pushed
+        image.line(1,1,w-1,1,COLOR[:button_high])
+             .line(1,h-1,w-1,h-1,COLOR[:button_high])
+             .line(1,1,1,h-1,COLOR[:button_high])
+             .line(w-1,1,w-1,h-1,COLOR[:button_high])
+      end
+    end
+      
   end
   
-  
+  # フォーカスを受け取れるようにするモジュール
+  module Focusable
+    ### クラス変数 ###
+    @@shader_mouse_over = Shader_MouseOver.new(COLOR[:mouse_over])
+    @@shader_active     = Shader_Active.new(COLOR[:mouse_over])
+    
+    # シェーダーをセットする
+    def set_shader
+      if activated?
+        @@shader_active
+      elsif @mouse_over
+        @@shader_mouse_over
+      elsif
+        nil
+      end
+    end
+      
+    def update
+      super
+      @@shader_active.update if activated?
+    end
+    
+    # 画像の作成
+    def render
+      self.shader = set_shader
+      super
+    end
+    
+  end
     
   
   ### ■ボタン■ ###
   class WSButtonBase < WSControl
-    
-    ### クラス変数 ###
-    @@shader_button     = Shader_Button.new(COLOR[:button_high], COLOR[:button_low])
-    @@shader_image      = RenderTarget.new(32, 32)
-      
-    def state
-      if @pushed
-        :pushed
-      elsif !@enabled
-        :disable    
-      elsif @active
-        :active
-      else
-        :usual
-      end
-    end
+ 
+    include ButtonGradation   
     
     # set_imageで@image[true](押された絵)と@image[false](通常の絵)を設定する。
     # オーバーライドしてこのメソッドを再定義することでボタンの絵を変更することができる。
     def set_image
       # 画像を再作成する前にdisposeする
-      if @image.has_key?(:usual)
-        @image[:usual].dispose  unless @image[:usual].disposed? 
-        @image[:active].dispose unless @image[:active].disposed?
-        @image[:pushed].dispose unless @image[:pushed].disposed?
-      end
-      
-      w = width-1
-      h = height-1
-      
+      @image.each_value{|image| image.dispose if image.disposed?}
+ 
       @@shader_image.resize(width, height)
       
       # 通常時の画像を作成
@@ -288,127 +312,90 @@ EOS
       @image[:pushed].draw(1, 1, @image[:usual])
       set_border(@image[:pushed], :pushed)
 
-
       refreshed
-    end
-
-    def set_border(image, state=:usual, round=true)
-      w = self.width-1
-      h = self.height-1
-      image.line(0,0,w,0,COLOR[:border])
-           .line(0,h,w,h,COLOR[:border])
-           .line(0,0,0,h,COLOR[:border])
-           .line(w,0,w,h,COLOR[:border])
-      if state != :pushed
-        image.line(1,1,w-1,1,COLOR[:button_high])
-             .line(1,h-1,w-1,h-1,COLOR[:button_high])
-             .line(1,1,1,h-1,COLOR[:button_high])
-             .line(w-1,1,w-1,h-1,COLOR[:button_high])
-      end
-      if round
-        image.line(0,2,2,0,COLOR[:border])
-             .line(0,h-2,2,h,COLOR[:border])
-             .line(w-2,0,w,2,COLOR[:border])
-             .line(w-2,h,w,h-2,COLOR[:border])
-        image[0,0] = [0,0,0,0]
-        image[w,0] = [0,0,0,0]
-        image[0,h] = [0,0,0,0]
-        image[w,h] = [0,0,0,0]
-      end
-    end
-    
-    # シェーダーをセットする
-    def set_shader
-      if activated?
-        @@shader_active.update
-        @@shader_active
-      elsif @mouse_over
-        @@shader_mouse_over
-      elsif
-        nil
-      end
-    end
-    
-    # 画像のレンダリング
-    def render
-      set_image if refresh?
-      self.shader = set_shader
-      self.image = @image[self.state]
     end
 
     # 画像の描画
     def draw
       super
     end
+    
   end
-
-
+  
+  # 普通のボタン
+  class WSButton
+    # 境界線を丸める
+    def set_border(image, state=:usual)
+      w = self.width-1
+      h = self.height-1
+      super(image, state)
+      image.line(0,2,2,0,COLOR[:border])
+           .line(0,h-2,2,h,COLOR[:border])
+           .line(w-2,0,w,2,COLOR[:border])
+           .line(w-2,h,w,h-2,COLOR[:border])
+      image[0,0] = [0,0,0,0]
+      image[w,0] = [0,0,0,0]
+      image[0,h] = [0,0,0,0]
+      image[w,h] = [0,0,0,0]
+    end
+  end  
+  
+  
   
 
   ### ■チェックボックス■ ###
   class WSCheckBox
     
-    BIN_TRUE = "iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOBAMAAADtZjDiAAAAMFBMVEUAAABH
-                OjpZYnV8dX6ssrfO0djW3eHe6Or6/PgAAAAAAAAAAAAAAAAAAAAAAAAAAABK
-                +yyIAAAASUlEQVR4nGNQggAGjQ4QaGLQcAEBIO0aGhpqAqGDRSG0oRmYDhZM
-                A9GmhsJgWlhQvAxEGwqal4LoQOHyVJA5rmmpoU1wc6H2AAApZhx9AHeA0gAA
-                AABJRU5ErkJggg=="
-
+    ### 画像キャッシュの作成
+    IMG_CACHE[:checkbox_true] = Image.load_from_file_in_memory("iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOBAMAAADtZjDiAAAAMFBMVEUAAABHOjpZYnV8dX6ssrfO0djW3eHe6Or6/PgAAAAAAAAAAAAAAAAAAAAAAAAAAABK+yyIAAAASUlEQVR4nGNQggAGjQ4QaGLQcAEBIO0aGhpqAqGDRSG0oRmYDhZMA9GmhsJgWlhQvAxEGwqal4LoQOHyVJA5rmmpoU1wc6H2AAApZhx9AHeA0gAAAABJRU5ErkJggg==".unpack('m')[0])
+    IMG_CACHE[:checkbox_false] = Image.load_from_file_in_memory("iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOBAMAAADtZjDiAAAAMFBMVEXV78pZYnWssrfO0djW3eHe6Orn9PT6/PgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA6pDB0AAAAAXRSTlMAQObYZgAAAEFJREFUeJxjEIQABvFyEChkEFcCASCtbGxsbAShXZzBtIuLC4g2gdGuoWDaJSwtBEoHQ8VB6pWUXZyNC+HmQu0BAOTcFzeyvHAbAAAAAElFTkSuQmCC".unpack('m')[0])
     
-    BIN_FALSE = "iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOBAMAAADtZjDiAAAAMFBMVEXV78pZ
-                YnWssrfO0djW3eHe6Orn9PT6/PgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA6
-                pDB0AAAAAXRSTlMAQObYZgAAAEFJREFUeJxjEIQABvFyEChkEFcCASCtbGxs
-                bAShXZzBtIuLC4g2gdGuoWDaJSwtBEoHQ8VB6pWUXZyNC+HmQu0BAOTcFzey
-                vHAbAAAAAElFTkSuQmCC"
-
-
-    
-    ### チェックボックス画像(true) ###
+    # チェックボックス画像(true)
     def image_checkbox_true
-      unless IMG_CACHE[:checkbox_true]
-        IMG_CACHE[:checkbox_true] = Image.load_from_file_in_memory(BIN_TRUE.unpack('m')[0])
-      end
       IMG_CACHE[:checkbox_true]
     end
         
-    ### チェックボックス画像(false) ###
+    # チェックボックス画像(false)
     def image_checkbox_false
-      unless IMG_CACHE[:checkbox_false]
-      IMG_CACHE[:checkbox_false] = Image.load_from_file_in_memory(BIN_FALSE.unpack('m')[0])
-      end
       IMG_CACHE[:checkbox_false]
     end
   
-    # シェーダーをセットする
-    def set_shader
-      if activated?
-        @@shader_active.update
-        @@shader_active
-      elsif @mouse_over
-        @@shader_mouse_over
-      elsif
-        nil
-      end
-    end
-    
-    # 画像のレンダリング
-    def render
-      refresh if refresh?
-      self.shader = set_shader
-    end
-    
     # 描画
     def draw
       super
-      if self.activated?
-        tmp = @font.get_width(@caption)
-        self.target.draw_line(self.x + 18, self.y - 2, self.x + tmp + 20, self.y - 2, C_BLACK)
-        self.target.draw_line(self.x + 18, self.y - 2, self.x + 18, self.y + @font.size + 2, C_BLACK)
-        self.target.draw_line(self.x + tmp + 20, self.y - 2, self.x + tmp + 20, self.y + @font.size + 2, C_BLACK)
-        self.target.draw_line(self.x + 18, self.y + @font.size + 2, self.x + tmp + 20, self.y + @font.size + 2, C_BLACK)
-      end
     end
   end  
+  
+ 
+
+  ### ■プルダウンリスト■ ###
+  class WSPullDownList  
+
+    include ButtonGradation
+    
+    def refresh
+      @image.each_value{|image| image.dispose if image.disposed?}
+       
+      @@shader_image.resize(width, height)
+      
+      # 通常時の画像を作成
+      tx = self.width - 8
+      ty = self.height / 2 + 3
+      @image[:usual] = @@shader_image.draw_shader(0,0,@@shader_image, @@shader_button)
+                                     .to_image
+                                     .triangle_fill(tx, ty, tx-3, ty-6, tx+3, ty-6, COLOR[:font])
+      set_border(@image[:usual])
+ 
+      refreshed            
+    end
+
+    def draw_caption
+      self.target.draw_font(self.x + 3, self.y + 3, item.to_s, @font, {:color => COLOR[:font],:z => self.z}) if self.item
+    end
+    
+  end
+  
+  
   
   
 end

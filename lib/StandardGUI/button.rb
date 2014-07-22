@@ -12,7 +12,7 @@ module WS
       @fore_color = COLOR[:font]
 
       # 画像を作成する
-      set_image
+      refresh
     end
     
     # キャプションの設定
@@ -23,28 +23,21 @@ module WS
     
     # コントロールの状態を判定しシンボルを返す
     def state
-      if @pushed
-        :pushed
-      else  
-        super
-      end
+      @pushed ? :pushed : super
     end
     
     # オートレイアウトなどでサイズが変更されたときに呼ばれる
     def resize(width, height)
       super
       # 画像を作成する
-      set_image
+      refresh
     end
      
     # set_imageで@image[true](押された絵)と@image[false](通常の絵)を設定する。
     # オーバーライドしてこのメソッドを再定義することでボタンの絵を変更することができる。
     def set_image
       # 画像を再作成する前にdisposeする
-      if @image.has_key?(:usual)
-        @image[:usual].dispose
-        @image[:pushed].dispose
-      end
+      @image.each_value{|image| image.dispose if image.disposed?}
       
       # 通常時の画像を作成
       @image[:usual] = Image.new(@width, @height, COLOR[:base]).draw_border(true)
@@ -66,13 +59,16 @@ module WS
 
     def render
       set_image if refresh?
-      self.image = @image[state]
+      change_image
     end
 
+    def change_image
+      self.image = @image[state] || @image[:usual]
+    end
+    
     def draw
       super
-      return unless self.image
-      if self.activated?
+      if self.image && self.activated?
         self.target.draw_line(self.x - 1, self.y - 1, self.x + @width, self.y - 1, C_BLACK)
         self.target.draw_line(self.x - 1, self.y - 1, self.x - 1, self.y + @height, C_BLACK)
         self.target.draw_line(self.x + @width, self.y - 1, self.x + @width, self.y + @height, C_BLACK)

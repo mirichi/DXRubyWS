@@ -140,6 +140,7 @@ module WS
     
     def render
       refresh if refresh?
+      super
     end
     
     def draw
