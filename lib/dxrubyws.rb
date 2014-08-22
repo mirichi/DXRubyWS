@@ -42,26 +42,19 @@ module WS
       # キーイベント
       push_keys = Input::IME.push_keys
       release_keys = Input::IME.release_keys
-      if @system_focus # システムフォーカスにキーイベントを送信
-        push_keys.each do |key| # 押した
-          @system_focus.on_key_push(key)
-        end
-        release_keys.each do |key| # 離した
-          @system_focus.on_key_release(key)
-        end
-      else # システムフォーカスが無い場合はデスクトップに送っとく
-        push_keys.each do |key|
-          self.on_key_push(key)
-        end
-        release_keys.each do |key|
-          self.on_key_release(key)
-        end
+
+      sys_focus = @system_focus || self
+      push_keys.each do |key|
+        sys_focus.on_key_push(key)
+      end
+      release_keys.each do |key|
+        sys_focus.on_key_release(key)
       end
 
       # 文字列イベント
       str = Input::IME.get_string.encode("UTF-8")
       if str.length > 0
-        @system_focus.on_string(str)
+        sys_focus.on_string(str)
       end
 
       oldx, oldy = @cursor_x, @cursor_y
