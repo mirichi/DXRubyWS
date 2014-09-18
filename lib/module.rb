@@ -359,4 +359,119 @@ module WS
       super
     end
   end
+  
+  module HoverTextDisplayable
+    
+    #表示するテキストのクラス
+    class HoverText < WSControl
+      def initialize(text, font = nil, max_width = nil)
+        super(0,0,0,0) #取り敢えず生成
+        
+        @old_text = text
+        txt = text.gsub($/, "") #改行は不可能
+        @font = font if font
+        @max_width = max_width
+        
+        @text = []
+        width = 0
+        sum = 0
+        length = txt.length
+        
+        until sum == length
+          new_added = txt.within(@font, max_width)
+          new_added = txt[0] if new_added.empty?
+          @text << new_added
+          txt = txt[(new_length = new_added.length)..-1]
+          sum += new_length
+          width = [width, @font.get_width(new_added)].max
+        end
+        
+        self.width = width + 4
+        self.height = @text.size * @font.size + 4
+        
+        self.image = Image.new(self.width, self.height, COLOR[:background])
+                  .box(0,0,self.width-1,self.height-1,COLOR[:border])
+        @text.each_with_index do |v, i|
+          self.image.draw_font(2, i * @font.size + 2, v, @font, COLOR[:font])
+        end
+        
+        @show = false
+      end
+      
+      def text
+        @text.join($/)
+      end
+      def text=(v)
+        self.__send__(:initialize, v, @font, @max_width)
+        v
+      end
+      
+      def font
+        @font
+      end
+      def font=(v)
+        self.__send__(:initialize, @old_text, v, @max_width)
+        v
+      end
+      
+      def max_width
+        @max_width
+      end
+      def max_width=(v)
+        self.__send__(:initialize, @old_text, @font, v)
+        v
+      end
+      
+      def show(x, y)
+        return if @show
+        self.x = x
+        self.y = y
+        WS.desktop.add_control(self)
+        @show = true
+      end
+      
+      def hide
+        return unless @show
+        WS.desktop.remove_control(self)
+        self.vanish
+        @show = false
+      end
+    end
+    
+    def initialize(*args)
+      super
+      @hovertext_wait = 30
+      @hovertext_frame = 120
+      @hovertext = "default hovertext"
+      @hovertext_frame_count = 0
+    end
+    
+    def update
+      super
+      if @mouse_over
+        if @hovertext_frame_count >= @hovertext_wait
+          unless @hovertext_frame
+            @hovertext_control ||= HoverText.new(@hovertext, @font, @max_width)
+            @hovertext_control.show(Input.mousePosX + 1, Input.mousePosY + 1)
+          else
+            if @hovertext_frame_count < @hovertext_wait + @hovertext_frame
+              @hovertext_control ||= HoverText.new(@hovertext, @font, @max_width)
+              @hovertext_control.show(Input.mousePosX + 1, Input.mousePosY + 1)
+            else
+              @hovertext_control.hide
+            end
+          end
+        end
+        
+        @hovertext_frame_count += 1
+        
+      else
+        if @hovertext_control
+          @hovertext_control.hide
+          @hovertext_control = nil
+        end
+        @hovertext_frame_count = 0
+      end
+    end
+  end
 end
