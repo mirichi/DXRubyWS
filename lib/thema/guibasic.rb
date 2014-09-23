@@ -347,6 +347,10 @@ EOS
       def initialize(text, font = nil, max_width = nil)
         super(0,0,0,0) #取り敢えず生成
         
+        set_hover_text(text, font, max_width)
+      end
+      
+      def set_hover_text(text, font, max_width)
         @old_text = text
         txt = text.gsub($/, "") #改行は不可能
         @font = font if font
@@ -370,7 +374,7 @@ EOS
         self.height = @text.size * @font.size + 4
         
         self.image = Image.new(self.width, self.height, COLOR[:background])
-                  .box(0,0,self.width-1,self.height-1,COLOR[:border])
+                     .box(0,0,self.width-1,self.height-1,COLOR[:border])
         @text.each_with_index do |v, i|
           self.image.draw_font(2, i * @font.size + 2, v, @font, COLOR[:font])
         end
@@ -382,7 +386,7 @@ EOS
         @text.join($/)
       end
       def text=(v)
-        self.__send__(:initialize, v, @font, @max_width)
+        set_hover_text(v, @font, @max_width)
         v
       end
       
@@ -390,7 +394,7 @@ EOS
         @font
       end
       def font=(v)
-        self.__send__(:initialize, @old_text, v, @max_width)
+        set_hover_text(@old_text, v, @max_width)
         v
       end
       
@@ -398,7 +402,7 @@ EOS
         @max_width
       end
       def max_width=(v)
-        self.__send__(:initialize, @old_text, @font, v)
+        set_hover_text(@old_text, @font, v)
         v
       end
       
@@ -497,7 +501,7 @@ EOS
 
     def set_image
       # 画像を再作成する前にdisposeする
-      if @image.has_key?(true)
+      if @image.has_key?(:usual)
         @image[:usual].dispose
         @image[:active].dispose
         @image[:pushed].dispose
@@ -511,6 +515,9 @@ EOS
       # 通常時の画像を作成
       @image[:usual] = Image.new(@width, @height).draw((@width - @origin.width) / 2, (@height - @origin.height) / 2, @origin)
       set_border(@image[:usual])
+      
+      @image[:active] = @image[:usual].dup
+      
       # 押下時の画像を作成
       @image[:pushed] = Image.new(@width, @height).draw((@width - @origin.width) / 2, (@height - @origin.height) / 2, @origin)
       set_border(@image[:pushed], :pushed)
