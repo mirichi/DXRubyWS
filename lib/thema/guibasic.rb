@@ -488,9 +488,7 @@ EOS
   end
   
   # 画像ボタン
-  class WSImageButton < WSButtonBase
-    include Focusable
-    include ButtonClickable
+  class WSImageButton < WSButton
     include HoverTextDisplayable
 
     def initialize(tx, ty, image, width = image.width, height = image.height, caption = "")
@@ -523,19 +521,6 @@ EOS
       set_border(@image[:pushed], :pushed)
       
       refreshed
-    end
-
-    def on_key_push(key)
-      if key == K_SPACE
-        @image_flag = true
-      end
-    end
-
-    def on_key_release(key)
-      if key == K_SPACE
-        @image_flag = false
-        on_click(0, 0)
-      end
     end
   end
   
