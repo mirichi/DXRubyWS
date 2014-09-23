@@ -376,7 +376,7 @@ EOS
         self.image = Image.new(self.width, self.height, COLOR[:background])
                      .box(0,0,self.width-1,self.height-1,COLOR[:border])
         @text.each_with_index do |v, i|
-          self.image.draw_font(2, i * @font.size + 2, v, @font, COLOR[:font])
+          self.image.draw_font_ex(2, i * @font.size + 2, v, @font, color: COLOR[:font], aa: false)
         end
         
         @show = false
