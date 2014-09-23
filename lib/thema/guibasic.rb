@@ -340,7 +340,189 @@ EOS
     end
   end  
   
+  module HoverTextDisplayable
+    
+    #表示するテキストのクラス
+    class HoverText < WSControl
+      def initialize(text, font = nil, max_width = nil)
+        super(0,0,0,0) #取り敢えず生成
+        
+        set_hover_text(text, font, max_width)
+      end
+      
+      def set_hover_text(text, font, max_width)
+        @old_text = text
+        txt = text.gsub($/, "") #改行は不可能
+        @font = font if font
+        @max_width = max_width
+        
+        @text = []
+        width = 0
+        sum = 0
+        length = txt.length
+        
+        until sum == length
+          new_added = (max_width ? txt.within(@font, max_width) : txt)
+          new_added = txt[0] if new_added.empty?
+          @text << new_added
+          txt = txt[(new_length = new_added.length)..-1]
+          sum += new_length
+          width = [width, @font.get_width(new_added)].max
+        end
+        
+        self.width = width + 4
+        self.height = @text.size * @font.size + 4
+        
+        self.image = Image.new(self.width, self.height, COLOR[:background])
+                     .box(0,0,self.width-1,self.height-1,COLOR[:border])
+        @text.each_with_index do |v, i|
+          self.image.draw_font_ex(2, i * @font.size + 2, v, @font, color: COLOR[:font], aa: false)
+        end
+        
+        @show = false
+      end
+      
+      def text
+        @text.join($/)
+      end
+      def text=(v)
+        set_hover_text(v, @font, @max_width)
+        v
+      end
+      
+      def font
+        @font
+      end
+      def font=(v)
+        set_hover_text(@old_text, v, @max_width)
+        v
+      end
+      
+      def max_width
+        @max_width
+      end
+      def max_width=(v)
+        set_hover_text(@old_text, @font, v)
+        v
+      end
+      
+      def show(x, y)
+        return if @show
+        self.x = x
+        self.y = y
+        WS.desktop.add_control(self)
+        @show = true
+      end
+      
+      def hide
+        return unless @show
+        WS.desktop.remove_control(self)
+        self.vanish
+        @show = false
+      end
+    end
+    
+    def initialize(*args)
+      super
+      @hovertext_wait = 30
+      @hovertext_frame = 120
+      @hovertext = "default hovertext"
+      @hovertext_frame_count = 0
+      @hovertext_max_width = nil
+    end
+    
+    def update
+      super
+      if @mouse_over
+        if @hovertext_frame_count >= @hovertext_wait
+          unless @hovertext_frame
+            @hovertext_control ||= HoverText.new(@hovertext, @font, @hovertext_max_width)
+            @hovertext_control.show(Input.mousePosX + 1, Input.mousePosY + 1)
+          else
+            if @hovertext_frame_count < @hovertext_wait + @hovertext_frame
+              @hovertext_control ||= HoverText.new(@hovertext, @font, @hovertext_max_width)
+              @hovertext_control.show(Input.mousePosX + 1, Input.mousePosY + 1)
+            else
+              @hovertext_control.hide
+            end
+          end
+        end
+        
+        @hovertext_frame_count += 1
+        
+      else
+        if @hovertext_control
+          @hovertext_control.hide
+          @hovertext_control = nil
+        end
+        @hovertext_frame_count = 0
+      end
+    end
+    
+    def hover_text
+      @hovertext_control ? @hovertext_control.text : @hovertext
+    end
+    def hover_text=(v)
+      @hovertext = v
+      if @hovertext_control
+        @hovertext_control.text = v
+      end
+    end
+    
+    def font=(v)
+      super
+      if @hovertext_control
+        @hovertext_control.font = v
+      end
+    end
+    
+    def hover_text_max_width
+      @hovertext_max_width
+    end
+    def hover_text_max_width=(v)
+      @hovertext_max_width = v
+      if @hovertext_control
+        @hovertext_control.max_width = v
+      end
+    end
+  end
   
+  # 画像ボタン
+  class WSImageButton < WSButton
+    include HoverTextDisplayable
+
+    def initialize(tx, ty, image, width = image.width, height = image.height, caption = "")
+      @origin = image
+      super(tx, ty, width, height, caption)
+      self.hover_text = caption
+    end
+
+    def set_image
+      # 画像を再作成する前にdisposeする
+      if @image.has_key?(:usual)
+        @image[:usual].dispose
+        @image[:active].dispose
+        @image[:pushed].dispose
+      end
+      
+      w = width-1
+      h = height-1
+      
+      @@shader_image.resize(width, height)
+      
+      # 通常時の画像を作成
+      @image[:usual] = Image.new(@width, @height).draw((@width - @origin.width) / 2, (@height - @origin.height) / 2, @origin)
+      set_border(@image[:usual])
+      
+      @image[:active] = @image[:usual].dup
+      
+      # 押下時の画像を作成
+      @image[:pushed] = Image.new(@width, @height).draw((@width - @origin.width) / 2, (@height - @origin.height) / 2, @origin)
+      set_border(@image[:pushed], :pushed)
+      
+      refreshed
+    end
+  end
   
 
   ### ■チェックボックス■ ###
