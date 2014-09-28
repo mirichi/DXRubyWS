@@ -217,7 +217,7 @@ module WS
   def self.default_z=(v);@@default_z=v;end
   
   @@theme = []
-  def self.theme;@@theme;end
+  def self.theme;@@theme.dup;end
   def self.theme=(v)
     directory = File.dirname(__FILE__) + '/theme/'
     unless (ary = Dir[directory + v.to_s + "{,\.rb}"]).empty?
