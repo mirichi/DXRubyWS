@@ -215,6 +215,21 @@ module WS
   @@default_z = 10000
   def self.default_z;@@default_z;end
   def self.default_z=(v);@@default_z=v;end
+  
+  @@theme = []
+  def self.theme;@@theme;end
+  def self.theme=(v)
+    directory = File.dirname(__FILE__) + '/theme/'
+    unless (ary = Dir[directory + v.to_s + "{,\.rb}"]).empty?
+      ary.each do |path|
+        next if @@theme.include?(theme_name = path.gsub(directory, ""))
+        @@theme << theme_name
+        require path
+      end
+    end
+    
+    v
+  end
 end
 
 # デスクトップのサイズ＆衝突判定範囲はWindow.width=/height=で書き換える
