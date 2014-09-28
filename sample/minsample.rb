@@ -147,7 +147,8 @@ class Test < WS::WSWindow
     super(100, 300, 300, 200, "LayoutTest")
 
     b1 = WS::WSButton.new(0, 0, 100, 20, "btn1")
-    b2 = WS::WSButton.new(0, 0, 100, 20, "btn2")
+#    b2 = WS::WSButton.new(0, 0, 100, 20, "btn2")
+    b2 = WS::WSImageButton.new(0, 0, Image.load('./image/enemyshot2.png'), 100, 20, "btn2")
     self.client.add_control(b1)
     self.client.add_control(b2)
 

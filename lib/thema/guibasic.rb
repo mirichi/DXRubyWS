@@ -339,10 +339,9 @@ EOS
       image[w,h] = [0,0,0,0]
     end
   end  
-  
-  
-  
 
+  
+  
   ### ■チェックボックス■ ###
   class WSCheckBox
     
@@ -365,9 +364,9 @@ EOS
       super
     end
   end  
-  
- 
 
+  
+  
   ### ■プルダウンリスト■ ###
   class WSPullDownList  
 

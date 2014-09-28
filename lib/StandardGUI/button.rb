@@ -96,6 +96,46 @@ module WS
     end
   end
 
+  # 画像ボタン
+  class WSImageButton < WSButton
+    include HoverTextDisplayable
+
+    def initialize(tx, ty, image, width = image.width, height = image.height, caption = "")
+      @origin = image
+      super(tx, ty, width, height, caption)
+      self.hover_text = caption
+    end
+
+    def set_image
+      # 画像を再作成する前にdisposeする
+      if @image.has_key?(:usual)
+        @image[:usual].dispose
+        @image[:active].dispose
+        @image[:pushed].dispose
+      end
+      
+      w = width-1
+      h = height-1
+      
+      @@shader_image.resize(width, height)
+      
+      # 通常時の画像を作成
+      @image[:usual] = Image.new(@width, @height).draw((@width - @origin.width) / 2, (@height - @origin.height) / 2, @origin)
+      set_border(@image[:usual])
+      
+      @image[:active] = @image[:usual].dup
+      
+      # 押下時の画像を作成
+      @image[:pushed] = Image.new(@width, @height).draw((@width - @origin.width) / 2, (@height - @origin.height) / 2, @origin)
+      set_border(@image[:pushed], :pushed)
+      
+      refreshed
+    end
+  end
+  
+
+  
+  
   # スピンボタン
   class WSSpinButton < WSButtonBase
     include Focusable
