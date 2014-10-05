@@ -2,6 +2,8 @@
 require 'dxruby'
 require_relative './core'
 require_relative './module'
+require_relative './standardgui'
+require_relative './fontcache'
 
 # ウィンドウシステム
 module WS
@@ -215,6 +217,31 @@ module WS
   @@default_z = 10000
   def self.default_z;@@default_z;end
   def self.default_z=(v);@@default_z=v;end
+  
+  @@theme = nil
+  def self.theme;@@theme;end
+  def self.set_theme(v)
+    Dir.chdir(File.dirname(__FILE__) + '/theme/') do
+      unless (ary = Dir[v.to_s + "{,\.rb}"]).empty?
+        @@theme ||= []
+        ary.each do |path|
+          next if @@theme.include?(path)
+          @@theme << path
+          if File.directory?(path)
+            Dir.chdir(path) do
+              Dir["**/*\.rb"].each do |file|
+                require File.expand_path(file)
+              end
+            end
+          else
+            require File.expand_path(path)
+          end
+        end
+      end
+    end
+    
+    v
+  end
 end
 
 # デスクトップのサイズ＆衝突判定範囲はWindow.width=/height=で書き換える
