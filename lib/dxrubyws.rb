@@ -2,6 +2,8 @@
 require 'dxruby'
 require_relative './core'
 require_relative './module'
+require_relative './standardgui'
+require_relative './fontcache'
 
 # ウィンドウシステム
 module WS
@@ -216,15 +218,25 @@ module WS
   def self.default_z;@@default_z;end
   def self.default_z=(v);@@default_z=v;end
   
-  @@theme = []
-  def self.theme;@@theme.dup;end
-  def self.theme=(v)
-    directory = File.dirname(__FILE__) + '/theme/'
-    unless (ary = Dir[directory + v.to_s + "{,\.rb}"]).empty?
-      ary.each do |path|
-        next if @@theme.include?(theme_name = path.gsub(directory, ""))
-        @@theme << theme_name
-        require path
+  @@theme = nil
+  def self.theme;@@theme;end
+  def self.set_theme(v)
+    Dir.chdir(File.dirname(__FILE__) + '/theme/') do
+      unless (ary = Dir[v.to_s + "{,\.rb}"]).empty?
+        @@theme ||= []
+        ary.each do |path|
+          next if @@theme.include?(path)
+          @@theme << path
+          if File.directory?(path)
+            Dir.chdir(path) do
+              Dir["**/*\.rb"].each do |file|
+                require File.expand_path(file)
+              end
+            end
+          else
+            require File.expand_path(path)
+          end
+        end
       end
     end
     
