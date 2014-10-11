@@ -219,7 +219,7 @@ module WS
   
   def self.set_theme(v)
     Dir[File.dirname(__FILE__) + '/theme/' + v + "/**/*.rb"].each do |path|
-      require_relative path
+      require path
     end
     v
   end
