@@ -2,6 +2,7 @@
 require 'dxruby'
 require_relative './core'
 require_relative './module'
+require_relative './fontcache'
 
 # ウィンドウシステム
 module WS
@@ -215,6 +216,13 @@ module WS
   @@default_z = 10000
   def self.default_z;@@default_z;end
   def self.default_z=(v);@@default_z=v;end
+  
+  def self.set_theme(v)
+    Dir[File.dirname(__FILE__) + '/theme/' + v + "/**/*.rb"].each do |path|
+      require_relative path
+    end
+    v
+  end
 end
 
 # デスクトップのサイズ＆衝突判定範囲はWindow.width=/height=で書き換える
