@@ -3,7 +3,7 @@ require 'dxruby'
 require_relative '../lib/dxrubyws'
 require_relative '../lib/standardgui'
 
-WS.set_theme("guibasic")
+#WS.set_theme("guibasic")
 
 Window.width, Window.height = 1280, 720 # ワイド画面化
 

@@ -113,20 +113,10 @@ module WS
       @image.each_value{|image| image.dispose if image.disposed?}
       
       # 通常時の画像を作成
-      @image[:usual] = Image.new(@width, @height, COLOR[:base]).draw_border(true)
+      @image[:usual] = Image.new(@width, @height).draw((@width - @origin.width) / 2, (@height - @origin.height) / 2, @origin).draw_border(true)
       # 押下時の画像を作成
-      @image[:pushed] = Image.new(@width, @height, COLOR[:base]).draw_border(false)
-      # キャプションの描画
-      if @caption.length > 0
-        width = @font.get_width(@caption)
-        @image[:usual].draw_font_ex(@width / 2 - width / 2 ,
-                             @height / 2 - @font.size / 2 ,
-                             @caption, @font, {:color => @fore_color, :aa => false})
-      
-        @image[:pushed].draw_font_ex(@width / 2 - width / 2 + 1,
-                             @height / 2 - @font.size / 2 + 1,
-                             @caption, @font, {:color => @fore_color, :aa => false})
-      end
+      @image[:pushed] = Image.new(@width, @height).draw((@width - @origin.width) / 2, (@height - @origin.height) / 2, @origin).draw_border(false)
+
       refreshed
     end
     

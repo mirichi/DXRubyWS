@@ -3,6 +3,7 @@ module WS
   ### 色定数 ###
   COLOR = {}
   COLOR[:base] = [190, 190, 190]         # ウィンドウやボタン等の基本色
+  COLOR[:border] = [80, 80, 80]          # 外枠の色
   COLOR[:shadow] = [120,120,120]         # 影
   COLOR[:darkshadow] = [80,80,80]        # 濃い影
   COLOR[:light] = [220,220,220]          # 明るい
