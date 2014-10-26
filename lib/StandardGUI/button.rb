@@ -106,31 +106,30 @@ module WS
       self.hover_text = caption
     end
 
+    # set_imageで@image[true](押された絵)と@image[false](通常の絵)を設定する。
+    # オーバーライドしてこのメソッドを再定義することでボタンの絵を変更することができる。
     def set_image
       # 画像を再作成する前にdisposeする
-      if @image.has_key?(:usual)
-        @image[:usual].dispose
-        @image[:active].dispose
-        @image[:pushed].dispose
-      end
-      
-      w = width-1
-      h = height-1
-      
-      @@shader_image.resize(width, height)
+      @image.each_value{|image| image.dispose if image.disposed?}
       
       # 通常時の画像を作成
-      @image[:usual] = Image.new(@width, @height).draw((@width - @origin.width) / 2, (@height - @origin.height) / 2, @origin)
-      set_border(@image[:usual])
-      
-      @image[:active] = @image[:usual].dup
-      
+      @image[:usual] = Image.new(@width, @height, COLOR[:base]).draw_border(true)
       # 押下時の画像を作成
-      @image[:pushed] = Image.new(@width, @height).draw((@width - @origin.width) / 2, (@height - @origin.height) / 2, @origin)
-      set_border(@image[:pushed], :pushed)
+      @image[:pushed] = Image.new(@width, @height, COLOR[:base]).draw_border(false)
+      # キャプションの描画
+      if @caption.length > 0
+        width = @font.get_width(@caption)
+        @image[:usual].draw_font_ex(@width / 2 - width / 2 ,
+                             @height / 2 - @font.size / 2 ,
+                             @caption, @font, {:color => @fore_color, :aa => false})
       
+        @image[:pushed].draw_font_ex(@width / 2 - width / 2 + 1,
+                             @height / 2 - @font.size / 2 + 1,
+                             @caption, @font, {:color => @fore_color, :aa => false})
+      end
       refreshed
     end
+    
   end
   
 
