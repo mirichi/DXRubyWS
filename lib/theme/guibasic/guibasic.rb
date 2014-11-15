@@ -338,8 +338,41 @@ EOS
       image[0,h] = [0,0,0,0]
       image[w,h] = [0,0,0,0]
     end
-  end  
 
+  end    
+   
+    
+    
+  # 画像ボタン
+  class WSImageButton
+
+    def set_image
+      # 画像を再作成する前にdisposeする
+      if @image.has_key?(:usual)
+        @image[:usual].dispose
+        @image[:active].dispose
+        @image[:pushed].dispose
+      end
+      
+      w = width-1
+      h = height-1
+           
+      @@shader_image.resize(width, height)
+      
+      # 通常時の画像を作成
+      @image[:usual] = Image.new(@width, @height).draw((@width - @origin.width) / 2, (@height - @origin.height) / 2, @origin)
+      set_border(@image[:usual])
+       
+      @image[:active] = @image[:usual].dup
+      
+      # 押下時の画像を作成
+      @image[:pushed] = Image.new(@width, @height).draw((@width - @origin.width) / 2, (@height - @origin.height) / 2, @origin)
+      set_border(@image[:pushed], :pushed)
+     
+      refreshed
+    end    
+  
+  end
   
   
   ### ■チェックボックス■ ###
@@ -363,7 +396,9 @@ EOS
     def draw
       super
     end
+    
   end  
+
 
   
   
