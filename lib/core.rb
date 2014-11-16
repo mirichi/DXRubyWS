@@ -319,8 +319,8 @@ module WS
   class WSContainerBase < WSControl
     attr_accessor :childlen
 
-    def initialize(tx, ty, width, height)
-      super(tx, ty, width, height)
+    def initialize(tx=nil, ty=nil, width=nil, height=nil)
+      super
       @childlen = []
       @layout = nil
     end
@@ -377,7 +377,7 @@ module WS
     # オートレイアウト設定開始
     def layout(type=nil, &b)
       @layout = WSLayout.new(type, self, self, &b)
-      @layout.auto_layout
+      @layout.auto_layout if self.width and self.height
     end
 
     # サイズの変更でRenderTargetをresizeし、オートレイアウトを起動する
@@ -486,8 +486,10 @@ module WS
   class WSContainer < WSContainerBase
     attr_accessor :childlen
 
-    def initialize(tx, ty, width, height)
-      super(tx, ty, width, height)
+    def initialize(tx=nil, ty=nil, width=nil, height=nil)
+      super
+      width ||= 16 # サイズ省略時は適当なサイズにしておく
+      height ||=16
       self.image = RenderTarget.new(width, height) # ContainerはRenderTargetを持つ
     end
 

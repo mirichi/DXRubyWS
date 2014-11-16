@@ -54,13 +54,13 @@ module WS
         self.image.bgcolor = [0, 0, 160]
   
         # タイトルバーのクロースボタン
-        close_button = WSWindowCloseButton.new(0, 0, height-2, height-2, "")
+        close_button = WSWindowCloseButton.new(nil, nil, height-2, height-2, "")
         close_button.fore_color = COLOR[:font]
         add_control(close_button)
         close_button.add_handler(:click) {signal(:close)}
   
         # ウィンドウタイトル
-        label = WSLabel.new(0, 0, width, height, title)
+        label = WSLabel.new(nil, nil, nil, height, title)
         label.fore_color = C_WHITE
         label.font = Font.new(14, nil, :weight=>true)
         add_control(label)
@@ -73,7 +73,7 @@ module WS
         layout(:hbox) do
           self.margin_top = self.margin_right = 1
           self.margin_left = 2
-          add label, true
+          add label
           add close_button
         end
       end
@@ -93,7 +93,7 @@ module WS
 
       # ウィンドウタイトルはそれでひとつのコントロールを作る
       # メニューやツールバー、ステータスバーもたぶんそうなる
-      window_title = WSWindowTitle.new(0, 0, sx - @border_width * 2, 16, caption)
+      window_title = WSWindowTitle.new(nil, nil, nil, 16, caption)
       add_control(window_title, :window_title)
       window_title.add_handler(:close) {self.close}
       window_title.add_handler(:drag_move, self.method(:on_drag_move))
@@ -103,15 +103,15 @@ module WS
       window_title.add_handler(:doubleclick, self.method(:on_maximize))
 
       # クライアント領域は単純なコンテナである
-      client = WSWindowClient.new(0, 0, sx - @border_width * 2, sy - @border_width * 2 - 16)
+      client = WSWindowClient.new
       add_control(client, :client)
 
       # オートレイアウトでコントロールの位置を決める
       # Layout#objで元のコンテナを参照できる
       layout(:vbox) do
         self.margin_top = self.margin_left = self.margin_right = self.margin_bottom = self.obj.border_width
-        add window_title, true
-        add self.obj.client, true, true
+        add window_title
+        add self.obj.client
       end
 
       # Escで閉じる
