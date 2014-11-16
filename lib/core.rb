@@ -13,7 +13,7 @@ module WS
     @@default_font = Font.new(16)
 
     def initialize(tx=nil, ty=nil, width=nil, height=nil)
-      super(tx, ty) if tx and ty
+      super(tx, ty)
       @width = width
       @height = height
       @min_width, @min_height = 16, 16
