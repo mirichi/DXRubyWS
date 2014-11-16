@@ -7,7 +7,7 @@ module WS
     attr_reader :caption, :fore_color
     
     # 初期化
-    def initialize(tx, ty, width, height, caption = "")
+    def initialize(tx=nil, ty=nil, width=nil, height=nil, caption = "")
       super(tx, ty, width, height)
       self.image = Image.new(width, height) if width and height
       self.collision_enable = false
