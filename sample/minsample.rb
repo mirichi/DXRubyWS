@@ -146,13 +146,13 @@ class Test < WS::WSWindow
   def initialize
     super(100, 300, 300, 200, "LayoutTest")
 
-    b1 = WS::WSButton.new(0, 0, 100, 20, "btn1")
+    b1 = WS::WSButton.new(nil, nil, 100, nil, "btn1") # オートレイアウトで自動設定させる座標やサイズはnilでよい
 #    b2 = WS::WSButton.new(0, 0, 100, 20, "btn2")
-    b2 = WS::WSImageButton.new(0, 0, Image.load('./image/enemyshot2.png'), 100, 20, "btn2")
+    b2 = WS::WSImageButton.new(nil, nil, Image.load('./image/enemyshot2.png'), nil, nil, "btn2")
     self.client.add_control(b1)
     self.client.add_control(b2)
 
-    img = WS::WSImage.new(0, 0, 100, 10)
+    img = WS::WSImage.new(nil, nil, 100, nil)
     self.client.add_control(img)
 
     img.add_handler(:resize) do
@@ -184,18 +184,20 @@ class Test < WS::WSWindow
     # self.をつけないとローカル変数への代入とみなされてしまうらしい。
 
     # addメソッドの第2、第3引数でそれぞれresizable_width/resizable_heightを指定できるようにした。
+    # widthやheightがnilになっている場合、自動的にresizable_width/resizable_heightがtrueになるので指定する必要がなくなった。
+    # でもnilじゃなく値を入れたときにオートレイアウトさせたければ第2、第3引数を指定する必要がある。
     client.layout(:vbox) do
       self.margin_top = 10
       self.margin_bottom = 10
       layout(:hbox) do
-        add b1, false, true
-        add img, false, true
+        add b1
+        add img
       end
       layout(:hbox) do
         self.margin_left = 10
         self.margin_right = 10
         self.margin_top = 10
-        add b2, true, true
+        add b2
       end
       layout
     end

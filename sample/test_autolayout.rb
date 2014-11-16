@@ -9,16 +9,16 @@ module WS
     def initialize
       super(20,100,300,320)
 
-      self.client.add_control(b1 = WSButton.new(50,10,40,20), :b1)
-      self.client.add_control(b2 = WSButton.new(100,100,120,20), :b2)
-      self.client.add_control(b3 = WSButton.new(150,150,120,20), :b3)
+      self.client.add_control(b1 = WSButton.new(nil, nil, 100), :b1)
+      self.client.add_control(b2 = WSButton.new, :b2)
+      self.client.add_control(b3 = WSButton.new, :b3)
       b1.min_height = 40
       b2.min_height = 120
       b3.min_height = 120
       self.client.layout(:vbox) do
-        add b1, true, true
-        add b2, true, true
-        add b3, true, true
+        add b1
+        add b2
+        add b3
       end
     end
   end
@@ -26,16 +26,16 @@ module WS
     def initialize
       super(330,100,300,320)
 
-      self.client.add_control(b1 = WSButton.new(50,10,40,20), :b1)
-      self.client.add_control(b2 = WSButton.new(100,100,120,20), :b2)
-      self.client.add_control(b3 = WSButton.new(150,150,120,20), :b3)
+      self.client.add_control(b1 = WSButton.new, :b1)
+      self.client.add_control(b2 = WSButton.new, :b2)
+      self.client.add_control(b3 = WSButton.new, :b3)
       b1.min_width = 40
       b2.min_width = 120
       b3.min_width = 120
       self.client.layout(:hbox) do
-        add b1, true, true
-        add b2, true, true
-        add b3, true, true
+        add b1
+        add b2
+        add b3
       end
     end
   end

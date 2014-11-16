@@ -9,24 +9,32 @@ module WS
     # 初期化
     def initialize(tx, ty, width, height, caption = "")
       super(tx, ty, width, height)
-      self.image = Image.new(width, height)
+      self.image = Image.new(width, height) if width and height
       self.collision_enable = false
       self.caption = caption
       @fore_color = COLOR[:font]
-     end
- 
+    end
+
     # キャプションの設定
     def caption=(text)
       @caption = text
       refresh     
     end
-    
+
     # 文字色の設定
     def fore_color=(color)
       @fore_color = color
       refresh     
     end
-    
+
+    # resize時の処理
+    def resize(width, height)
+      super
+      self.image.dispose if self.image
+      self.image = Image.new(width, height)
+      refresh     
+    end
+
     # 画像の作成
     def render
       if refresh?
