@@ -634,48 +634,32 @@ module WS
     def auto_layout
       case @type
       when :hbox # 水平に並べる
-        undef_size_ctl = {}
-        undef_size_count = 0
-        undef_size_ary = []
-        total = 0
-        @data.each do |ctl|
-          if ctl.resizable_width
-            undef_size_count += 1
-            if undef_size_ary.include?(ctl.min_width)
-              undef_size_ctl[ctl.min_width] << ctl
-            else
-              undef_size_ary << ctl.min_width
-              undef_size_ctl[ctl.min_width] = [ctl]
-            end
-            total += ctl.min_width
+        # サイズ未定のものをカウント
+        undef_size_count = @data.count{|o| o.resizable_width}
+
+        # サイズ確定オブジェクトのサイズ合計
+        total = @data.inject(0){|t, o| t += (o.resizable_width ? 0 : o.width)}
+
+        # サイズが確定されていないオブジェクトの配列作成
+        undef_size_ctl = @data.select{|o| o.resizable_width}.sort_by{|o|o.min_width}.reverse
+
+        width = 0
+        rest = (self.width - @margin_left - @margin_right - total).to_f
+        count = undef_size_ctl.size
+
+        # サイズの大きいほうから残りのすべてをmin_widthにできるかどうかを確認する
+        undef_size_ctl.each do |o|
+          if rest < (count * o.min_width) # 入りきらない
+            rest -= o.min_width # このぶんは確定とする
+            count -= 1
           else
-            total += ctl.width
+            width = rest / count
+            break
           end
         end
-        undef_size_ary.sort!
 
         # 座標開始位置
         point = self.x + @margin_left
-
-        width = 0
-        width = undef_size_ary[0] if undef_size_ary[0]
-        rest = (self.width - @margin_left - @margin_right - total).to_f
-        adjusting = []
-
-        undef_size_ary.each_with_index do |x,i|
-          adjusting += undef_size_ctl[x]
-          
-          if i == undef_size_ary.size - 1 #最後の数字なら
-            width += rest / adjusting.size #残りを全部分配
-            rest = 0
-          else
-            tmp = rest / adjusting.size #取り敢えず残りを分配
-            tmp = [tmp, undef_size_ary[i+1] - x].min #大きすぎないよう補正
-            rest -= tmp * adjusting.size
-            width += tmp
-          end
-          break if rest < 1 #restが無くなったら(floatの誤差も考える)
-        end
 
         case undef_size_count
         when 0 # 均等
@@ -699,48 +683,32 @@ module WS
         end
 
       when :vbox # 垂直に並べる
-        undef_size_ctl = {}
-        undef_size_count = 0
-        undef_size_ary = []
-        total = 0
-        @data.each do |ctl|
-          if ctl.resizable_height
-            undef_size_count += 1
-            if undef_size_ary.include?(ctl.min_height)
-              undef_size_ctl[ctl.min_height] << ctl
-            else
-              undef_size_ary << ctl.min_height
-              undef_size_ctl[ctl.min_height] = [ctl]
-            end
-            total += ctl.min_height
+        # サイズ未定のものをカウント
+        undef_size_count = @data.count{|o| o.resizable_height}
+
+        # サイズ確定オブジェクトのサイズ合計
+        total = @data.inject(0){|t, o| t += (o.resizable_height ? 0 : o.height)}
+
+        # サイズが確定されていないオブジェクトの配列作成
+        undef_size_ctl = @data.select{|o| o.resizable_height}.sort_by{|o|o.min_height}.reverse
+
+        height = 0
+        rest = (self.height - @margin_top - @margin_bottom - total).to_f
+        count = undef_size_ctl.size
+
+        # サイズの大きいほうから残りのすべてをmin_heightにできるかどうかを確認する
+        undef_size_ctl.each do |o|
+          if rest < (count * o.min_height) # 入りきらない
+            rest -= o.min_height # このぶんは確定とする
+            count -= 1
           else
-            total += ctl.height
+            height = rest / count
+            break
           end
         end
-        undef_size_ary.sort!
 
         # 座標開始位置
         point = self.y + @margin_top
-
-        height = 0
-        height = undef_size_ary[0] if undef_size_ary[0]
-        rest = (self.height - @margin_top - @margin_bottom - total).to_f
-        adjusting = []
-
-        undef_size_ary.each_with_index do |x,i|
-          adjusting += undef_size_ctl[x]
-          
-          if i == undef_size_ary.size - 1 #最後の数字なら
-            height += rest / adjusting.size #残りを全部分配
-            rest = 0
-          else
-            tmp = rest / adjusting.size #取り敢えず残りを分配
-            tmp = [tmp, undef_size_ary[i+1] - x].min #大きすぎないよう補正
-            rest -= tmp * adjusting.size
-            height += tmp
-          end
-          break if rest < 1 #restが無くなったら(floatの誤差も考える)
-        end
 
         case undef_size_count
         when 0 # 均等
