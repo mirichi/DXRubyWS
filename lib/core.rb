@@ -572,6 +572,15 @@ module WS
       @data << o
       o.resizable_width = rsw if rsw != nil
       o.resizable_height = rsh if rsh != nil
+      
+      case @type
+      when :hbox
+        @min_width += (o.resizable_width ? o.min_width : o.width)
+        @min_height = [@min_height, (o.resizable_height ? o.min_height : o.height)].max
+      when :vbox
+        @min_height += (o.resizable_height ? o.min_height : o.height)
+        @min_width = [@min_width, (o.resizable_width ? o.min_width : o.width)].max
+      end
     end
 
     def adjust_x
