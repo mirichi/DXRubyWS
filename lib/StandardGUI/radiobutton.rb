@@ -22,6 +22,26 @@ module WS
       @margin = margin
       @fore_color = COLOR[:font]
       @image = {}
+
+      # キーボードイベント
+      add_key_handler(K_UP) do
+        @index -= 1 if @index > 0
+        refresh
+      end
+      add_key_handler(K_LEFT) do
+        @index -= 1 if @index > 0
+        refresh
+      end
+
+      add_key_handler(K_DOWN) do
+        @index += 1 if @index < @items.size - 1
+        refresh
+      end
+      add_key_handler(K_RIGHT) do
+        @index += 1 if @index < @items.size - 1
+        refresh
+      end
+
       # 画像を作成する
       set_image
     end
