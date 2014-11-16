@@ -146,7 +146,7 @@ class Test < WS::WSWindow
   def initialize
     super(100, 300, 300, 200, "LayoutTest")
 
-    b1 = WS::WSButton.new(nil, nil, 100, nil, "btn1")
+    b1 = WS::WSButton.new(nil, nil, 100, nil, "btn1") # オートレイアウトで自動設定させる座標やサイズはnilでよい
 #    b2 = WS::WSButton.new(0, 0, 100, 20, "btn2")
     b2 = WS::WSImageButton.new(nil, nil, Image.load('./image/enemyshot2.png'), nil, nil, "btn2")
     self.client.add_control(b1)
@@ -184,6 +184,8 @@ class Test < WS::WSWindow
     # self.をつけないとローカル変数への代入とみなされてしまうらしい。
 
     # addメソッドの第2、第3引数でそれぞれresizable_width/resizable_heightを指定できるようにした。
+    # widthやheightがnilになっている場合、自動的にresizable_width/resizable_heightがtrueになるので指定する必要がなくなった。
+    # でもnilじゃなく値を入れたときにオートレイアウトさせたければ第2、第3引数を指定する必要がある。
     client.layout(:vbox) do
       self.margin_top = 10
       self.margin_bottom = 10
