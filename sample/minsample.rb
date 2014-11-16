@@ -144,7 +144,7 @@ WS::desktop.add_control(w)
 # LayoutTestWindow
 class Test < WS::WSWindow
   def initialize
-    super(100, 300, 300, 200, "LayoutTest")
+    super(100, 340, 300, 200, "LayoutTest")
 
     b1 = WS::WSButton.new(nil, nil, 100, nil, "btn1") # オートレイアウトで自動設定させる座標やサイズはnilでよい
 #    b2 = WS::WSButton.new(0, 0, 100, 20, "btn2")
@@ -238,6 +238,9 @@ class TestWindow1 < WS::WSWindow
     @chkbox = WS::WSCheckBox.new(10, 105, 200, "あいう")
     self.client.add_control(@chkbox)
 
+    @radio1 = WS::WSRadioButton.new(10, 129, 200, ["テスト1","テスト2","テスト3"], 12)
+    self.client.add_control(@radio1)
+
     init
   end
 end
@@ -273,7 +276,7 @@ class TestWindow1
   end
 end
 
-w = TestWindow1.new(100, 100, 300, 150, "Test")
+w = TestWindow1.new(100, 100, 300, 240, "Test")
 WS.desktop.add_control(w)
 w.button1.activate
 
