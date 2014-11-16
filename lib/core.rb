@@ -11,19 +11,20 @@ module WS
     attr_accessor :min_width, :min_height, :focusable, :active, :enabled
     # デフォルトフォントオブジェクト
     @@default_font = Font.new(16)
-    
-    def initialize(tx, ty, width, height)
-      super(tx, ty)
-      @width, @height = width, height
+
+    def initialize(tx=nil, ty=nil, width=nil, height=nil)
+      super(tx, ty) if tx and ty
+      @width = width
+      @height = height
       @min_width, @min_height = 16, 16
-      self.collision = [0, 0, width - 1, height - 1]
+      self.collision = [0, 0, width - 1, height - 1] if width and height
       @signal_handler = {}   # シグナルハンドラ
       @key_handler = {}      # キーハンドラ
       @hit_cursor = Sprite.new # 衝突判定用スプライト
       @hit_cursor.collision = [0,0]
       @font ||= @@default_font
-      @resizable_width = false  # オートレイアウト用設定
-      @resizable_height = false # オートレイアウト用設定
+      @resizable_width = !width  # オートレイアウト用設定
+      @resizable_height = !height # オートレイアウト用設定
       @focusable = false
       @active = false
       @mouse_over = false
