@@ -34,68 +34,37 @@ module WS
     # コントロールに値を設定
     def value=(v)
       @index = v
-      @refresh = true
+      refresh
     end
         
     # ラジオボタンの画像を作成
     def set_image
       unless @image.has_key?(true)
-        @image[false] = image_checkbox_false
-        @image[true]  = image_checkbox_true
+        @image[false] = image_radiobutton_false
+        @image[true]  = image_radiobutton_true
       end
             
       self.image.dispose if self.image
       self.image = Image.new(self.width, self.height)
       
-      @refresh = true
+      refresh
     end
 
     ### ラジオボタン画像(true) ###
-    def image_checkbox_true
+    def image_radiobutton_true
       unless IMG_CACHE[:radiobutton_true]
-        sx = 2
-        sy = 2
-        ex = 13
-        ey = 13
-        IMG_CACHE[:radiobutton_true] = Image.new(16, 16)
-                               .box_fill(sx+2, sy+2, ex-2, ey-2, COLOR[:background])
-                               .line(sx+4, sy, ex-4, sy, COLOR[:shadow])
-                               .line(sx+2, sy+1, sx+3, sy+1, COLOR[:shadow])
-                               .line(ex-3, sy+1, ex-2, sy+1, COLOR[:shadow])
-                               .line(sx, sy+4, sx, ey-4, COLOR[:shadow])
-                               .line(sx+1, sy+2, sx+1, sy+3, COLOR[:shadow])
-                               .line(sx+1, ey-3, sx+1, ey-2, COLOR[:shadow])
-                               .line(sx+4, sy+1, ex-4, sy+1, COLOR[:darkshadow])
-                               .line(sx+2, sy+2, sx+3, sy+2, COLOR[:darkshadow])
-                               .line(ex-3, sy+2, ex-2, sy+2, COLOR[:darkshadow])
-                               .line(sx+1, sy+4, sx+1, ey-4, COLOR[:darkshadow])
-                               .line(sx+2, sy+2, sx+2, sy+3, COLOR[:darkshadow])
-                               .line(sx+2, ey-3, sx+2, ey-2, COLOR[:darkshadow])
-                               .line(sx+4, ey, ex-4, ey, COLOR[:highlight])
-                               .line(sx+2, ey-1, sx+3, ey-1, COLOR[:highlight])
-                               .line(ex-3, ey-1, ex-2, ey-1, COLOR[:highlight])
-                               .line(ex, sy+4, ex, ey-4, COLOR[:highlight])
-                               .line(ex-1, sy+2, ex-1, sy+3, COLOR[:highlight])
-                               .line(ex-1, ey-3, ex-1, ey-2, COLOR[:highlight])
-                               .line(sx+4, ey-1, ex-4, ey-1,COLOR[:base])
-                               .line(sx+2, ey-2, sx+3, ey-2, COLOR[:base])
-                               .line(ex-3, ey-2, ex-2, ey-2, COLOR[:base])
-                               .line(ex-1, sy+4, ex-1, ey-4, COLOR[:base])
-                               .line(ex-2, sy+3, ex-2, sy+3, COLOR[:base])
-                               .line(ex-2, ey-3, ex-2, ey-2, COLOR[:base])
-                               .box_fill(sx+5, sy+4, ex-5, ey-4, COLOR[:marker])
-                               .box_fill(sx+4, sy+5, ex-4, ey-5, COLOR[:marker])
+        sx,sy,ex,ey = 2,2,13,13
+        IMG_CACHE[:radiobutton_true] = IMG_CACHE[:radiobutton_false].dup
+        IMG_CACHE[:radiobutton_true].box_fill(sx+5, sy+4, ex-5, ey-4, COLOR[:marker])
+                                    .box_fill(sx+4, sy+5, ex-4, ey-5, COLOR[:marker])
       end
       IMG_CACHE[:radiobutton_true]
     end
         
     ### ラジオボタン画像(false) ###
-    def image_checkbox_false
+    def image_radiobutton_false
       unless IMG_CACHE[:radiobutton_false]
-        sx = 2
-        sy = 2
-        ex = 13
-        ey = 13
+        sx,sy,ex,ey = 2,2,13,13
         IMG_CACHE[:radiobutton_false] = Image.new(16, 16)
                              .box_fill(sx+2, sy+2, ex-2, ey-2, COLOR[:background])
                              .line(sx+4, sy, ex-4, sy, COLOR[:shadow])
@@ -134,7 +103,7 @@ module WS
       if !@items.empty? && ty % th >= mr && ty % th <= th - mr
         @index = ty / th
         signal(:change, @index)
-        @refresh = true
+        refresh
       end
       
       super
@@ -150,11 +119,11 @@ module WS
         self.image.draw(0, ty, @image[i == @index])
         self.image.draw_font_ex(20, ty, @items[i], @font, {:aa => false, :color => @fore_color})
       end
-      @refresh = false
+      refreshed
     end
     
     def render
-      render_radio_button if @refresh
+      render_radio_button if refresh?
       super
     end
     
