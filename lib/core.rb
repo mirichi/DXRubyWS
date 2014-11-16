@@ -555,7 +555,7 @@ module WS
     def initialize(type, obj, parent, &b)
       @type, @obj = type, obj
       @width, @height = parent.width, parent.height
-      @min_width = @min_height = 16
+      @min_width = @min_height = 0
       @x = @y = 0
       @margin_left = @margin_right = @margin_top = @margin_bottom = 0
       @resizable_width = @resizable_height = true
