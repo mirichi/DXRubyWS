@@ -90,7 +90,7 @@ module WS
       self.client.add_control(@ni)
       @ni.limit(1, 32)
       @ni.step(1, 8)
-      @ni.add_handler(:changed) {|obj, val| self.wx_changed(val)}
+      @ni.add_handler(:change) {|obj, val| self.wx_changed(val)}
   
       init
     end

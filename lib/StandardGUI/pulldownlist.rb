@@ -188,7 +188,7 @@ module WS
     end
     
     def change #新しく別のものが選択されたら呼ばれる。
-      signal(:changed, self.item, self.index)
+      signal(:change, self.item, self.index)
     end
 
     def on_leave

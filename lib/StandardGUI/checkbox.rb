@@ -101,14 +101,14 @@ module WS
     # クリックされた場合真偽値を入れ替える
     def on_mouse_push(tx, ty)
       self.checked = !@checked
-      signal(:changed, @checked)
+      signal(:change, @checked)
       super
     end
 
     def on_key_push(key)
       if key == K_SPACE
         self.checked = !@checked
-        signal(:changed, @checked)
+        signal(:change, @checked)
       end
       super
     end
