@@ -81,7 +81,7 @@ module WS
         end
 
         adjust_left
-        signal(:changed, @text) if before != @text
+        signal(:change, @text) if before != @text
       end
 
       add_key_handler(K_LEFT) do
@@ -162,7 +162,7 @@ module WS
           @selected_range.clear
           set_draw_range
         end
-        signal(:changed, @text) if before != @text
+        signal(:change, @text) if before != @text
       end
 
       add_key_handler(K_CTRL + K_C) do
@@ -184,7 +184,7 @@ module WS
         @cursor_pos += str.length
         
         adjust_right
-        signal(:changed, @text) if before != @text
+        signal(:change, @text) if before != @text
       end
     end
 
@@ -227,7 +227,7 @@ module WS
 
       adjust_right
       if before != @text
-        signal(:changed, @text)
+        signal(:change, @text)
       end
     end
 

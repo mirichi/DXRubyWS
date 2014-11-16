@@ -69,8 +69,8 @@ module WS
       # テキストボックスの作成
 		  c_numtext = WSTextBox.new(0, 0, width - 18, height)
 		  c_numtext.add_handler(:changed, method(:text_changed))
-      c_numtext.add_handler(:leave){ check_text; signal(:changed, @value) }
-      c_numtext.add_key_handler(K_RETURN){ check_text; signal(:changed, @value) }
+      c_numtext.add_handler(:leave){ check_text; signal(:change, @value) }
+      c_numtext.add_key_handler(K_RETURN){ check_text; signal(:change, @value) }
       # スピンボタン変動小の作成
 		  font_s = Font.new(8)
 		  c_b_add_s = WSSpinButton.new(width - 18,          0, 16, height / 2 - 2)
@@ -91,20 +91,20 @@ module WS
     def click_add_button_s(obj, tx, ty)
       @value = [@value + @small * (self.c_add_s.repeat_count / RATE), @max].min
       set_text
-      signal(:changed, @value)
+      signal(:change, @value)
     end
 
     # 減算ボタン小の押下処理
     def click_sub_button_s(obj, tx, ty)
       @value = [@value - @small * (self.c_sub_s.repeat_count / RATE), @min].max
       set_text
-      signal(:changed, @value)
+      signal(:change, @value)
     end
 
     # テキスト変更
     def text_changed(obj, text)
       refresh
-      signal(:changed, @value)
+      signal(:change, @value)
     end
 
     def value=(v)
@@ -196,9 +196,9 @@ module WS
    def create_controls
      # テキストボックスの作成
      c_numtext = WSTextBox.new(0, 0, width, height)
-     c_numtext.add_handler(:changed, method(:text_changed))
-     c_numtext.add_handler(:leave){ check_text; signal(:changed, @value) }
-     c_numtext.add_key_handler(K_RETURN){ check_text; signal(:changed, @value) }
+     c_numtext.add_handler(:change, method(:text_changed))
+     c_numtext.add_handler(:leave){ check_text; signal(:change, @value) }
+     c_numtext.add_key_handler(K_RETURN){ check_text; signal(:change, @value) }
      # スピンボタン変動小の作成
      font_s = Font.new(6)
      c_b_add_s = WSSpinButton.new(width - 34,          2, 16, height / 2 - 2)
@@ -231,14 +231,14 @@ module WS
    def click_add_button_b(obj, tx, ty)
      @value = [@value + @big * (self.c_add_l.repeat_count / RATE), @max].min
      set_text
-     signal(:changed, @value)
+     signal(:change, @value)
    end
    
    # 減算ボタン大の押下処理
    def click_sub_button_b(obj, tx, ty)
      @value = [@value - @big * (self.c_sub_l.repeat_count / RATE), @min].max
      set_text
-     signal(:changed, @value)
+     signal(:change, @value)
    end
    
    # ステップ値の設定

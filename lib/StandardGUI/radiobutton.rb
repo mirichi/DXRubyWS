@@ -133,7 +133,7 @@ module WS
       mr = (th - font.size) / 2
       if !@items.empty? && ty % th >= mr && ty % th <= th - mr
         @index = ty / th
-        signal(:changed, @index)
+        signal(:change, @index)
         @refresh = true
       end
       
