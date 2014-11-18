@@ -555,7 +555,7 @@ module WS
     def initialize(type, obj, parent, &b)
       @type, @obj = type, obj
       @width, @height = parent.width, parent.height
-      @min_width = @min_height = 16
+      @min_width = @min_height = 0
       @x = @y = 0
       @margin_left = @margin_right = @margin_top = @margin_bottom = 0
       @resizable_width = @resizable_height = true
@@ -572,6 +572,15 @@ module WS
       @data << o
       o.resizable_width = rsw if rsw != nil
       o.resizable_height = rsh if rsh != nil
+
+      case @type
+      when :hbox
+        @min_width += (o.resizable_width ? o.min_width : o.width)
+        @min_height = [@min_height, (o.resizable_height ? o.min_height : o.height)].max
+      when :vbox
+        @min_height += (o.resizable_height ? o.min_height : o.height)
+        @min_width = [@min_width, (o.resizable_width ? o.min_width : o.width)].max
+      end
     end
 
     def adjust_x
