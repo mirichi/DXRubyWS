@@ -147,7 +147,6 @@ class Test < WS::WSWindow
     super(100, 340, 300, 200, "LayoutTest")
 
     b1 = WS::WSButton.new(nil, nil, 100, nil, "btn1") # オートレイアウトで自動設定させる座標やサイズはnilでよい
-#    b2 = WS::WSButton.new(0, 0, 100, 20, "btn2")
     b2 = WS::WSImageButton.new(nil, nil, Image.load('./image/enemyshot2.png'), nil, nil, "btn2")
     self.client.add_control(b1)
     self.client.add_control(b2)
@@ -186,14 +185,14 @@ class Test < WS::WSWindow
     # addメソッドの第2、第3引数でそれぞれresizable_width/resizable_heightを指定できるようにした。
     # widthやheightがnilになっている場合、自動的にresizable_width/resizable_heightがtrueになるので指定する必要がなくなった。
     # でもnilじゃなく値を入れたときにオートレイアウトさせたければ第2、第3引数を指定する必要がある。
-    client.layout(:vbox) do
+    client.layout(:vbox_ex) do
       self.margin_top = 10
       self.margin_bottom = 10
       layout(:hbox) do
         add b1
         add img
       end
-      layout(:hbox) do
+      layout(:hbox_ex) do
         self.margin_left = 10
         self.margin_right = 10
         self.margin_top = 10
@@ -205,6 +204,35 @@ class Test < WS::WSWindow
 end
 
 t = Test.new
+WS.desktop.add_control(t)
+
+
+class Test2 < WS::WSWindow
+  def initialize
+    super(400, 340, 300, 200, "LayoutTest2")
+    
+    f_size = @font.size
+    str = "これはレイアウトを利用した簡易自動改行のデモです。文字を1つひとつ分解して別のコントロールにしてるから、重くなりそうだけど、いい感じでは？ by Hyde".split("")
+    str.map! do |s|
+      ctl = WS::WSLabel.new(0,0, @font.getWidth(s), f_size + 2, s) #Layoutするので座標は適当
+      self.client.add_control(ctl)
+      ctl
+    end
+    
+    client.layout(:top) do
+      self.margin_left = 16
+      self.margin_right = 16
+      self.margin_top = 20
+      self.margin_bottom = 12
+      layout(:left_ex) do
+        str.each do |ctl|
+          add ctl, false, false
+        end
+      end
+    end
+  end
+end
+t = Test2.new
 WS.desktop.add_control(t)
 
 
