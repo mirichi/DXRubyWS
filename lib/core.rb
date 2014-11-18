@@ -563,17 +563,17 @@ module WS
       @x = @y = 0
       @margin_left = @margin_right = @margin_top = @margin_bottom = 0
       @resizable_width = @resizable_height = true
-      @data = []
+      @default_data = []
       self.instance_eval &b if b
     end
 
     def layout(type=nil, &b)
-      @data << WSLayout.new(type, @obj, self, &b)
+      @default_data << WSLayout.new(type, @obj, self, &b)
       self
     end
     
     def add(o, rsw=nil, rsh=nil)
-      @data << o
+      @default_data << o
       o.resizable_width = rsw if rsw != nil
       o.resizable_height = rsh if rsh != nil
 
