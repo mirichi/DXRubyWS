@@ -8,7 +8,7 @@ module WS
     class WSVScrollBarSlider < WSControl
       include Draggable
 
-      def initialize(tx, ty, width, height)
+      def initialize(tx=nil, ty=nil, width=nil, height=nil)
         super
         add_handler(:drag_move) do |obj, dx, dy|
           self.y = (self.y + dy).clamp(16, @parent.height - 16 - @height)
@@ -47,11 +47,11 @@ module WS
     attr_accessor :view_size, :total_size, :shift_qty, :pos
     include RepeatClickable
 
-    def initialize(tx, ty, width, height)
+    def initialize(tx=nil, ty=nil, width=16, height=nil)
       super
       self.image.bgcolor = COLOR[:light]
       @pos = 0
-      @view_size = height - 32
+      @view_size = 0
       @total_size = 0
       @shift_qty = 1
 
@@ -138,7 +138,7 @@ module WS
     class WSHScrollBarSlider < WSControl
       include Draggable
 
-      def initialize(tx, ty, width, height)
+      def initialize(tx=nil, ty=nil, width=nil, height=nil)
         super
         add_handler(:drag_move) do |obj, dx, dy|
           self.x = (self.x + dx).clamp(16, @parent.width - 16 - @width)
@@ -177,11 +177,11 @@ module WS
     attr_accessor :view_size, :total_size, :shift_qty, :pos
     include RepeatClickable
 
-    def initialize(tx, ty, width, height)
+    def initialize(tx=nil, ty=nil, width=nil, height=16)
       super
       self.image.bgcolor = COLOR[:light]
       @pos = 0
-      @view_size = width - 32
+      @view_size = 0
       @total_size = 0
       @shift_qty = 1
 
@@ -267,16 +267,16 @@ module WS
     attr_accessor :client, :h_header_size, :v_header_size, :vsb, :hsb
 
     # 生成時にクライアント領域にするコントロールが必須
-    def initialize(x, y, width, height, client)
+    def initialize(x=nil, y=nil, width=nil, height=nil, client)
       super(x, y, width, height)
       @client = client
       @h_header_size = @v_header_size = 0
       add_control(client, :client)
 
       # スクロールバー生成
-      vsb = WSVScrollBar.new(0, 0, 16, height - 4)
+      vsb = WSVScrollBar.new
       add_control(vsb, :vsb)
-      hsb = WSHScrollBar.new(0, 0, width - 4, 16)
+      hsb = WSHScrollBar.new
       add_control(hsb, :hsb)
 
       # 縦横スクロールバー表示用レイアウト

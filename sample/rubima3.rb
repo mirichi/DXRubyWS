@@ -560,9 +560,9 @@ module WS
       # スクロールバー
       sb = WSVScrollBar.new(508, 0, 16, 700-16)
       client.add_control(sb, :sb)
-      sb.total_size = 30        # 全体サイズが30
-      sb.shift_qty = 1 # ボタンを押したときに1動く
-      sb.view_size = client.height.quo(32) # 表示される範囲
+      sb.total_size = 30 * 32        # 全体サイズが30 * 32pixel
+      sb.shift_qty = 16 # ボタンを押したときに16動く
+      sb.view_size = client.height # 表示される範囲
       sb.add_handler(:slide) {|obj, pos| @position = pos}
 
       # マップの画像
@@ -571,12 +571,12 @@ module WS
       client.add_control(wsimage, :wsimage)
       wsimage.add_handler(:resize) do
         wsimage.image.resize(wsimage.width, wsimage.height)
-        sb.view_size = client.height.quo(32)
+        sb.view_size = client.height
       end
 
       # マウスホイール処理
-      wsimage.add_handler(:mouse_wheel_up){sb.slide(-3)}
-      wsimage.add_handler(:mouse_wheel_down){sb.slide(3)}
+      wsimage.add_handler(:mouse_wheel_up){sb.slide(-32*3)}
+      wsimage.add_handler(:mouse_wheel_down){sb.slide(32*3)}
 
       # オートレイアウト
       client.layout(:hbox) do
@@ -587,25 +587,25 @@ module WS
       # クリック時の編集
       wsimage.add_handler(:mouse_push) do |obj, tx, ty|
         @lbutton = true
-        @mapdata[(ty + @position * 32) / 32][tx / 32] = WS.desktop.mappartswindow.select_number
+        @mapdata[(ty + @position) / 32][tx / 32] = WS.desktop.mappartswindow.select_number
       end
       wsimage.add_handler(:mouse_release) do
         @lbutton = false
       end
       wsimage.add_handler(:mouse_move) do |obj, tx, ty|
-        @mapdata[(ty + @position * 32) / 32][tx / 32] = WS.desktop.mappartswindow.select_number if @lbutton
+        @mapdata[(ty + @position) / 32][tx / 32] = WS.desktop.mappartswindow.select_number if @lbutton
       end
     end
 
     def render
       # マップ描画
-      client.wsimage.image.draw_tile(0, 0, @mapdata, @images, 0, @position*32, 16, 30)
+      client.wsimage.image.draw_tile(0, 0, @mapdata, @images, 0, @position, 16, 30)
 
       # 描画枠の描画
       x1 = $myship.x / 5
       x2 = x1 + 360-1
-      y1 = ($map.y + $map.count      ) % 960 - @position * 32
-      y2 = ($map.y + $map.count + 480) % 960 - @position * 32
+      y1 = ($map.y + $map.count      ) % 960 - @position
+      y2 = ($map.y + $map.count + 480) % 960 - @position
       client.wsimage.image.draw_line(x1, y1, x2, y1, C_YELLOW)
       client.wsimage.image.draw_line(x1, y2, x2, y2, C_YELLOW)
       if y1 < y2

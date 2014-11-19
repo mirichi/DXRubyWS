@@ -74,7 +74,7 @@ end
 
 # ListBoxTestWindow
 w = WS::WSWindow.new(400, 100, 200, 250, "ListBoxTest")
-lbx = WS::WSListBox.new(50, 30, 100, 160)
+lbx = WS::WSListBox.new
 lbx.items.concat(String.instance_methods(false))
 #lbx.items.concat(w.instance_variables)
 w.client.add_control(lbx)

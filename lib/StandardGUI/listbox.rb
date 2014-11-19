@@ -42,19 +42,16 @@ module WS
 
        
     # 初期化
-    def initialize(tx, ty, width, height)
+    def initialize(tx=nil, ty=nil, width=nil, height=nil)
       # クライアント領域作成。WSScrollableContainerではsuperにクライアント領域コントロールを渡す必要があるので
       # superより先にこれだけ作る。
-      client = WSListBoxClient.new(0, 0, width - 4 - 16, height - 4)
+      client = WSListBoxClient.new
       super(tx, ty, width, height, client)
 
       @font = Font.new(12)
       @items = [] # リストの中身
       @cursor = 0 # カーソルの位置
 
-      resize(@width, @height)
-      
-#      add_control(client, :client)
       client.add_handler(:mouse_push) do |obj, tx, ty|
         tmp = ((vsb.pos + ty) / @font.size).to_i
         if tmp < @items.size
@@ -65,7 +62,7 @@ module WS
 
       # 縦スクロールバーを使うための設定。横スクロールバーは使わないので設定しない。
       vsb.total_size = @items.length * @font.size # リストボックス内データのサイズ(ピクセル単位)
-      vsb.view_size = client.height               # 画面に見えているデータのサイズ(ピクセル単位)
+      vsb.view_size = client.height if client.height # 画面に見えているデータのサイズ(ピクセル単位)
       vsb.shift_qty = @font.size                  # 上下ボタンで動く量(ピクセル単位)
 
       # マウスホイール処理
@@ -128,7 +125,6 @@ module WS
       super
       @cursor_image.dispose if @cursor_image
       @cursor_image = Image.new(width, @font.size, COLOR[:select])
-      vsb.view_size = client.height
     end
   end
 end
