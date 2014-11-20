@@ -223,11 +223,13 @@ module WS
     # フォーカスが当てられたときに呼ばれる
     def on_enter
       @active = true
+      signal(:enter)
     end
 
     # フォーカスを失ったときに呼ばれる
     def on_leave
       @active = false
+      signal(:leave)
     end
 
     # コントロールをアクティブにする
