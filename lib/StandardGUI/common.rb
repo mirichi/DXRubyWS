@@ -13,6 +13,7 @@ module WS
   COLOR[:select] = [0,30,153]            # リストボックスなどの選択色
   COLOR[:font] = [0,0,0]                 # デフォルトの文字色
   COLOR[:font_reverse] = [255, 255, 255] # 反転文字色
+  COLOR[:windowtitle_font] = [255, 255, 255]
   COLOR[:mouse_over] = [0, 128, 192]
   # 画像キャッシュ用ハッシュ
   IMG_CACHE    = {}

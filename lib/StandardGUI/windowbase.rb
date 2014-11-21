@@ -20,7 +20,7 @@ module WS
     def initialize(tx, ty, sx, sy, caption = "WindowTitle")
       super(tx, ty, sx, sy)
       @caption      = caption
-      @border_width = 3
+      @border_width = default_border_width
       
 #      # オートレイアウトでコントロールの位置を決める
 #      # Layout#objで元のコンテナを参照できる
@@ -38,5 +38,11 @@ module WS
         end
       end
     end
+    
+    # ボーダー幅のデフォルト値
+    def default_border_width
+      return 3	
+    end
+    
   end
 end

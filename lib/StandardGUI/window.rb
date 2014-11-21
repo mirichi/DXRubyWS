@@ -51,8 +51,7 @@ module WS
   
       def initialize(tx, ty, width, height, title="")
         super(tx, ty, width, height)
-        self.image.bgcolor = [0, 0, 160]
-  
+        
         # タイトルバーのクロースボタン
         close_button = WSWindowCloseButton.new(nil, nil, height-2, height-2, "")
         close_button.fore_color = COLOR[:font]
@@ -61,7 +60,7 @@ module WS
   
         # ウィンドウタイトル
         label = WSLabel.new(nil, nil, nil, height, title)
-        label.fore_color = C_WHITE
+        label.fore_color = COLOR[:windowtitle_font]
         label.font = Font.new(14, nil, :weight=>true)
         add_control(label)
 
@@ -93,7 +92,7 @@ module WS
 
       # ウィンドウタイトルはそれでひとつのコントロールを作る
       # メニューやツールバー、ステータスバーもたぶんそうなる
-      window_title = WSWindowTitle.new(nil, nil, nil, 16, caption)
+      window_title = WSWindowTitle.new(nil, nil, nil, window_title_height, caption)
       add_control(window_title, :window_title)
       window_title.add_handler(:close) {self.close}
       window_title.add_handler(:drag_move, self.method(:on_drag_move))
@@ -108,17 +107,23 @@ module WS
 
       # オートレイアウトでコントロールの位置を決める
       # Layout#objで元のコンテナを参照できる
-      layout(:vbox) do
-        self.margin_top = self.margin_left = self.margin_right = self.margin_bottom = self.obj.border_width
-        add window_title
-        add self.obj.client
-      end
+      init_layout
 
       # Escで閉じる
       add_key_handler(K_ESCAPE){self.close}
 
     end
-
+    
+    # オートレイアウト
+    def init_layout
+      layout(:vbox) do
+        self.margin_top = self.margin_left = self.margin_right = self.margin_bottom = self.obj.border_width
+        add obj.window_title
+        add obj.client
+      end
+    end
+    
+    # メニューバー付きレイアウト
     def add_menubar(menuitems)
       add_control(WSMenuBar.new(menuitems), :menubar)
       layout(:vbox) do
@@ -129,6 +134,11 @@ module WS
       end
     end
 
+    # ウィンドウタイトルの高さ
+    def window_title_height
+    	return 16
+    end
+    
     # コントロール画像の描画
     def render
       super

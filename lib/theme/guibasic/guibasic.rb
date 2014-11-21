@@ -1,257 +1,9 @@
 # coding: utf-8
 module WS
-    
-  ### 色定数 ###
-  COLOR[:base] = [190, 190, 190]         # ウィンドウやボタン等の基本色
-  COLOR[:border] = [80,80,80]            # 境界線
-  COLOR[:shadow] = [120,120,120]         # 影
-  COLOR[:darkshadow] = [80,80,80]        # 濃い影
-  COLOR[:light] = [220,220,220]          # 明るい
-  COLOR[:highlight] = [240,240,240]      # ハイライト
-  COLOR[:background] = [255,255,255]     # テキストボックス、リストボックスなどの背景色
-  COLOR[:marker] = [0,0,0]               # チェックボックス、ラジオボタン等のマークの色
-  COLOR[:select] = [0,30,153]            # リストボックスなどの選択色
-  COLOR[:font] = [0,0,0]                 # デフォルトの文字色
-  COLOR[:font_reverse] = [255, 255, 255] # 反転文字色
-  COLOR[:mouse_over] = [0, 64, 128]
-  #ボタン
-  COLOR[:button_high] = [240, 240, 240]
-  COLOR[:button_low]  = [160, 160, 160]
-  
-  
-  
-  
-  ### ■マウスオーバー■ ###
-  class Shader_MouseOver < Shader
-    # シェーダコアのHLSL記述
-    hlsl = <<EOS
-    // (1) グローバル変数
-        float4  tone;
-        texture tex0;
-
-    // (2) サンプラ
-        sampler Samp0 = sampler_state
-        {
-            AddressU  = Border;
-            AddressV  = Border;
-            Texture =<tex0>;
-        };
-
-    // (3) 入出力の構造体
-        struct PixelIn
-        {
-            float2 UV : TEXCOORD0;
-        };
-        struct PixelOut
-        {
-            float4 Color : COLOR0;
-        };
-
-    // (4) ピクセルシェーダのプログラム
-        PixelOut PS_P0_Main(PixelIn input)
-        {
-            PixelOut output;
-            output.Color =  tex2D(Samp0, input.UV);
-            output.Color += tone;
-            
-            return output;
-        }
-
-    // (5) technique定義
-        technique Glow
-        {
-            pass P0
-            {
-                PixelShader = compile ps_2_0 PS_P0_Main();
-            }
-        }
-EOS
-
-    # シェーダコアの作成
-    @@core = DXRuby::Shader::Core.new(hlsl,{:tone => :float})
-
-    # 初期化
-    def initialize(tone)
-      super(@@core, "Shader_MouseOver")
-      set_parameter(tone)
-    end
-
-    # パラメータの設定
-    def set_parameter(tone)
-      self.tone = tone.collect{|v| v / 255.0}
-    end
-    
-    # 更新
-    def update
-    end
-    
-  end  
-  
-  ### ■アクティブシェーダー■ ###
-  class Shader_Active < Shader
-    # シェーダコアのHLSL記述
-    hlsl = <<EOS
-    // (1) グローバル変数
-        float   level;  
-        float4  tone;
-        texture tex0;
-  
-    // (2) サンプラ
-        sampler Samp0 = sampler_state
-        {
-            AddressU  = Border;
-            AddressV  = Border;
-            Texture =<tex0>;
-        };
-  
-    // (3) 入出力の構造体
-        struct PixelIn
-        {
-            float2 UV : TEXCOORD0;
-        };
-        struct PixelOut
-        {
-            float4 Color : COLOR0;
-        };
-  
-    // (4) ピクセルシェーダのプログラム
-        PixelOut PS_P0_Main(PixelIn input)
-        {
-            PixelOut output;
-            output.Color =  tex2D(Samp0, input.UV);
-            output.Color += (tone * level) ;
-            
-            return output;
-        }
-  
-    // (5) technique定義
-        technique Glow
-        {
-            pass P0
-            {
-                PixelShader = compile ps_2_0 PS_P0_Main();
-            }
-        }
-EOS
-  
-    # シェーダコアの作成
-    @@core = DXRuby::Shader::Core.new(hlsl,{:tone  => :float,
-                                            :level => :float})
-  
-    # 初期化
-    def initialize(tone)
-      super(@@core, "Shader_Active")
-      @count = 0
-      set_parameter(tone)
-    end
-  
-    # パラメータの設定
-    def set_parameter(tone)
-      self.tone = tone.collect{|v| v / 255.0}
-    end
-    
-    # 更新
-    def update
-      if @running_time != Window.running_time
-        @running_time = Window.running_time
-        @count = (@count + 2) % 360
-        self.level = 0.5 + Math::sin((@count / 180.0) * Math::PI) / 2
-      end
-    end
-    
-  end  
-
-    
-  ### ■グラデーション用シェーダー■ ###
-  class Shader_Button < Shader
-    # シェーダコアのHLSL記述
-    hlsl = <<EOS
-    // (1) グローバル変数
-        float3  gColorHigh;
-        float3  gColorLow;
-        texture tex0;
-  
-    // (2) サンプラ
-        sampler Samp0 = sampler_state
-        {
-            AddressU  = Border;
-            AddressV  = Border;
-            Texture =<tex0>;
-        };
-  
-    // (3) 入出力の構造体
-        struct PixelIn
-        {
-            float2 UV : TEXCOORD0;
-        };
-        struct PixelOut
-        {
-            float4 Color : COLOR0;
-        };
-  
-    // (4) ピクセルシェーダのプログラム
-        PixelOut PS_P0_Main(PixelIn input)
-        {
-            PixelOut output;
-            
-            output.Color = tex2D(Samp0, input.UV);
-            output.Color.rgb = gColorHigh - (gColorHigh - gColorLow) * input.UV[1];
-            output.Color.rgb -= 0.1 * floor(input.UV[1] / 0.5);
-            output.Color.a = 1.0;
-      
-            return output;
-        }
-  
-    // (5) technique定義
-        technique Glow
-        {
-            pass P0
-            {
-                PixelShader = compile ps_2_0 PS_P0_Main();
-            }
-        }
-EOS
-  
-    # シェーダコアの作成
-    @@core = DXRuby::Shader::Core.new(hlsl,{:gColorHigh => :float,
-                                            :gColorLow  => :float})
-  
-    # 初期化
-    def initialize(high, low)
-      super(@@core, "Shader_Button")
-      set_parameter(high, low)
-    end
-  
-    # パラメータの設定
-    def set_parameter(high, low)
-      self.gColorHigh = high.collect{|v| v / 255.0}
-      self.gColorLow  = low.collect{ |v| v / 255.0}
-    end
-  end  
-  
-  
-
-  module ButtonGradation
-    @@shader_image      = RenderTarget.new(32, 32)
-    @@shader_button     = Shader_Button.new(COLOR[:button_high], COLOR[:button_low])
-    
-    def set_border(image, state=:usual, round=false)
-      w = self.width-1
-      h = self.height-1
-      image.line(0,0,w,0,COLOR[:border])
-           .line(0,h,w,h,COLOR[:border])
-           .line(0,0,0,h,COLOR[:border])
-           .line(w,0,w,h,COLOR[:border])
-      if state != :pushed
-        image.line(1,1,w-1,1,COLOR[:button_high])
-             .line(1,h-1,w-1,h-1,COLOR[:button_high])
-             .line(1,1,1,h-1,COLOR[:button_high])
-             .line(w-1,1,w-1,h-1,COLOR[:button_high])
-      end
-    end
-      
-  end
-  
+ 
+  require_relative 'guibasic_color'
+  require_relative 'guibasic_shader'
+ 
   # フォーカスを受け取れるようにするモジュール
   module Focusable
     ### クラス変数 ###
@@ -281,7 +33,33 @@ EOS
     end
     
   end
+  
+  
+  
+  
+  module ButtonGradation
+    @@shader_image      = RenderTarget.new(32, 32)
+    @@shader_button     = Shader_Button.new(COLOR[:button_high], COLOR[:button_low])
     
+    def set_border(image, state=:usual, round=false)
+      w = self.width-1
+      h = self.height-1
+      image.line(0,0,w,0,COLOR[:border])
+           .line(0,h,w,h,COLOR[:border])
+           .line(0,0,0,h,COLOR[:border])
+           .line(w,0,w,h,COLOR[:border])
+      if state != :pushed
+        image.line(1,1,w-1,1,COLOR[:button_high])
+             .line(1,h-1,w-1,h-1,COLOR[:button_high])
+             .line(1,1,1,h-1,COLOR[:button_high])
+             .line(w-1,1,w-1,h-1,COLOR[:button_high])
+      end
+    end
+      
+  end
+
+    
+  
   
   ### ■ボタン■ ###
   class WSButtonBase < WSControl
