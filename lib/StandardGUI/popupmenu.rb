@@ -22,9 +22,7 @@ module WS
         if o
           o.x = 5
           o.y = i * @font.size + 4
-          o.width = width
-          o.height = @font.size
-          o.collision = [0, 0, o.width-1, o.height-1]
+          o.resize(width, @font.size)
           add_control(o)
         end
       end

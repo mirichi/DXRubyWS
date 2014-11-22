@@ -101,8 +101,7 @@ module WS
     # 描画時にスライダーのサイズを再計算する
     def render
       if self.visible # DXRubyのバグ回避
-        self.slider.height = (@total_size > 0 ? @view_size.quo(@total_size) * (@height - 32) : 0)
-        self.slider.height = self.slider.height.clamp(8, @height - 32)
+        self.slider.height = (@total_size > 0 ? @view_size.quo(@total_size) * (@height - 32) : 0).clamp(8, @height - 32)
         if @total_size > @view_size
           self.slider.y = (@height - 32 - slider.height) * (@pos.quo((@total_size - @view_size))) + 16
         else
@@ -231,8 +230,7 @@ module WS
     # 描画時にスライダーのサイズを再計算する
     def render
       if self.visible # DXRubyのバグ回避
-        self.slider.width = (@total_size > 0 ? @view_size.quo(@total_size) * (@width - 32) : 0)
-        self.slider.width = self.slider.width.clamp(8, @width - 32)
+        self.slider.width = (@total_size > 0 ? @view_size.quo(@total_size) * (@width - 32) : 0).clamp(8, @width - 32)
         if @total_size > @view_size
           self.slider.x = (@width - 32 - slider.width) * (@pos.quo((@total_size - @view_size))) + 16
         else
