@@ -473,5 +473,11 @@ module WS
       @cursor_pos = 0
       set_draw_range
     end
+
+    def resize(w, h)
+      self.image.dispose if self.image
+      self.image = Image.new(w, h, COLOR[:background]).draw_border(false)
+      super
+    end
   end
 end
