@@ -174,6 +174,7 @@ module WS
       add_key_handler(K_CTRL + K_V) do
         before = @text.dup
         str = Rclip.getData.force_encoding("SJIS").encode("UTF-8").gsub(/\r\n/, "").gsub(/\r/, "").gsub(/\n/, "")
+        @text = @text.dup
         if @selected_range.empty?
           @text[@cursor_pos, 0] = str
         else
@@ -216,6 +217,7 @@ module WS
     # 文字が入力されたらカーソル位置に挿入
     def on_string(str)
       before = @text.dup
+      @text = @text.dup
       if @selected_range.empty?
         @text[@cursor_pos, 0] = str
       else
