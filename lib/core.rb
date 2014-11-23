@@ -565,6 +565,10 @@ module WS
       self.instance_eval &b if b
     end
 
+    def set_margin(top, bottom, left, right)
+    	@margin_top, @margin_bottom, @margin_left, @margin_right = top, bottom, left, right
+    end
+
     def layout(type=nil, &b)
       @data << WSLayout.new(type, @obj, self, &b)
       self
