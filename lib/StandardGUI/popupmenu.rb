@@ -11,7 +11,7 @@ module WS
       @font = Font.new(12)
 
       # メニューアイテムからサイズ算出
-      width = menuitems.map{|o| @font.get_width(o.str)}.max
+      width = menuitems.map{|o| o ? @font.get_width(o.str) : 0}.max
       height = @font.size * menuitems.size
 
       super(tx, ty, width + 10, height + 8)
