@@ -10,11 +10,27 @@ module WS
     end
     
     def x=(v)
-      super(v+12)
+      super(v + 12)
     end
     
     def y=(v)
-      super(v+20)
+      super(v + 20)
+    end
+
+    def width
+      super + 24
+    end
+    
+    def height
+      super + 32
+    end
+        
+    def width=(v)
+      super(v - 24)
+    end
+    
+    def height=(v)
+      super(v - 32)
     end
     
     def resize(width, height)
