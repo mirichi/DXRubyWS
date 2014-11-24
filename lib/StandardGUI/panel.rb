@@ -9,6 +9,18 @@ module WS
       @border  = border
     end
     
+    def x=(v)
+      super(v+12)
+    end
+    
+    def y=(v)
+      super(v+20)
+    end
+    
+    def resize(width, height)
+      super(width - 24, height - 32)
+    end
+    
     # 描画
     def draw
       super

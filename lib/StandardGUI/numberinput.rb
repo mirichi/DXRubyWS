@@ -73,11 +73,11 @@ module WS
       c_numtext.add_key_handler(K_RETURN){ check_text; signal(:change, @value) }
       # スピンボタン変動小の作成
 		  font_s = Font.new(8)
-		  c_b_add_s = WSSpinButton.new(width - 18,          0, 16, height / 2 - 2)
+		  c_b_add_s = WSSpinButton.new(width - 18,          0, 16, height / 2 - 1)
       c_b_add_s.font = font_s
       c_b_add_s.caption = "▲"
       c_b_add_s.add_handler(:click, self.method(:click_add_button_s))
-      c_b_sub_s = WSSpinButton.new(width - 18, height / 2, 16, height / 2 - 2)
+      c_b_sub_s = WSSpinButton.new(width - 18, height / 2, 16, height / 2 - 1)
       c_b_sub_s.font = font_s  
       c_b_sub_s.caption = "▼"
       c_b_sub_s.add_handler(:click, self.method(:click_sub_button_s))
@@ -85,6 +85,22 @@ module WS
       add_control(c_numtext, :c_numtext)
       add_control(c_b_add_s, :c_add_s)
       add_control(c_b_sub_s, :c_sub_s)	  
+      
+      # オートレイアウト
+      layout(:hbox) do
+        self.set_margin(0,0,0,0)
+        add obj.c_numtext, true, false
+        layout(:vbox) do
+          self.set_margin(0,0,0,0)
+          add obj.c_add_s, false, false
+          add obj.c_sub_s, false, false
+          self.resizable_width = false
+          self.width = 16
+        end
+      end
+      
+      resize(width, height)
+      
     end
 		
     # 加算ボタン小の押下処理
@@ -201,21 +217,21 @@ module WS
      c_numtext.add_key_handler(K_RETURN){ check_text; signal(:change, @value) }
      # スピンボタン変動小の作成
      font_s = Font.new(6)
-     c_b_add_s = WSSpinButton.new(width - 34,          2, 16, height / 2 - 2)
+     c_b_add_s = WSSpinButton.new(0, 0, 16, height / 2 - 1)
      c_b_add_s.font = font_s
      c_b_add_s.caption = "▲"
      c_b_add_s.add_handler(:click, self.method(:click_add_button_s))
-     c_b_sub_s = WSSpinButton.new(width - 34, height / 2, 16, height / 2 - 2)
+     c_b_sub_s = WSSpinButton.new(0, 0, 16, height / 2 - 1)
      c_b_sub_s.font = font_s  
      c_b_sub_s.caption = "▼"
      c_b_sub_s.add_handler(:click, self.method(:click_sub_button_s))
      # スピンボタン変動大の作成
      font_b = Font.new(8)
-     c_b_add_b = WSSpinButton.new(width - 18,          2, 16, height / 2 - 2)
+     c_b_add_b = WSSpinButton.new(0, 0, 16, height / 2 - 1)
      c_b_add_b.font = font_b
      c_b_add_b.caption = "▲"
      c_b_add_b.add_handler(:click, self.method(:click_add_button_b))
-     c_b_sub_b = WSSpinButton.new(width - 18, height / 2, 16, height / 2 - 2)
+     c_b_sub_b = WSSpinButton.new(0, 0, 16, height / 2 - 1)
      c_b_sub_b.font = font_b  
      c_b_sub_b.caption = "▼"
      c_b_sub_b.add_handler(:click, self.method(:click_sub_button_b))
@@ -225,6 +241,27 @@ module WS
      add_control(c_b_sub_s, :c_sub_s)
      add_control(c_b_add_b, :c_add_l)
      add_control(c_b_sub_b, :c_sub_l)      
+     
+     # オートレイアウト
+     layout(:hbox) do
+       self.set_margin(0, 0, 0, 0)
+       add obj.c_numtext, true, true
+       layout(:vbox) do
+         self.set_margin(1, 1, 0, 0)
+         add obj.c_add_s, false, false
+         add obj.c_sub_s, false, false
+         self.resizable_width = false
+         self.width = 16
+       end
+       layout(:vbox) do
+         self.set_margin(1, 1, 0, 0)
+         add obj.c_add_l, false, false
+         add obj.c_sub_l, false, false
+         self.resizable_width = false
+         self.width = 16
+       end
+     end
+     
    end
    
    # 加算ボタン大の押下処理
