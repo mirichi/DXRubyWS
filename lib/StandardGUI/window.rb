@@ -7,9 +7,7 @@ module WS
   class WSWindow < WSWindowBase
     attr_accessor :border_width # ウィンドウボーダーの幅
     attr_reader :window_focus # ウィンドウ上のフォーカスを持つコントロール
-    include WindowFocus
     include Resizable
-    include Focusable
 
     ### ■ウィンドウ内容を描画するクライアント領域の定義■ ###
     class WSWindowClient < WSContainer
