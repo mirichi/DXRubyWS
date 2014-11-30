@@ -572,7 +572,7 @@ module WS
       @width, @height = parent.width, parent.height
       @min_width = @min_height = 0
       @x = @y = 0
-      @space = 8
+      @space = 0
       @margin_left = @margin_right = @margin_top = @margin_bottom = 0
       @resizable_width = @resizable_height = true
       @data = []
@@ -670,7 +670,7 @@ module WS
         undef_size_count = @data.count{|o| o.resizable_width}
 
         # サイズ確定オブジェクトのサイズ合計
-        total = @data.inject(0){|t, o| t += (o.resizable_width ? 0 : o.width)}
+        total = @data.inject(0){|t, o| t += (o.resizable_width ? 0 : o.width + self.space)}
 
         # サイズが確定されていないオブジェクトの配列作成
         undef_size_ctl = @data.select{|o| o.resizable_width}.sort_by{|o|o.min_width}.reverse
@@ -685,7 +685,7 @@ module WS
             rest -= o.min_width # このぶんは確定とする
             count -= 1
           else
-            width = rest / count
+            width = (rest - self.space * (count -1)) / count
             break
           end
         end
@@ -697,8 +697,8 @@ module WS
         when 0 # 均等
           # 座標調整
           adjust_x do |o|
-            tmp = (self.width - @margin_left - @margin_right - total) / (@data.size + 1) # オブジェクトの間隔を足す
-            point += (tmp > 0 ? tmp : 0)
+            tmp = (self.width - @margin_left - @margin_right - total - self.space) / (@data.size + 1) # オブジェクトの間隔を足す
+            point += (tmp > 0 ? tmp  + self.space: 0)
             @new_x = point
             point += @new_width
           end
@@ -710,7 +710,7 @@ module WS
             if o.resizable_width # 最大化するオブジェクトを最大化
               @new_width = (width < @new_min_width ? @new_min_width : width)
             end
-            point += @new_width
+            point += @new_width + self.space
           end
         end
 
@@ -719,7 +719,7 @@ module WS
         undef_size_count = @data.count{|o| o.resizable_height}
 
         # サイズ確定オブジェクトのサイズ合計
-        total = @data.inject(0){|t, o| t += (o.resizable_height ? 0 : o.height)}
+        total = @data.inject(0){|t, o| t += (o.resizable_height ? 0 : o.height + self.space)}
 
         # サイズが確定されていないオブジェクトの配列作成
         undef_size_ctl = @data.select{|o| o.resizable_height}.sort_by{|o|o.min_height}.reverse
@@ -734,7 +734,7 @@ module WS
             rest -= o.min_height # このぶんは確定とする
             count -= 1
           else
-            height = rest / count
+            height = (rest - self.space * (count - 1)) / count
             break
           end
         end
@@ -746,8 +746,8 @@ module WS
         when 0 # 均等
           # 座標調整
           adjust_y do |o|
-            tmp = (self.height - @margin_top - @margin_bottom - total) / (@data.size + 1) # オブジェクトの間隔を足す
-            point += (tmp > 0 ? tmp : 0)
+            tmp = (self.height - @margin_top - @margin_bottom - total - self.space) / (@data.size + 1) # オブジェクトの間隔を足す
+            point += (tmp > 0 ? tmp + self.space : 0)
             @new_y = point
             point += @new_height
           end
@@ -759,7 +759,7 @@ module WS
             if o.resizable_height # 最大化するオブジェクトを最大化
               @new_height = (height < @new_min_height ? @new_min_height : height)
             end
-            point += @new_height
+            point += @new_height + self.space
           end
         end
       end
