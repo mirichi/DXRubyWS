@@ -39,7 +39,7 @@ module WS
       # キャプションの描画
       if @caption.length > 0
         cw = @font.get_width(@caption) + 2
-        cs = 2
+        cs = 4
         self.target.draw_font( self.x + 8, self.y, @caption, @font, :color=>COLOR[:font])
       else
         cw = 0
@@ -51,8 +51,8 @@ module WS
         sy = self.y + 8
         ex = self.x + @width
         ey = self.y + @height
-        self.target.draw_line( sx, sy, sx + 4, sy, COLOR[:darkshadow])
-        self.target.draw_line( sx, sy + 1, sx + 4 - cs, sy + 1, COLOR[:highlight])
+        self.target.draw_line( sx, sy, sx + 8 - cs, sy, COLOR[:darkshadow])
+        self.target.draw_line( sx, sy + 1, sx + 8 - cs, sy + 1, COLOR[:highlight])
         self.target.draw_line( sx + 8 + cw, sy, ex, sy, COLOR[:darkshadow])
         self.target.draw_line( sx + 8 + cw, sy + 1, ex, sy + 1, COLOR[:highlight])
         self.target.draw_line( sx, sy, sx, ey, COLOR[:darkshadow])

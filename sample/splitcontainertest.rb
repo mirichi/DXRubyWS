@@ -7,134 +7,172 @@ require_relative '../lib/fontcache'
 module WS
   class SeparatorTest < WSWindow
     def initialize
-      super(100,100,400,300)
-      sch = WSSplitContainerH.new(4,8,384, 260)
-      scv = WSSplitContainerV.new(4,8,384, 260)
-      
-      client.add_control(sch)
-      sch.client_b.add_control(scv)
-      
-      sch.client_a.add_control(b1 = WSButton.new(50,50,100,20))
-      scv.client_b.add_control(b2 = WSButton.new(100,100,100,20))
-      b1.add_handler(:click) {|obj, tx, ty|self.button1_click(tx, ty)}
-      b2.add_handler(:click) {|obj, tx, ty|self.button2_click(tx, ty)}
-
-      sch.client_a.add_control(t1 = WSTextBox.new(50,130,100,20))
-
-      sch.client_a.layout(:vbox) do
-      	self.set_margin(16,16,16,16)
-        add b1, true, false
-        add t1, true, false
-      end
-      sch.client_b.layout(:hbox) do
-      	self.set_margin(0,0,0,0)
-      	add scv, true, true
-      end
-      scv.client_b.layout(:hbox) do
-      	self.set_margin(16,16,16,16)
-      	add b2, false, false
+      super(0,0,560,400)
+      # 垂直配置コンテナ
+      scv = WSSplitContainer.new(0,0,32,32, :v)
+      scv.separator_size = 8
+      scv.space = 4
+      scv.add_client(WSButton.new(0,0,72,72, "ボタンA"), :c_panel_d)
+      scv.add_client(WSPanel.new(0,0,72,72, "パネルE"), :c_panel_e)
+      scv.c_panel_d.min_height = 72
+      scv.c_panel_e.min_height = 72
+      # 水平配置コンテナ
+      sch = WSSplitContainer.new(0,0,32,32, :h)
+      sch.separator_size = 8
+      sch.space = 4
+      sch.add_client(WSLightContainer.new(0,0,72,24), :c_panel_a)
+      sch.add_client(WSLightContainer.new(0,0,72,24), :c_panel_b)
+      sch.add_client(WSLightContainer.new(0,0,72,24), :c_panel_c)
+      sch.add_client(scv)
+      sch.c_panel_a.min_width = 72
+      sch.c_panel_b.min_width = 72
+      sch.c_panel_c.min_width = 72
+      # コンテナ要素の追加
+      scv.c_panel_e.add_control(WSLabel.new(0,0,32,22,"チェックボックス"), :label_a)
+      scv.c_panel_e.add_control(WSCheckBox.new(0,0,32,"チェックボックスA"), :checkbox_a)
+      scv.c_panel_e.add_control(WSCheckBox.new(0,0,32,"チェックボックスB"), :checkbox_b)
+      scv.c_panel_e.add_control(WSCheckBox.new(0,0,32,"チェックボックスC"), :checkbox_c)
+      scv.c_panel_e.client.layout(:vbox) do
+      	self.space = 4
+      	add obj.label_a, true, false
+      	add obj.checkbox_a, true, false
+      	add obj.checkbox_b, true, false
+      	add obj.checkbox_c, true, false
       	layout
       end
-      
-      
-    end
-
-    def button1_click(tx, ty)
-      WS.desktop.add_control(WS::WSMessageBox.new("MessageBoxTest", "メッセージボックステスト1"))
-    end
-    def button2_click(tx, ty)
-      WS.desktop.add_control(WS::WSMessageBox.new("MessageBoxTest", "メッセージボックステスト2"))
-    end
-  end
-  
-  
-  ### セパレーター付きコンテナの定義 ###
-  class WSSplitContainerH < WSContainer
-  	class WSClient < WSContainer
-  	  def initialize(x, y, width, height)
-  	  	super
-  	  	self.image.bgcolor = COLOR[:highlight]
-  	  end
-    end
-  	
-  	class WSSeparator < WSControl
-  		include Draggable 
-  		attr_accessor :client
-  	  def initialize(x, y, width, height)
-  	  	super
-  	  	self.image = Image.new(width, height, COLOR[:shadow])
-  	  end
-    end
-    
-  	def initialize(x, y, width, height)
-  		super
-  		create_controls
-  	end
-  	
-  	def create_controls
-      add_control(WSClient.new(0, 0, width / 2, height), :client_a)
-      add_control(WSClient.new(0, 0, width / 2, height), :client_b)
-      add_control(WSSeparator.new(0, 0, 8, height), :c_separator)
-    	c_separator.add_handler(:drag_move) do |obj, x|
-  	    obj.x = (obj.x + x).clamp(64, width - 64)
-  	    client_a.resize(obj.x - client_a.x, client_a.height)
-  	    obj.signal(:slide)
-  	  end
-      c_separator.add_handler(:slide){  @layout.auto_layout }
-      # オートレイアウト
-      layout(:hbox) do
-      	add obj.client_a, false, true 
-      	add obj.c_separator, false, true
-      	add obj.client_b, true, true
+      sch.c_panel_a.add_control(WSLabel.new(0,0,32,22,"ラベルa"), :label_b)
+      sch.c_panel_a.add_control(WSLabel.new(0,0,32,22,"ラベルb"), :label_c)
+      sch.c_panel_a.add_control(WSLabel.new(0,0,32,22,"ラベルc"), :label_d)
+      sch.c_panel_a.layout(:vbox) do
+      	self.space = 32
+      	add obj.label_b, true, false
+      	add obj.label_c, true, false
+      	add obj.label_d, true, false
+      	layout
       end
-  	end
+      # クライアントのオートレイアウト
+      client.add_control(sch)
+      client.layout(:hbox) do
+      	set_margin(8,8,8,8)
+        add sch, true, true
+      end
+      
+      # SplitContainerのレイアウト初期化
+      sch.init_layout
+      scv.init_layout
+      
+    end
   end
   
   ### セパレーター付きコンテナの定義 ###
-  class WSSplitContainerV < WSContainer
-  	class WSClient < WSContainer
-  	  def initialize(x, y, width, height)
-  	  	super
-  	  	self.image.bgcolor = COLOR[:highlight]
-  	  end
-    end
-  	
+  class WSSplitContainer < WSContainer
+
+  	### セパレータの定義 ###
   	class WSSeparator < WSControl
   		include Draggable 
   		attr_accessor :client
-  	  def initialize(x, y, width, height)
-  	  	super
+  	  def initialize(x, y, width, height, client, type=:h)
+  	  	super(x, y, width, height)
+  	  	@client = client
+  	  	@type = type
+  	  	init_handler
   	  	self.image = Image.new(width, height, COLOR[:shadow])
+  	  end
+  	  
+  	  def init_handler
+  	  	case @type
+  	  	when :h # 水平セパレータ
+  	  	  add_handler(:drag_move) do |obj, x, y|
+  	  	  	# クライアント幅をリサイズ
+  	  	  	new_width = [@client.width + x, @client.min_width].max
+  	        obj.x = obj.x + x
+  	        @client.resize(new_width, @client.height)
+  	        obj.signal(:slide)
+  	  	  end
+  	  	when :v # 垂直セパレータ
+  	  		add_handler(:drag_move) do |obj, x, y|
+  	  			new_height = [@client.height + y, @client.min_height].max
+  	        obj.y = obj.y + y
+  	        @client.resize(@client.width, new_height)
+  	        obj.signal(:slide)
+  	  	  end
+  	  	end
+  	  end
+  	  
+  	  def set_image
+  	    self.image.dispose if self.image
+  	    self.image = Image.new(width, height, COLOR[:shadow])
+  	  end
+  	  
+  	  def resize(width, height)
+  	    super(width, height)
+  	    set_image
   	  end
     end
     
-  	def initialize(x, y, width, height)
-  		super
-  		create_controls
+    attr_reader   :clients
+    attr_reader   :separators
+    attr_accessor :space
+    
+	  def initialize(x, y, width, height, type=:h)
+ 	  	super(x, y, width, height)
+ 	  	@type = type
+ 	  	@clients = []
+	  	@separators = []
+	  	@separator_size = 8
+	  	@space = 0
   	end
   	
-  	def create_controls
-      add_control(WSClient.new(0, 0, width, height / 2), :client_a)
-      add_control(WSClient.new(0, 0, width, height / 2), :client_b)
-      add_control(WSSeparator.new(0, 0, width, 8), :c_separator)
-    	c_separator.add_handler(:drag_move) do |obj, x, y|
-  	    obj.y = (obj.y + y).clamp(64, height - 64)
-  	    client_a.resize(client_a.height ,obj.y - client_a.y)
-  	    obj.signal(:slide)
-  	  end
-      c_separator.add_handler(:slide){  @layout.auto_layout }
-      # オートレイアウト
-      layout(:vbox) do
-      	add obj.client_a, true, false 
-      	add obj.c_separator, true, false
-      	add obj.client_b, true, true
+  	# セパレーターサイズ
+  	def separator_size=(v)
+  		@separator_size = v
+  		@separators.each do |separator|
+  			separator.resize(@separator_size, @separator_size)
+  		end
+  	end
+  	
+  	# クライアント追加
+  	def add_client(obj, name=nil)
+  		# セパレータの追加
+  		if @clients.size > 0
+   			separator = WSSeparator.new(0, 0, @separator_size, @separator_size, @clients.last, @type)
+  			separator.add_handler(:slide){  @layout.auto_layout }
+  			add_control(separator)
+  			@separators << separator
+  		end
+      # クライアントの追加
+  		add_control(obj, name)
+  		@clients << obj
+  	end
+  	
+  	# オートレイアウト
+    def init_layout
+      case @type
+      when :h # 水平レイアウト
+      	layout(:hbox) do
+      		s = obj.clients.size-1
+      		self.space = obj.space
+      	  for i in 0..s
+      	  	add obj.clients[i], (i == s), true
+    	  	  add obj.separators[i], false, true if s > 0 && i != s
+      	  end
+        end
+      when :v # 垂直レイアウト
+      	layout(:vbox) do
+      		s = obj.clients.size-1
+      		self.space = obj.space
+      		for i in 0..s
+      	  	add obj.clients[i], true, (i == s)
+    	  	  add obj.separators[i], true, false if s > 0 && i != s
+      	  end
+        end
       end
   	end
   end
   
 end
 
-w = WS::SeparatorTest.new
+w  = WS::SeparatorTest.new
 WS.desktop.add_control w
 
 Window.loop do
@@ -142,9 +180,3 @@ Window.loop do
   break if Input.key_push?(K_ESCAPE)
   Window.caption = Window.get_load.to_s
 end
-
-
-
-
-
-
