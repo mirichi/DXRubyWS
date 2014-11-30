@@ -329,7 +329,8 @@ module WS
 
     # 自身の配下にコントロールを追加する
     # nameでシンボルを渡されるとその名前でgetterメソッドを追加する
-    def add_control(obj, name=nil)
+    # _add_controlは書き換えないようにする
+    def _add_control(obj, name=nil)
       obj.parent = self
       
       @childlen << obj
@@ -343,9 +344,15 @@ module WS
       end
       obj
     end
+    
+    # コントロール追加に変更を加えたい場合はこちらを書き換える
+    def add_control(obj, name=nil)
+    	_add_control(obj, name)
+    end
 
     # コントロールの削除
-    def remove_control(obj, name=nil)
+    # _remove_controlは書き換えないようにする
+    def _remove_control(obj, name=nil)
       @childlen.delete(obj)
       if name
         tmp = class << self;self;end
@@ -355,6 +362,12 @@ module WS
       end
       obj
     end
+    
+    # コントロールの削除に変更を加えたい場合はこちらを書き換える
+    def remove_control(obj, name=nil)
+    	remove_control(obj, name)
+    end
+
 
     # Sprite#update時に配下のコントロールにもupdateを投げる
     def update
@@ -375,13 +388,13 @@ module WS
       end
       super
     end
-
+    
     # オートレイアウト設定開始
     def layout(type=nil, &b)
       @layout = WSLayout.new(type, self, self, &b)
       @layout.auto_layout if self.width and self.height
     end
-
+    
     # サイズの変更でRenderTargetをresizeし、オートレイアウトを起動する
     def resize(width, height)
       super
@@ -552,13 +565,14 @@ module WS
   class WSLayout
     attr_accessor :type, :x, :y, :width, :height, :resizable_width, :resizable_height, :obj, :parent
     attr_accessor :margin_left, :margin_right, :margin_top, :margin_bottom
-    attr_accessor :min_width, :min_height
+    attr_accessor :min_width, :min_height, :space
 
     def initialize(type, obj, parent, &b)
       @type, @obj = type, obj
       @width, @height = parent.width, parent.height
       @min_width = @min_height = 0
       @x = @y = 0
+      @space = 8
       @margin_left = @margin_right = @margin_top = @margin_bottom = 0
       @resizable_width = @resizable_height = true
       @data = []

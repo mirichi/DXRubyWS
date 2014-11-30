@@ -3,38 +3,34 @@
 module WS
   class WSPanel < WSLightContainer
 
+    class WSPanelClient < WSLightContainer
+    end
+    
     def initialize(sx, sy, width, height, caption="", border = true)
-      super(sx + 12, sy + 20, width - 24, height - 32)
+      super(sx, sy, width, height)
       @caption = caption
       @border  = border
+      create_client
     end
     
-    def x=(v)
-      super(v + 12)
+    def create_client
+      _add_control(WSPanelClient.new(0, 0, 32, 32), :client)
+      layout(:hbox) do 
+        set_margin(32, 8, 8, 8)
+        add obj.client, true, true
+      end
     end
     
-    def y=(v)
-      super(v + 20)
-    end
-
-    def width
-      super + 24
-    end
-    
-    def height
-      super + 32
-    end
-        
-    def width=(v)
-      super(v - 24)
-    end
-    
-    def height=(v)
-      super(v - 32)
-    end
-    
-    def resize(width, height)
-      super(width - 24, height - 32)
+    # コントロールの追加(クライアントに直接追加します)
+    def add_control(obj, name=nil)
+      client.add_control(obj , name)
+      if name
+        tmp = class << self;self;end
+        tmp.class_eval do
+          define_method(name) do obj end
+        end
+      end
+      obj
     end
     
     # 描画
@@ -44,21 +40,21 @@ module WS
       if @caption.length > 0
         cw = @font.get_width(@caption) + 2
         cs = 2
-        self.target.draw_font( self.x - 2 , self.y - 20, @caption, @font, :color=>COLOR[:font])
+        self.target.draw_font( self.x + 8, self.y, @caption, @font, :color=>COLOR[:font])
       else
         cw = 0
         cs = 0
       end
       # ボーダーの描画
       if @border
-        sx = self.x - 12
-        sy = self.y - 12
-        ex = self.x + @width + 12
-        ey = self.y + @height + 12
-        self.target.draw_line( sx, sy, self.x - 4 - cs, sy, COLOR[:darkshadow])
-        self.target.draw_line( sx, sy + 1, self.x - 4 - cs, sy + 1, COLOR[:highlight])
-        self.target.draw_line( self.x - 4 + cw, sy, ex, sy, COLOR[:darkshadow])
-        self.target.draw_line( self.x - 4 + cw, sy + 1, ex, sy + 1, COLOR[:highlight])
+        sx = self.x
+        sy = self.y + 8
+        ex = self.x + @width
+        ey = self.y + @height
+        self.target.draw_line( sx, sy, sx + 4, sy, COLOR[:darkshadow])
+        self.target.draw_line( sx, sy + 1, sx + 4 - cs, sy + 1, COLOR[:highlight])
+        self.target.draw_line( sx + 8 + cw, sy, ex, sy, COLOR[:darkshadow])
+        self.target.draw_line( sx + 8 + cw, sy + 1, ex, sy + 1, COLOR[:highlight])
         self.target.draw_line( sx, sy, sx, ey, COLOR[:darkshadow])
         self.target.draw_line( sx + 1, sy + 1, sx + 1, ey, COLOR[:highlight])
         self.target.draw_line( sx, ey - 1, ex, ey - 1, COLOR[:darkshadow])
