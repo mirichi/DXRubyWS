@@ -365,7 +365,7 @@ module WS
     
     # コントロールの削除に変更を加えたい場合はこちらを書き換える
     def remove_control(obj, name=nil)
-    	remove_control(obj, name)
+    	_remove_control(obj, name)
     end
 
 
