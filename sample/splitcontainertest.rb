@@ -4,6 +4,8 @@ require_relative '../lib/dxrubyws'
 require_relative '../lib/standardgui'
 require_relative '../lib/fontcache'
 
+WS.set_theme("guibasic")
+
 module WS
   class SeparatorTest < WSWindow
     def initialize

@@ -55,8 +55,8 @@ module WS
       end
       
       #resize時に@image変更
-      def resize
-        super
+      def resize(width, height)
+        super(width, height)
         update_image(true)
       end
       
@@ -114,7 +114,7 @@ module WS
       end
     end
     
-    def refresh
+    def set_image
       @image.each{|image| image.dispose if image.disposed?}
       
       @btn_image =Image.new(@height - 4, @height - 4, COLOR[:base]).triangle_fill(7, 11, 3, 4, 11, 4, COLOR[:font]).draw_border(true) # 暫定
@@ -124,6 +124,7 @@ module WS
       @image[:usual].draw(2 + @width - @height, 2, @btn_image)
       @image[:active] = @image[:usual].dup
       @image[:active].draw(3, 3, @active_image)
+      refreshed
     end
     
     def resize(width, height)
@@ -160,6 +161,7 @@ module WS
     end
     
     def render
+      set_image if refresh?
       self.image = @image[state] || @image[:usual]
       super
     end

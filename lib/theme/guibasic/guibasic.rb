@@ -185,7 +185,7 @@ module WS
 
     include ButtonGradation
     
-    def refresh
+    def set_image
       @image.each_value{|image| image.dispose if image.disposed?}
        
       @@shader_image.resize(width, height)
