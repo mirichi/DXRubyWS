@@ -21,7 +21,7 @@ module WS
   #COLOR[:windowframe_low]  = [150, 26, 210]
   #COLOR[:windowframe_high] = [128, 240, 200]
   #COLOR[:windowframe_low]  = [255, 60, 210]
-  COLOR[:windowtitle_font]  = [255, 255, 255]
+  COLOR[:windowtitle_font]  = [16, 16, 112]
   #ボタン
   COLOR[:button_high] = [240, 240, 240]
   COLOR[:button_low]  = [160, 160, 160]
