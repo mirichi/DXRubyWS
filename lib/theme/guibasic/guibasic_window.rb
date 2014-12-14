@@ -1,9 +1,8 @@
 # coding: utf-8
 
 module WS
-  class WSWindow
-    
-    ### フレーム画像の作成 ###
+	module WindowFrameBasic
+	  ### フレーム画像の作成 ###
     @@frameimg = {:activated => {}, :deactivated => {}}
     
     # 画像の読み込み
@@ -31,7 +30,13 @@ module WS
     frame_tmpimg.dispose
     frame_render.dispose
     frame_img.dispose
-    
+	end
+	
+  class WSWindow
+  	
+  	# MixIn
+  	include WindowFrameBasic
+  	
     ### ■ウィンドウ内容を描画するクライアント領域の定義■ ###
     class WSWindowClient < WSContainer
     end
@@ -146,5 +151,51 @@ module WS
       super
     end
     
+  end
+  
+  # ダイアログボックスのスーパークラス
+  class WSDialogBase
+
+  	# MixIn
+  	include WindowFrameBasic
+	  
+	  # オートレイアウト
+    def init_layout
+      layout(:vbox) do
+        self.margin_top = 2
+        self.margin_left = self.margin_right = self.margin_bottom = self.obj.border_width
+        add obj.window_title
+        add obj.client
+      end
+    end
+	  
+	  # ボーダー幅のデフォルト値
+    def default_border_width
+      return 8
+    end
+    
+    # ウィンドウタイトルの高さ
+    def window_title_height
+      return 22
+    end
+	  
+  	def draw
+      sx = self.x
+      ex = self.x + self.width
+      sy = self.y
+      ey = self.y + self.height
+      faw, fah, fbw, fbh, fcw, fch = 16, 24, 8, 48, 8, 8
+      rate = (self.height - fah - fch) / 1.0 / fbh
+      frameimg = activated? ? @@frameimg[:activated] : @@frameimg[:deactivated]
+      self.target.draw(sx, sy, frameimg[:windowframe_upper_left])
+      self.target.draw(ex-faw, sy, frameimg[:windowframe_upper_right])
+      self.target.draw(sx, ey-fch, frameimg[:windowframe_lower_left])
+      self.target.draw(ex-fcw, ey-fch, frameimg[:windowframe_lower_right])
+      self.target.draw_scale(sx+faw, sy, frameimg[:windowframe_up],self.width - faw * 2,1,0,0)
+      self.target.draw_scale(sx+fcw, ey-fch, frameimg[:windowframe_low],self.width - fcw * 2,1,0,0)
+      self.target.draw_scale(sx, sy+fah, frameimg[:windowframe_left],1,rate,0,0)
+      self.target.draw_scale(ex-fbw, sy+fah, frameimg[:windowframe_right],1,rate,0,0)
+  		super      
+    end
   end
 end
