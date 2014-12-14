@@ -76,38 +76,32 @@ module WS
       end
 
       # ボタン押した
-      if Input.mouse_down?(M_LBUTTON) and @mouse_l_flag == false
-        @mouse_l_flag = true
+      if Input.mouse_push?(M_LBUTTON)
         tmp.mouse_event_dispatch(:mouse_push, tx, ty)
       end
   
       # ボタン離した
-      if !Input.mouse_down?(M_LBUTTON) and @mouse_l_flag == true
-        @mouse_l_flag = false
+      if Input.mouse_release?(M_LBUTTON)
         tmp.mouse_event_dispatch(:mouse_release, tx, ty)
       end
 
       # 中ボタン押した
-      if Input.mouse_down?(M_MBUTTON) and @mouse_m_flag == false
-        @mouse_m_flag = true
+      if Input.mouse_push?(M_MBUTTON)
         tmp.mouse_event_dispatch(:mouse_m_push, tx, ty)
       end
   
       # 中ボタン離した
-      if !Input.mouse_down?(M_MBUTTON) and @mouse_m_flag == true
-        @mouse_m_flag = false
+      if Input.mouse_release?(M_MBUTTON)
         tmp.mouse_event_dispatch(:mouse_m_release, tx, ty)
       end
 
       # 右ボタン押した
-      if Input.mouse_down?(M_RBUTTON) and @mouse_r_flag == false
-        @mouse_r_flag = true
+      if Input.mouse_push?(M_RBUTTON)
         tmp.mouse_event_dispatch(:mouse_r_push, tx, ty)
       end
   
       # 右ボタン離した
-      if !Input.mouse_down?(M_RBUTTON) and @mouse_r_flag == true
-        @mouse_r_flag = false
+      if Input.mouse_release?(M_RBUTTON)
         tmp.mouse_event_dispatch(:mouse_r_release, tx, ty)
       end
 
