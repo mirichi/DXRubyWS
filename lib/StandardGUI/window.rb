@@ -58,7 +58,6 @@ module WS
         # ウィンドウタイトル
         label = WSLabel.new(nil, nil, nil, height, title)
         label.fore_color = COLOR[:windowtitle_font]
-          p 
         label.font = Font.new(14, "ＭＳ ゴシック", :weight=>true)
         add_control(label)
         
