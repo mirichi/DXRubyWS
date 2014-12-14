@@ -91,6 +91,9 @@ module WS
       
       # マウスキャプチャする
       WS.capture(self, true)
+
+      # yesにフォーカスをあてる
+      btn_yes.activate
     end
     
     # ウィンドウを閉じたら次の優先ウィンドウにフォーカスを移す
