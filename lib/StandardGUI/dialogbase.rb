@@ -13,19 +13,18 @@ module WS
     def initialize(tx, ty, sx, sy, caption = "WindowTitle", style = {})
       super(tx, ty, sx, sy)
       
+      # クライアント領域は単純なコンテナである
+      _add_control(create_client, :client)
+      
       @border_width = default_border_width
       
       # ウィンドウタイトルはそれでひとつのコントロールを作る
       # メニューやツールバー、ステータスバーもたぶんそうなる
       window_title = WSWindow::WSWindowTitle.new(nil, nil, nil, window_title_height, caption)
-      add_control(window_title, :window_title)
+      _add_control(window_title, :window_title)
       window_title.add_handler(:close) {self.close}
       window_title.add_handler(:drag_move, self.method(:on_drag_move))
       window_title.close_button = (style[:close_button] == true)
-      
-      # クライアント領域は単純なコンテナである
-      client = WSWindow::WSWindowClient.new
-      add_control(client, :client)
       
       # オートレイアウトでコントロールの位置を決める
       # Layout#objで元のコンテナを参照できる
@@ -43,6 +42,22 @@ module WS
         add obj.window_title
         add obj.client
       end
+    end
+    
+    def create_client
+      WSWindow::WSWindowClient.new
+    end
+    
+    # コントロールの追加(クライアントに直接追加します)
+    def add_control(obj, name=nil)
+      client.add_control(obj , name)
+      if name
+        tmp = class << self;self;end
+        tmp.class_eval do
+          define_method(name) do obj end
+        end
+      end
+      obj
     end
     
     # ウィンドウタイトルの高さ
