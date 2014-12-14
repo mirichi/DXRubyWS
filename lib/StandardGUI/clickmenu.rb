@@ -15,7 +15,7 @@ module WS
       WS.capture(@rightclickmenu)
     end
   end
-
+  
   # マウスの中ボタンを押したらポップアップメニューを表示する機能を追加するモジュール
   module UseMiddleClickMenu
     attr_accessor :m_menuitems

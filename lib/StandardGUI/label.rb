@@ -14,27 +14,27 @@ module WS
       self.caption = caption
       @fore_color = COLOR[:font]
     end
-
+    
     # キャプションの設定
     def caption=(text)
       @caption = text
-      refresh     
+      refresh
     end
-
+    
     # 文字色の設定
     def fore_color=(color)
       @fore_color = color
-      refresh     
+      refresh
     end
-
+    
     # resize時の処理
     def resize(width, height)
       super
       self.image.dispose if self.image
       self.image = Image.new(width, height)
-      refresh     
+      refresh
     end
-
+    
     # 画像の作成
     def render
       if refresh?

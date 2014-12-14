@@ -7,7 +7,7 @@ module WS
     # スクロールバーのスライダークラス
     class WSVScrollBarSlider < WSControl
       include Draggable
-
+      
       def initialize(tx=nil, ty=nil, width=nil, height=nil)
         super
         add_handler(:drag_move) do |obj, dx, dy|
@@ -15,7 +15,7 @@ module WS
           signal(:slide, self.y)
         end
       end
-
+      
       def render
         # スライダーの高さが変更された場合に画像を再生成する
         if @old_height != @height
@@ -27,7 +27,7 @@ module WS
         super
       end
     end
-
+    
     class WSScrollBarUpButton < WSSpinButton
       def set_image
         super
@@ -35,7 +35,7 @@ module WS
         @image[:pushed].triangle_fill(8, 4, 4, 11, 12, 11, COLOR[:font])
       end
     end
-
+    
     class WSScrollBarDownButton < WSSpinButton
       def set_image
         super
@@ -46,7 +46,7 @@ module WS
     
     attr_accessor :view_size, :total_size, :shift_qty, :pos
     include RepeatClickable
-
+    
     def initialize(tx=nil, ty=nil, width=16, height=nil)
       super
       self.image.bgcolor = COLOR[:light]
@@ -54,7 +54,7 @@ module WS
       @view_size = 0
       @total_size = 0
       @shift_qty = 1
-
+      
       slider = WSVScrollBarSlider.new(0, 16, width, 16)
       slider.add_handler(:slide) do |obj, ty|
         if @height - 32 - slider.height == 0
@@ -65,7 +65,7 @@ module WS
         signal(:slide, @pos)
       end
       add_control(slider, :slider)
-
+      
       ub = WSScrollBarUpButton.new(0, 0, 16, 16)
       add_control(ub, :btn_up)
       ub.add_handler(:click) do
@@ -73,7 +73,7 @@ module WS
         @pos = 0 if @pos < 0
         signal(:slide, @pos)
       end
-
+      
       db = WSScrollBarDownButton.new(0, 0, 16, 16)
       add_control(db, :btn_down)
       db.add_handler(:click) do
@@ -84,20 +84,20 @@ module WS
           signal(:slide, @pos)
         end
       end
-
+      
       layout(:vbox) do
         add ub
         layout
         add db
       end
     end
-
+    
     def resize(width, height)
       super
       @pos = @pos.clamp(0, (@total_size - @view_size < 0 ? 0 : @total_size - @view_size))
       signal(:slide, @pos)
     end
-
+    
     # 描画時にスライダーのサイズを再計算する
     def render
       if self.visible # DXRubyのバグ回避
@@ -110,13 +110,13 @@ module WS
       end
       super
     end
-
+    
     def slide(dy)
       @pos += dy
       @pos = @pos.clamp(0, (@total_size - @view_size < 0 ? 0 : @total_size - @view_size))
       signal(:slide, @pos)
     end
-
+    
     def on_click(tx, ty)
       if ty < self.slider.y
         @pos -= @view_size
@@ -130,13 +130,13 @@ module WS
       end
     end
   end
-
+  
   # 横スクロールバークラス
   class WSHScrollBar < WSContainer
     # スクロールバーのスライダークラス
     class WSHScrollBarSlider < WSControl
       include Draggable
-
+      
       def initialize(tx=nil, ty=nil, width=nil, height=nil)
         super
         add_handler(:drag_move) do |obj, dx, dy|
@@ -144,7 +144,7 @@ module WS
           signal(:slide, self.x)
         end
       end
-
+      
       def render
         # スライダーの幅が変更された場合に画像を再生成する
         if @old_width != @width
@@ -156,7 +156,7 @@ module WS
         super
       end
     end
-
+    
     class WSScrollBarLeftButton < WSSpinButton
       def set_image
         super
@@ -164,7 +164,7 @@ module WS
         @image[:pushed].triangle_fill(4, 9, 11, 5, 11, 12, COLOR[:font])
       end
     end
-
+    
     class WSScrollBarRightButton < WSSpinButton
       def set_image
         super
@@ -175,7 +175,7 @@ module WS
     
     attr_accessor :view_size, :total_size, :shift_qty, :pos
     include RepeatClickable
-
+    
     def initialize(tx=nil, ty=nil, width=nil, height=16)
       super
       self.image.bgcolor = COLOR[:light]
@@ -183,7 +183,7 @@ module WS
       @view_size = 0
       @total_size = 0
       @shift_qty = 1
-
+      
       slider = WSHScrollBarSlider.new(16, 0, 16, height)
       slider.add_handler(:slide) do |obj, tx|
         if @width - 32 - slider.width == 0
@@ -194,7 +194,7 @@ module WS
         signal(:slide, @pos)
       end
       add_control(slider, :slider)
-
+      
       lb = WSScrollBarLeftButton.new(0, 0, 16, 16)
       add_control(lb, :btn_left)
       lb.add_handler(:click) do
@@ -202,7 +202,7 @@ module WS
         @pos = 0 if @pos < 0
         signal(:slide, @pos)
       end
-
+      
       rb = WSScrollBarRightButton.new(0, 0, 16, 16)
       add_control(rb, :btn_right)
       rb.add_handler(:click) do
@@ -213,20 +213,20 @@ module WS
           signal(:slide, @pos)
         end
       end
-
+      
       layout(:hbox) do
         add lb
         layout
         add rb
       end
     end
-
+    
     def resize(width, height)
       super
       @pos = @pos.clamp(0, (@total_size - @view_size < 0 ? 0 : @total_size - @view_size))
       signal(:slide, @pos)
     end
-
+    
     # 描画時にスライダーのサイズを再計算する
     def render
       if self.visible # DXRubyのバグ回避
@@ -239,13 +239,13 @@ module WS
       end
       super
     end
-
+    
     def slide(dx)
       @pos += dx
       @pos = @pos.clamp(0, (@total_size - @view_size < 0 ? 0 : @total_size - @view_size))
       signal(:slide, @pos)
     end
-
+    
     def on_click(tx, ty)
       if tx < self.slider.x
         @pos -= @view_size
@@ -259,28 +259,28 @@ module WS
       end
     end
   end
-
+  
   # スクロールバー付きコンテナ
   class WSScrollableContainer < WSLightContainer
     attr_accessor :client, :h_header_size, :v_header_size, :vsb, :hsb
-
+    
     # 生成時にクライアント領域にするコントロールが必須
     def initialize(x=nil, y=nil, width=nil, height=nil, client)
       super(x, y, width, height)
       @client = client
       @h_header_size = @v_header_size = 0
       add_control(client, :client)
-
+      
       # スクロールバー生成
       vsb = WSVScrollBar.new
       add_control(vsb, :vsb)
       hsb = WSHScrollBar.new
       add_control(hsb, :hsb)
-
+      
       # 縦横スクロールバー表示用レイアウト
       @layout_vsb_hsb = WSLayout.new(:vbox, self, self) do
         self.margin_left = self.margin_top = self.margin_right = self.margin_bottom = 2
-
+        
         layout(:hbox) do
           add client, true, true
           add vsb, false, true
@@ -295,34 +295,34 @@ module WS
           end
         end
       end
-
+      
       # 縦スクロールバーのみ表示用レイアウト
       @layout_vsb = WSLayout.new(:vbox, self, self) do
         self.margin_left = self.margin_top = self.margin_right = self.margin_bottom = 2
-
+        
         layout(:hbox) do
           add client, true, true
           add vsb, false, true
         end
       end
-
+      
       # 横スクロールバーのみ表示用レイアウト
       @layout_hsb = WSLayout.new(:vbox, self, self) do
         self.margin_left = self.margin_top = self.margin_right = self.margin_bottom = 2
-
+        
         layout(:vbox) do
           add client, true, true
           add hsb, true, false
         end
       end
-
+      
       # スクロールバーなし
       @layout_none = WSLayout.new(:vbox, self, self) do
         self.margin_left = self.margin_top = self.margin_right = self.margin_bottom = 2
         add client, true, true
       end
     end
-
+    
     def resize(width, height)
       size_x = width - 4 - @h_header_size# とりあえずスクロールバー無しのクライアントサイズ
       size_y = height - 4 - @v_header_size
@@ -334,7 +334,7 @@ module WS
       if size_y <= vsb.total_size
         bvsb = true
       end
-
+      
       # 横が小さくなった場合の再判定
       if bvsb and !bhsb
         size_x -= 16
@@ -342,7 +342,7 @@ module WS
           bhsb = true
         end
       end
-
+      
       # オートレイアウトの選択
       if bhsb and bvsb
         @layout = @layout_vsb_hsb
@@ -369,18 +369,18 @@ module WS
         vsb.pos = 0
         hsb.pos = 0
       end
-
+      
       super
-
+      
       hsb.view_size = client.width
       vsb.view_size = client.height
     end
-
+    
     def render
       resize(@width, @height) unless @layout
       super
     end
-
+    
     def draw
       draw_border(false)
       super

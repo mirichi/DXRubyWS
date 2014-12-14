@@ -76,7 +76,7 @@ module WS
         WS.capture(nil)
         WS.desktop.remove_control(self)
       end
-    
+      
       def selected=(v)
         old_select = @selected
         @selected = v.clamp(0, @content.size-1)
@@ -146,7 +146,7 @@ module WS
       WS.desktop.add_control(@list)
       WS.capture(@list)
     end
-
+    
     def on_key_push(k)
       if k == K_ESCAPE
         if WS.captured?(@list)
@@ -174,7 +174,7 @@ module WS
     def draw_caption
       if self.item
         self.target.draw_font(self.x + 3, self.y + 3, item.to_s, @font, {:color => activated? ? COLOR[:font_reverse] : COLOR[:font],:z => self.z})
-      end 
+      end
     end
     
     def item
@@ -192,7 +192,7 @@ module WS
     def change #新しく別のものが選択されたら呼ばれる。
       signal(:change, self.item, self.index)
     end
-
+    
     def on_leave
       if WS.captured?(@list)
         WS.capture(nil)
@@ -202,4 +202,4 @@ module WS
     end
   end
 end
- 
+
