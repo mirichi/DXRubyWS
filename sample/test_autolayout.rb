@@ -8,7 +8,7 @@ module WS
   class LayoutTest < WSWindow
     def initialize
       super(20,100,300,320)
-
+      
       self.client.add_control(b1 = WSButton.new(nil, nil, 100), :b1)
       self.client.add_control(b2 = WSButton.new, :b2)
       self.client.add_control(b3 = WSButton.new, :b3)
@@ -25,7 +25,7 @@ module WS
   class LayoutTest2 < WSWindow
     def initialize
       super(330,100,300,320)
-
+      
       self.client.add_control(b1 = WSButton.new, :b1)
       self.client.add_control(b2 = WSButton.new, :b2)
       self.client.add_control(b3 = WSButton.new, :b3)

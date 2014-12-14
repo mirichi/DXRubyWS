@@ -13,13 +13,13 @@ module WS
       super
       @pushed = false
     end
-  
+    
     def on_mouse_push(tx, ty)
       WS.capture(self)
       @pushed = true
       super
     end
-  
+    
     def on_mouse_release(tx, ty)
       @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
       @pushed = false
@@ -36,7 +36,7 @@ module WS
       end
       super
     end
-  
+    
     def on_mouse_move(tx, ty)
       @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
       if WS.captured?(self)
@@ -44,16 +44,16 @@ module WS
       end
       super
     end
-  
+    
     def on_click(tx, ty)
       signal(:click, tx, ty)
     end
-  
+    
     def on_click_cancel(tx, ty)
       signal(:click_cancel, tx, ty)
     end
   end
-
+  
   # スクロールバーのボタンのようにオートリピートで:clickシグナルを発行し続ける
   # このシグナルはupdate時に発生する
   module RepeatClickable
@@ -70,14 +70,14 @@ module WS
       super
       on_click(tx, ty)
     end
-  
+    
     def on_mouse_release(tx, ty)
       @pushed = false
       WS.capture(nil)
       @downcount = 0
       super
     end
-  
+    
     def on_mouse_move(tx, ty)
       @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
       if WS.captured?(self)
@@ -85,7 +85,7 @@ module WS
       end
       super
     end
-  
+    
     def update
       if @downcount > 0
         @downcount -= 1
@@ -96,12 +96,12 @@ module WS
       end
       super
     end
-  
+    
     def on_click(tx, ty)
       signal(:click, tx, ty)
     end
   end
-
+  
   # マウスでドラッグしたときに:drag_moveシグナルを発行する
   # また、ボタン押したら:drag_start、離したら:drag_endを発行する
   # :drag_moveシグナルの引数は相対座標
@@ -111,7 +111,7 @@ module WS
       super
       @dragging_flag = false
     end
-
+    
     def on_mouse_push(tx, ty)
       @dragging_flag = true
       WS.capture(self)
@@ -120,32 +120,32 @@ module WS
       on_drag_start(tx, ty)
       super
     end
-
+    
     def on_mouse_release(tx, ty)
       @dragging_flag = false
       WS.capture(nil)
       on_drag_end(tx, ty)
       super
     end
-
+    
     def on_mouse_move(tx, ty)
       on_drag_move(tx - @drag_old_x, ty - @drag_old_y) if @dragging_flag
       super
     end
-
+    
     def on_drag_move(tx, ty)
       signal(:drag_move, tx, ty)
     end
-
+    
     def on_drag_start(tx, ty)
       signal(:drag_start, tx, ty)
     end
-
+    
     def on_drag_end(tx, ty)
       signal(:drag_end, tx, ty)
     end
   end
-
+  
   # オブジェクトのボーダーをつかんでサイズ変更したときにresizeメソッドを呼ぶ。
   # また、サイズ変更開始時にresize_start、終了時にresize_endメソッドを呼ぶ。
   # それらを呼んだあとで同名のシグナルを発行する。
@@ -162,7 +162,7 @@ module WS
       end
       super
     end
-
+    
     def on_mouse_release(tx, ty)
       WS.capture(nil)
       Input.set_cursor(IDC_ARROW)
@@ -170,11 +170,11 @@ module WS
       signal(:resize_end)
       super
     end
-
+    
     def on_mouse_move(tx, ty)
       if WS.captured?(self)
         x1, y1, width, height = self.x, self.y, self.width, self.height
-
+        
         if @resize_left
           width += @drag_old_x - tx
           x1 += tx - @drag_old_x
@@ -187,9 +187,9 @@ module WS
         if width >= 32
           @drag_old_x = tx
         else
-           width = 32
+          width = 32
         end
-
+        
         if @resize_top
           height += @drag_old_y - ty
           y1 += ty - @drag_old_y
@@ -202,9 +202,9 @@ module WS
         if height >= 32
           @drag_old_y = ty
         else
-           height = 32
+          height = 32
         end
-
+        
         move(x1, y1)
         resize(width, height)
       else
@@ -242,26 +242,26 @@ module WS
       end
       super
     end
-
+    
     def on_mouse_out
       Input.set_cursor(IDC_ARROW)
       super
     end
-
+    
     def resize_start
     end
     def resize_end
     end
   end
-
+  
   # ダブルクリックしたときの2回目のボタン押下時に:doubleclickシグナルを発行する
   # インスタンス変数@doubleclickcout/@doubleclick_x/@doubleclick_yを使う
   # ダブルクリックの余裕は30フレーム/縦横5pixel以内で固定
   module DoubleClickable
     def on_mouse_push(tx, ty)
       if @doubleclickcount and @doubleclickcount > 0 and
-         (@doubleclick_x - tx).abs < 5 and (@doubleclick_y - ty).abs < 5
-          on_doubleclick(tx, ty)
+        (@doubleclick_x - tx).abs < 5 and (@doubleclick_y - ty).abs < 5
+        on_doubleclick(tx, ty)
       else
         @doubleclickcount = 30
         @doubleclick_x = tx
@@ -269,17 +269,17 @@ module WS
       end
       super
     end
-
+    
     def update
       @doubleclickcount -= 1 if @doubleclickcount and @doubleclickcount > 0
       super
     end
-
+    
     def on_doubleclick(tx, ty)
       signal(:doubleclick, tx, ty)
     end
   end
-
+  
   # フォーカスを受け取れるようにするモジュール
   module Focusable
     def initialize(*args)
@@ -287,7 +287,7 @@ module WS
       @focusable = true
     end
   end
-
+  
   # ウィンドウとして配下のコントロールにフォーカスを設定する機能をパッケージしたモジュール
   module WindowFocus
     # 配下のコントロールにフォーカスを設定する
@@ -298,7 +298,7 @@ module WS
       end
       super
     end
-
+    
     # ウィンドウを閉じたら次の優先ウィンドウにフォーカスを移す
     def close
       self.parent.remove_control(self)
@@ -309,7 +309,7 @@ module WS
         WS.desktop.activate
       end
     end
-
+    
     # キーハンドラを呼ばなかったらウィンドウフォーカスコントロールに転送
     def on_key_push(key)
       if @window_focus
@@ -320,7 +320,7 @@ module WS
         super
       end
     end
-
+    
     # キーハンドラを呼ばなかったらウィンドウフォーカスコントロールに転送
     def on_key_release(key)
       if @window_focus
@@ -331,13 +331,13 @@ module WS
         super
       end
     end
-
+    
     # ウィンドウ上のフォーカスがあるコントロールに文字列イベントを転送
     def on_string(str)
       @window_focus.on_string(str) if @window_focus
       super
     end
-
+    
     # コントロールにウィンドウフォーカスを設定する
     def set_focus(obj)
       return nil if @window_focus == obj
@@ -346,13 +346,13 @@ module WS
       @window_focus.on_enter if self.activated? and @window_focus
       obj
     end
-
+    
     # ウィンドウがアクティブ化したときにフォーカスコントロールにon_enterを転送
     def on_enter
       @window_focus.on_enter if @window_focus
       super
     end
-
+    
     # ウィンドウがノンアクティブ化したときにフォーカスコントロールにon_leaveを転送
     def on_leave
       @window_focus.on_leave if @window_focus
@@ -394,7 +394,7 @@ module WS
         self.height = @text.size * @font.size + 4
         
         self.image = Image.new(self.width, self.height, COLOR[:background])
-                     .box(0,0,self.width-1,self.height-1,COLOR[:border])
+        .box(0,0,self.width-1,self.height-1,COLOR[:border])
         @text.each_with_index do |v, i|
           self.image.draw_font_ex(2, i * @font.size + 2, v, @font, color: COLOR[:font], aa: false)
         end

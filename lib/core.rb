@@ -12,7 +12,7 @@ module WS
     attr_reader :min_width, :min_height
     # デフォルトフォントオブジェクト
     @@default_font = Font.new(16)
-
+    
     def initialize(tx=nil, ty=nil, width=nil, height=nil)
       super(tx, ty)
       @width = width
@@ -37,49 +37,49 @@ module WS
     # ありがちな処理なら自分で書かなくてもmodule.rbのモジュールをincludeすれば、
     # これらをオーバーライドして判定してシグナルを発行してくれるので、
     # シグナルを受けるだけでよくなる。
-
+    
     # マウスの左ボタンを押したときに呼ばれる
     def on_mouse_push(tx, ty)
       signal(:mouse_push, tx, ty)
       self
     end
-
+    
     # マウスの左ボタンを離したときに呼ばれる
     def on_mouse_release(tx, ty)
       signal(:mouse_release, tx, ty)
       self
     end
-
+    
     # マウスの中ボタンを押したときに呼ばれる
     def on_mouse_m_push(tx, ty)
       signal(:mouse_m_push, tx, ty)
       self
     end
-
+    
     # マウスの中ボタンを離したときに呼ばれる
     def on_mouse_m_release(tx, ty)
       signal(:mouse_m_release, tx, ty)
       self
     end
-
+    
     # マウスの右ボタンを押したときに呼ばれる
     def on_mouse_r_push(tx, ty)
       signal(:mouse_r_push, tx, ty)
       self
     end
-
+    
     # マウスの右ボタンを離したときに呼ばれる
     def on_mouse_r_release(tx, ty)
       signal(:mouse_r_release, tx, ty)
       self
     end
-
+    
     # マウスカーソルを動かしたときに呼ばれる
     def on_mouse_move(tx, ty)
       signal(:mouse_move, tx, ty)
       self
     end
-
+    
     # コントロールにマウスカーソルが乗ったときに呼ばれる
     def on_mouse_over
       signal(:mouse_over)
@@ -93,7 +93,7 @@ module WS
       @mouse_over = false
       self
     end
-
+    
     # マウスのホイールアップ
     def on_mouse_wheel_up(tx, ty)
       signal(:mouse_wheel_up)
@@ -105,18 +105,18 @@ module WS
       signal(:mouse_wheel_down)
       self
     end
-
+    
     # マウスイベント用の内部処理
     # WSContainerとの協調に必要。特殊なパターンでない限り、ユーザが意識する必要はない。
     def mouse_event_dispatch(event, tx, ty)
       self.__send__(("on_" + event.to_s).to_sym, tx, ty)
     end
-
+    
     # シグナル処理
     # add_handlerで登録しておいたMethodオブジェクトもしくはブロックを、signal実行時に呼び出す
     # 一応、1つのシグナルに複数のハンドラを設定することができるようになっている。はず。
     # callを呼ぶのでcallを持っていればそれが呼ばれる。
-
+    
     # シグナルハンドラの登録
     def add_handler(signal, obj=nil, &block)
       if obj
@@ -135,7 +135,7 @@ module WS
       end
       nil
     end
-
+    
     # シグナルの発行(=ハンドラの呼び出し)
     # ハンドラを呼んだらtrue、何もなければfalseを返す。
     def signal(s, *args)
@@ -148,49 +148,49 @@ module WS
         false
       end
     end
-
+    
     # 絶対座標の算出
     def get_global_vertex
       return [self.x, self.y] unless self.parent
       tx, ty = self.parent.get_global_vertex
       [self.x + tx, self.y + ty]
     end
-
+    
     # コントロールの移動/リサイズをするときはmove/resizeを呼ぶ。
     # 自分でコントロールのクラスを実装した場合、move/resize時になにか処理が必要なら実装すること。
     # :move/:resizeシグナルは外部の処理でこのコントロールのmove/resize後に何かをしたい場合に使う。
     # たとえばWSImageを派生クラスを作らず直接newした場合、画像データは外部から設定することになるが、
     # resize時に画像の再生成が必要になる。そういうときにこのイベントを捕まえて新しいサイズの画像を生成、設定する。
     # :moveシグナルは使い道ないかもしれん。
-
+    
     # コントロールの移動
     def move(tx, ty)
       self.x, self.y = tx, ty
       signal(:move, tx, ty)
       nil
     end
-
+    
     # コントロールのリサイズ
     def resize(width, height)
-    	@width = [width, @min_width].max
-    	@height = [height, @min_height].max
+      @width = [width, @min_width].max
+      @height = [height, @min_height].max
       self.collision = [0, 0, @width - 1, @height - 1]
       signal(:resize)
       nil
     end
-
+    
     # コントロールの最小幅の設定
     def min_width=(v)
-    	@min_width = v
-    	@width = [@width, v].max if @width
+      @min_width = v
+      @width = [@width, v].max if @width
     end
     
     # コントロールの最小高さの設定
     def min_height=(v)
-    	@min_height = v
-    	@height = [@height, v].max if @height
+      @min_height = v
+      @height = [@height, v].max if @height
     end
-
+    
     # キー押したイベント。引数はDXRubyのキー定数。
     # ハンドラを呼んだらtrue、何もなければfalseを返す。
     def on_key_push(key)
@@ -203,14 +203,14 @@ module WS
         end
         result ||= true
       end
-
+      
       result
     end
-
+    
     # キー離したイベント。引数はDXRubyのキー定数。
     def on_key_release(key)
     end
-
+    
     # キーハンドラ登録
     def add_key_handler(key, obj=nil, &block)
       if obj
@@ -229,44 +229,44 @@ module WS
       end
       nil
     end
-
+    
     # 文字列入力イベント
     def on_string(str)
     end
-
+    
     # フォーカスが当てられたときに呼ばれる
     def on_enter
       @active = true
       signal(:enter)
     end
-
+    
     # フォーカスを失ったときに呼ばれる
     def on_leave
       @active = false
       signal(:leave)
     end
-
+    
     # コントロールをアクティブにする
     def activate
       self.parent.set_focus(self) if self.focusable
       self
     end
-
+    
     # アクティブかどうかを返す
     def activated?
       @active
     end
-
+    
     # 有効かどうかを返す
     def enabled?
       @enabled && self.visible && (self.parent ? self.parent.enabled? : true)
     end
-
+    
     # 見えるかどうかを返す
     def visible?
       self.visible && (self.parent ? self.parent.visible? : true)
     end
-
+    
     # コントロールの状態を判定しシンボルを返す
     # 特殊な状態は継承先で個別に定義する
     # :usual            通常状態
@@ -274,19 +274,19 @@ module WS
     # :active           フォーカスを得ている
     def state
       if !@enabled
-        :disable    
+        :disable
       elsif @active
         :active
       else
         :usual
       end
-    end    
+    end
     
     # コントロールを読める文字にする
     def inspect
       "#<" + self.class.name + ">"
     end
-
+    
     # フォーカスを受け取れるコントロールを配列にして返す
     def get_focusable_control_ary
       if @focusable and self.visible and self.enabled?
@@ -295,7 +295,7 @@ module WS
         []
       end
     end
-
+    
     # フォーカスを受け取れるコントロールを返す
     def get_focusable_control(tx, ty)
       if @focusable and self.visible and self.enabled?
@@ -304,7 +304,7 @@ module WS
         nil
       end
     end
-
+    
     # リフレッシュ
     def refresh
       @refresh = true
@@ -325,22 +325,22 @@ module WS
     end
     
   end
-
-
-
-
+  
+  
+  
+  
   # 配下にコントロールを保持する機能を追加したコントロール
   # ウィンドウやリストボックスなど、自身の内部にコントロールを配置するものはWSContainerを使う。
   # マウスイベントやdraw/updateの伝播をしてくれる。
   class WSContainerBase < WSControl
     attr_accessor :childlen
-
+    
     def initialize(tx=nil, ty=nil, width=nil, height=nil)
       super
       @childlen = []
       @layout = nil
     end
-
+    
     # 自身の配下にコントロールを追加する
     # nameでシンボルを渡されるとその名前でgetterメソッドを追加する
     # _add_controlは書き換えないようにする
@@ -361,9 +361,9 @@ module WS
     
     # コントロール追加に変更を加えたい場合はこちらを書き換える
     def add_control(obj, name=nil)
-    	_add_control(obj, name)
+      _add_control(obj, name)
     end
-
+    
     # コントロールの削除
     # _remove_controlは書き換えないようにする
     def _remove_control(obj, name=nil)
@@ -379,22 +379,22 @@ module WS
     
     # コントロールの削除に変更を加えたい場合はこちらを書き換える
     def remove_control(obj, name=nil)
-    	_remove_control(obj, name)
+      _remove_control(obj, name)
     end
-
-
+    
+    
     # Sprite#update時に配下のコントロールにもupdateを投げる
     def update
       Sprite.update(@childlen)
       super
     end
-
+    
     # 引数の座標に存在する配下のコントロールを返す。無ければnil
     def find_hit_object(tx, ty)
       @hit_cursor.x, @hit_cursor.y = tx, ty
       @hit_cursor.check(@childlen.reverse)[0]
     end
-
+    
     def mouse_event_dispatch(event, tx, ty)
       if !WS.captured?(self) or WS.capture_notify # キャプチャしたのが自コンテナだった場合は配下コントロールにイベントを渡さない
         ctl = find_hit_object(tx, ty)
@@ -417,20 +417,20 @@ module WS
         @layout.auto_layout
       end
     end
-
+    
     # フォーカスを受け取れるコントロールを配列にして返す
     def get_focusable_control_ary
       ary = []
       @childlen.each do |o|
         if o.focusable and o.visible and o.enabled?
           ary.push(o)
-        else 
+        else
           ary.concat(o.get_focusable_control_ary)
         end
       end
       ary
     end
-
+    
     # 座標の位置にあってフォーカスを受け取れるコントロールを返す
     def get_focusable_control(tx, ty)
       ctl = find_hit_object(tx, ty)
@@ -438,14 +438,14 @@ module WS
       return ctl if ctl.focusable and ctl.visible and ctl.enabled?
       return ctl.get_focusable_control(tx - ctl.x, ty - ctl.y)
     end
-
+    
     # コントロールにフォーカスを設定する
     def set_focus(obj)
       self.parent.set_focus(obj) if self.parent
       obj
     end
   end
-
+  
   class WSLightContainer < WSContainerBase
     def target=(v)
       @childlen.each do |s|
@@ -460,27 +460,27 @@ module WS
       obj.target = self.target # 子コントロールの描画先は親の親
       super
     end
-
+    
     def render
       @childlen.each do |s|
         s.render if s.visible
       end
     end
-
+    
     def draw
       self.target.ox -= self.x
       self.target.oy -= self.y
-
+      
       @childlen.each do |s|
         if s.visible
           s.draw
         end
       end
-
+      
       self.target.ox += self.x
       self.target.oy += self.y
     end
-
+    
     # 自身のtargetに枠を描画する
     def draw_border(flag)
       sx = @width
@@ -508,27 +508,27 @@ module WS
       end
     end
   end
-
+  
   # self.imageにRenderTargetを持つコンテナ。
   # 配下のオブジェクトのtargetはそれが設定される。
   # したがって、配下のオブジェクトの座標は親になるWSContainerの左上隅が0,0となる。
   class WSContainer < WSContainerBase
     attr_accessor :childlen
-
+    
     def initialize(tx=nil, ty=nil, width=nil, height=nil)
       super
       width ||= 16 # サイズ省略時は適当なサイズにしておく
       height ||=16
       self.image = RenderTarget.new(width, height) # ContainerはRenderTargetを持つ
     end
-
+    
     # 自身の配下にコントロールを追加する
     # nameでシンボルを渡されるとその名前でgetterメソッドを追加する
     def add_control(obj, name=nil)
       obj.target = self.image # 子コントロールの描画先は親のRenderTargetである
       super
     end
-
+    
     # 配下のオブジェクトをすべて自身に描画する
     # self.imageに描画する処理はすべてrenderをオーバーライドして書くこと。
     # self.targetに対する描画はdrawをオーバーライドして書くこと。
@@ -542,13 +542,13 @@ module WS
         end
       end
     end
-
+    
     # サイズの変更でRenderTargetをresizeし、オートレイアウトを起動する
     def resize(width, height)
       self.image.resize(width, height) if width != @width or height != @height
       super
     end
-
+    
     # 自身のimgaeに枠を描画する
     def render_border(flag)
       sx = @width
@@ -574,13 +574,13 @@ module WS
       end
     end
   end
-
+  
   # オートレイアウト
   class WSLayout
     attr_accessor :type, :x, :y, :width, :height, :resizable_width, :resizable_height, :obj, :parent
     attr_accessor :margin_left, :margin_right, :margin_top, :margin_bottom
     attr_accessor :min_width, :min_height, :space
-
+    
     def initialize(type, obj, parent, &b)
       @type, @obj = type, obj
       @width, @height = parent.width, parent.height
@@ -592,11 +592,11 @@ module WS
       @data = []
       self.instance_eval &b if b
     end
-
+    
     def set_margin(top, bottom, left, right)
-    	@margin_top, @margin_bottom, @margin_left, @margin_right = top, bottom, left, right
+      @margin_top, @margin_bottom, @margin_left, @margin_right = top, bottom, left, right
     end
-
+    
     def layout(type=nil, &b)
       @data << WSLayout.new(type, @obj, self, &b)
       self
@@ -606,7 +606,7 @@ module WS
       @data << o
       o.resizable_width = rsw if rsw != nil
       o.resizable_height = rsh if rsh != nil
-
+      
       case @type
       when :hbox
         @min_width += (o.resizable_width ? o.min_width : o.width)
@@ -616,15 +616,15 @@ module WS
         @min_width = [@min_width, (o.resizable_width ? o.min_width : o.width)].max
       end
     end
-
+    
     def adjust_x
       @data.each do |o|
         @new_x, @new_y = o.x, o.y
         @new_width, @new_height = o.width, o.height
         @new_min_width, @new_min_height = o.min_width, o.min_height
-
+        
         yield o
-
+        
         # 直交位置サイズ調整
         if o.resizable_height
           # いっぱいに広げる
@@ -634,27 +634,27 @@ module WS
           # 真ん中にする
           @new_y = (self.height - @margin_top - @margin_bottom) / 2 - @new_height / 2 + self.y + @margin_top
         end
-
+        
         # 変わってたらmoveを呼び出す
         if @new_x != o.x or @new_y != o.y
           o.move(@new_x, @new_y)
         end
-
+        
         # 変わってたらresizeを呼び出す
         if @new_width != o.width or @new_height != o.height
           o.resize(@new_width, @new_height)
         end
       end
     end
-
+    
     def adjust_y
       @data.each do |o|
         @new_x, @new_y = o.x, o.y
         @new_width, @new_height = o.width, o.height
         @new_min_width, @new_min_height = o.min_width, o.min_height
-
+        
         yield o
-
+        
         # 直交位置サイズ調整
         if o.resizable_width
           # いっぱいに広げる
@@ -664,35 +664,35 @@ module WS
           # 真ん中にする
           @new_x = (self.width - @margin_left - @margin_right) / 2 - @new_width / 2 + self.x + @margin_left
         end
-
+        
         # 変わってたらmoveを呼び出す
         if @new_x != o.x or @new_y != o.y
           o.move(@new_x, @new_y)
         end
-
+        
         # 変わってたらresizeを呼び出す
         if @new_width != o.width or @new_height != o.height
           o.resize(@new_width, @new_height)
         end
       end
     end
-
+    
     def auto_layout
       case @type
       when :hbox # 水平に並べる
         # サイズ未定のものをカウント
         undef_size_count = @data.count{|o| o.resizable_width}
-
+        
         # サイズ確定オブジェクトのサイズ合計
         total = @data.inject(0){|t, o| t += (o.resizable_width ? 0 : o.width + self.space)}
-
+        
         # サイズが確定されていないオブジェクトの配列作成
         undef_size_ctl = @data.select{|o| o.resizable_width}.sort_by{|o|o.min_width}.reverse
-
+        
         width = 0
         rest = (self.width - @margin_left - @margin_right - total).to_f
         count = undef_size_ctl.size
-
+        
         # サイズの大きいほうから残りのすべてをmin_widthにできるかどうかを確認する
         undef_size_ctl.each do |o|
           if rest < (count * o.min_width) # 入りきらない
@@ -703,10 +703,10 @@ module WS
             break
           end
         end
-
+        
         # 座標開始位置
         point = self.x + @margin_left
-
+        
         case undef_size_count
         when 0 # 均等
           # 座標調整
@@ -716,7 +716,7 @@ module WS
             @new_x = point
             point += @new_width
           end
-
+          
         else # 最大化するものを含む
           # 座標調整
           adjust_x do |o|
@@ -727,21 +727,21 @@ module WS
             point += @new_width + self.space
           end
         end
-
+        
       when :vbox # 垂直に並べる
         # サイズ未定のものをカウント
         undef_size_count = @data.count{|o| o.resizable_height}
-
+        
         # サイズ確定オブジェクトのサイズ合計
         total = @data.inject(0){|t, o| t += (o.resizable_height ? 0 : o.height + self.space)}
-
+        
         # サイズが確定されていないオブジェクトの配列作成
         undef_size_ctl = @data.select{|o| o.resizable_height}.sort_by{|o|o.min_height}.reverse
-
+        
         height = 0
         rest = (self.height - @margin_top - @margin_bottom - total).to_f
         count = undef_size_ctl.size
-
+        
         # サイズの大きいほうから残りのすべてをmin_heightにできるかどうかを確認する
         undef_size_ctl.each do |o|
           if rest < (count * o.min_height) # 入りきらない
@@ -752,10 +752,10 @@ module WS
             break
           end
         end
-
+        
         # 座標開始位置
         point = self.y + @margin_top
-
+        
         case undef_size_count
         when 0 # 均等
           # 座標調整
@@ -765,7 +765,7 @@ module WS
             @new_y = point
             point += @new_height
           end
-
+          
         else # 最大化するものを含む
           # 座標調整
           adjust_y do |o|
@@ -777,20 +777,20 @@ module WS
           end
         end
       end
-
+      
       @data.each do |o|
         o.auto_layout if WSLayout === o
       end
     end
-
+    
     def move(tx, ty)
       @x, @y = tx, ty
     end
-
+    
     def resize(width, height)
       @width, @height = width, height
     end
-
+    
     def inspect
       "#<" + self.class.name + ">"
     end

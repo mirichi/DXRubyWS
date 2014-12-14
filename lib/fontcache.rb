@@ -4,7 +4,7 @@ require 'weakref'
 # フォントキャッシュ
 class RenderTarget
   @@font_cache = WeakRef.new({})
-
+  
   def draw_font(x, y, str, font, hash)
     GC.disable
     color = hash[:color]
@@ -20,7 +20,7 @@ class RenderTarget
     else
       data2 = data1[color] = {}
     end
-
+    
     unless data2.has_key?(str)
       width = font.get_width(str)
       return if width == 0
