@@ -290,6 +290,11 @@ module WS
   
   # ウィンドウとして配下のコントロールにフォーカスを設定する機能をパッケージしたモジュール
   module WindowFocus
+    def initialize(*args)
+      super
+      @focusable = true
+    end
+
     # 配下のコントロールにフォーカスを設定する
     def mouse_event_dispatch(event, tx, ty)
       if event == :mouse_push or event == :mouse_r_push

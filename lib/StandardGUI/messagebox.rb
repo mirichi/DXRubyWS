@@ -30,7 +30,6 @@ module WS
     
     attr_reader :border_width, :window_focus, :message # ウィンドウ上のフォーカスを持つコントロール
     include WindowFocus
-    include Focusable
     
     def initialize(caption = "", message, cancelable: true)
       @font = @@default_font

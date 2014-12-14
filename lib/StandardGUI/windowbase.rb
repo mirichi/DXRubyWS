@@ -10,7 +10,6 @@ module WS
     
     # Mix-In
     include WindowFocus
-    include Focusable
     
     # 公開インスタンス
     attr_accessor :border_width # ウィンドウボーダーの幅
