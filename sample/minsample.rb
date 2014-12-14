@@ -19,16 +19,16 @@ class WS::WSObjectBrowser < WS::WSWindow
     lbl2 = WS::WSLabel.new(0, 0, 200, 16)
     lbl2.fore_color = C_BLACK
     self.client.add_control(lbl2, :lbl2)
-
+    
     titles = [["instance_variable", 100], ["class", 150], ["to_s", 200]]
     lv = WS::WSListView.new(50, 30, 100, 160, titles)
     self.instance_variables.each do |i|
       lv.items << [i, self.instance_variable_get(i).class, self.instance_variable_get(i)]
     end
     self.client.add_control(lv, :lv)
-
+    
     add_key_handler(K_F5){redraw}
-
+    
     client.layout(:vbox) do
       layout(:hbox) do
         self.height = lbl1.height
@@ -43,14 +43,14 @@ class WS::WSObjectBrowser < WS::WSWindow
       end
     end
   end
-
+  
   def redraw
     self.client.lv.items.clear
     self.instance_variables.each do |i|
       self.client.lv.items << [i, self.instance_variable_get(i).class, self.instance_variable_get(i)]
     end
   end
-
+  
 end
 
 module UseObjectBrowser
@@ -145,21 +145,21 @@ WS::desktop.add_control(w)
 class Test < WS::WSWindow
   def initialize
     super(100, 340, 300, 200, "LayoutTest")
-
+    
     b1 = WS::WSButton.new(nil, nil, 100, nil, "btn1") # オートレイアウトで自動設定させる座標やサイズはnilでよい
-#    b2 = WS::WSButton.new(0, 0, 100, 20, "btn2")
+    #    b2 = WS::WSButton.new(0, 0, 100, 20, "btn2")
     b2 = WS::WSImageButton.new(nil, nil, Image.load('./image/enemyshot2.png'), nil, nil, "btn2")
     self.client.add_control(b1)
     self.client.add_control(b2)
-
+    
     img = WS::WSImage.new(nil, nil, 100, nil)
     self.client.add_control(img)
-
+    
     img.add_handler(:resize) do
       img.image.dispose if img.image
       img.image = Image.new(img.width, img.height, C_WHITE).circle_fill(img.width/2, img.height/2, img.width>img.height ? img.height/2 : img.width/2, C_GREEN)
     end
-
+    
     # オートレイアウトのテスト
     # WSContainer#layoutでレイアウト定義を開始する。
     # 内部でLayoutオブジェクトを作成し、そのインスタンスでブロックがinstance_evalされる。
@@ -173,16 +173,16 @@ class Test < WS::WSWindow
     # レイアウトボックス内にサイズ可変のものが無い場合：コントロールは均等の間隔で配置される。
     # ある場合：レイアウトボックスがすべて埋まるように、可変サイズのオブジェクトを大きくする。
     #           このとき、可変サイズのオブジェクトが複数あったらそれらすべてが同じサイズになるように調整される。
-
+    
     # hbox(水平配置)のレイアウトボックス内にresizeble_height=trueのオブジェクトが存在した場合、
     # 縦サイズはレイアウトボックスのサイズまで拡大される。縦横逆の場合も同じ。
-
+    
     # レイアウトボックスは縦横可変サイズのオブジェクトとして扱われ、
     # 引数なしのlayoutだけを配置すると空っぽの可変サイズオブジェクトとして動作する。
-
+    
     # self.margin_top=/left=/bottom=/right=でレイアウトボックスのマージンを設定できる。
     # self.をつけないとローカル変数への代入とみなされてしまうらしい。
-
+    
     # addメソッドの第2、第3引数でそれぞれresizable_width/resizable_heightを指定できるようにした。
     # widthやheightがnilになっている場合、自動的にresizable_width/resizable_heightがtrueになるので指定する必要がなくなった。
     # でもnilじゃなく値を入れたときにオートレイアウトさせたければ第2、第3引数を指定する必要がある。
@@ -215,32 +215,32 @@ class TestWindow1 < WS::WSWindow
   attr_accessor :button1, :label1, :textbox1, :textbox2, :image1
   def initialize(*param)
     super
-    @button1 = WS::WSButton.new(10, 10, 150, 20, "Show MessageBox")
+    @button1 = WS::WSButton.new(10, 10, 150, 20, "Show ConfirmBox")
     @label1 = WS::WSLabel.new(10, 50, 100, 20, "label")
     @textbox1 = WS::WSTextBox.new(70, 45, 200, 20)
-#    @textbox2 = WS::WSTextBox.new(70, 80, 200, 20)
+    #    @textbox2 = WS::WSTextBox.new(70, 80, 200, 20)
     @image1 = WS::WSImage.new(200, 10, 30, 30)
     @pulldown1 = WS::WSPullDownList.new(70, 80, 200, 20, ["てすと1","てすと2","テスト3"])
-
+    
     self.client.add_control(@button1)
     self.client.add_control(@label1)
     self.client.add_control(@textbox1)
-#    self.client.add_control(@textbox2)
+    #    self.client.add_control(@textbox2)
     self.client.add_control(@image1)
     self.client.add_control(@pulldown1)
-
+    
     @button1.add_handler(:click) {|obj, tx, ty|self.button1_click(tx, ty)}
     @image1.add_handler(:mouse_over){|obj|self.image1_mouse_over}
     @image1.add_handler(:mouse_out){|obj|self.image1_mouse_out}
     @image1.add_handler(:mouse_push){|obj, tx, ty|self.image1_mouse_push(tx, ty)}
     @image1.add_handler(:mouse_r_push){|obj, tx, ty|self.image1_mouse_r_push(tx, ty)}
-
+    
     @chkbox = WS::WSCheckBox.new(10, 105, 200, "あいう")
     self.client.add_control(@chkbox)
-
+    
     @radio1 = WS::WSRadioButton.new(10, 129, 200, ["テスト1","テスト2","テスト3"], 12)
     self.client.add_control(@radio1)
-
+    
     init
   end
 end
@@ -254,25 +254,36 @@ class TestWindow1
     @image_blue = Image.new(30, 30, C_BLUE)
     @image1.image = @image_white
   end
-
+  
   def image1_mouse_over
     @image1.image = @image_black
   end
-
+  
   def image1_mouse_out
     @image1.image = @image_white
   end
-
+  
   def image1_mouse_push(tx, ty)
     @image1.image = @image_red
   end
-
+  
   def image1_mouse_r_push(tx, ty)
     @image1.image = @image_blue
   end
-
+  
   def button1_click(tx, ty)
-    WS.desktop.add_control(WS::WSMessageBox.new("MessageBoxTest", "メッセージボックステスト"))
+    cfm = WS::WSConfirmBox.new("WSConfirmBox Test", "YesかNoか？")
+    cfm.add_handler(:no){self.confirm_no}
+    cfm.add_handler(:yes){self.confirm_yes}
+    WS.desktop.add_control(cfm)
+  end
+  
+  def confirm_yes
+    WS.desktop.add_control(WS::WSMessageBox.new("WSMessageBox Test", "やはり賛成か！"))
+  end
+  
+  def confirm_no
+    WS.desktop.add_control(WS::WSMessageBox.new("WSMessageBox Test", "やはり反対か！"))
   end
 end
 
