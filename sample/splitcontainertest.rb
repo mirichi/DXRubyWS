@@ -77,8 +77,10 @@ module WS
   	  	super(x, y, width, height)
   	  	@client = client
   	  	@type = type
+  	  	self.min_width  = 2
+  	  	self.min_height = 2
   	  	init_handler
-  	  	self.image = Image.new(width, height, COLOR[:shadow])
+  	  	set_image
   	  end
   	  
   	  def init_handler

@@ -8,7 +8,8 @@ module WS
   class WSControl < Sprite
     
     attr_accessor :parent, :font, :width, :height, :resizable_width, :resizable_height
-    attr_accessor :min_width, :min_height, :focusable, :active, :enabled
+    attr_accessor :focusable, :active, :enabled
+    attr_reader :min_width, :min_height
     # デフォルトフォントオブジェクト
     @@default_font = Font.new(16)
 
@@ -171,10 +172,23 @@ module WS
 
     # コントロールのリサイズ
     def resize(width, height)
-      @width, @height = width, height
-      self.collision = [0, 0, width - 1, height - 1]
+    	@width = [width, @min_width].max
+    	@height = [height, @min_height].max
+      self.collision = [0, 0, @width - 1, @height - 1]
       signal(:resize)
       nil
+    end
+
+    # コントロールの最小幅の設定
+    def min_width=(v)
+    	@min_width = v
+    	@width = [@width, v].max if @width
+    end
+    
+    # コントロールの最小高さの設定
+    def min_height=(v)
+    	@min_height = v
+    	@height = [@height, v].max if @height
     end
 
     # キー押したイベント。引数はDXRubyのキー定数。
