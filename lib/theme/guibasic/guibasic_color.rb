@@ -1,6 +1,6 @@
 # coding: utf-8
 module WS
-    
+  
   ### 色定数 ###
   COLOR[:base] = [190, 190, 190]         # ウィンドウやボタン等の基本色
   COLOR[:border] = [80,80,80]            # 境界線
@@ -16,7 +16,7 @@ module WS
   COLOR[:mouse_over] = [0, 64, 128]
   #ウィンドウフレーム
   COLOR[:windowframe_high] = [186, 210, 235]
-  COLOR[:windowframe_low]  = [150, 180, 210] 
+  COLOR[:windowframe_low]  = [150, 180, 210]
   #COLOR[:windowframe_high] = [24, 210, 128]
   #COLOR[:windowframe_low]  = [150, 26, 210]
   #COLOR[:windowframe_high] = [128, 240, 200]
