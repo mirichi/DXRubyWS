@@ -20,7 +20,7 @@ module WS
         super(nil,nil,w+10,@font.size+4)
         
         @image = {true  => Image.new(w + 10, @font.size + 4).draw(4, 0, Image.new(w + 2, @font.size + 4, [150,150,150])).draw_font_ex(5, 2, @str, @font, :color=>COLOR[:font],:aa=>false),
-                  false => Image.new(w + 10, @font.size + 4).draw_font_ex(5, 2, @str, @font, :color=>COLOR[:font],:aa=>false)}
+          false => Image.new(w + 10, @font.size + 4).draw_font_ex(5, 2, @str, @font, :color=>COLOR[:font],:aa=>false)}
         self.image = @image[false]
         
         @mouse_on = false

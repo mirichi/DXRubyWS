@@ -8,7 +8,7 @@ module WS
     # リストビューのタイトル部分のクラス
     class WSListViewTitle < WSContainer
       attr_accessor :titles
-
+      
       def initialize(tx, ty, width, height, titles)
         super(tx, ty, width, height)
         self.image.bgcolor = COLOR[:base]
@@ -17,10 +17,10 @@ module WS
         @titles_bak = nil
         @dragging_number = nil
       end
-
+      
       def update
         pos = self.parent.parent.hsb.pos
-
+        
         unless @titles == @titles_bak
           @titles_bak = @titles.map {|title| title.dup}
           @titles_image = []
@@ -32,20 +32,20 @@ module WS
           signal(:title_resize)
         end
       end
-
+      
       def draw
         pos = self.parent.parent.hsb.pos
-
+        
         # タイトル
         tx = 0
         @titles.each_with_index do |title, i|
           self.image.draw(tx - pos, 0, @titles_image[i])
           tx += title[1]
         end
-
+        
         # ボーダー
         self.render_border(true)
-
+        
         # セパレータ
         sx = @width
         sy = @height
@@ -57,20 +57,20 @@ module WS
           self.image.draw_line(tx-pos  ,0,tx-pos  ,sy-2,COLOR[:highlight])
           self.image.draw_line(tx+1-pos,1,tx+1-pos,sy-3,COLOR[:light])
         end
-
+        
         super
       end
-
+      
       # 以下、セパレータドラッグ処理
       def on_mouse_push(tx, ty)
         total = 0
         @titles.size.times do |i|
           total += @titles[i][1]
-
+          
           # セパレータの判定用Sprite生成
           s = Sprite.new(total - 2 - self.parent.parent.hsb.pos, 0)
           s.collision = [0, 0, 4, 15]
-
+          
           # 判定
           @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
           if @hit_cursor === s
@@ -82,7 +82,7 @@ module WS
         end
         super
       end
-
+      
       def on_mouse_release(tx, ty)
         @dragging_number = nil
         @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
@@ -90,23 +90,23 @@ module WS
         Input.set_cursor(IDC_ARROW) unless self === @hit_cursor
         super
       end
-  
+      
       def on_mouse_out
         Input.set_cursor(IDC_ARROW)
         super
       end
-
+      
       def on_mouse_move(tx, ty)
         @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
         total = 0
         flag = false
         @titles.size.times do |i|
           total += @titles[i][1]
-
+          
           # セパレータの判定用Sprite生成
           s = Sprite.new(total - 2 - self.parent.parent.hsb.pos, 0)
           s.collision = [0, 0, 4, 15]
-
+          
           # 判定
           if @hit_cursor === s
             Input.set_cursor(IDC_SIZEWE)
@@ -117,24 +117,24 @@ module WS
         if !flag and @dragging_number == nil
           Input.set_cursor(IDC_ARROW)
         end
-
+        
         # ドラッグ中処理
         if @dragging_number
           tmp = @titles[@dragging_number][1] + tx - @drag_old_x
           tmp = 1 if tmp < 1
           @titles[@dragging_number][1] = tmp
           @drag_old_x = tx if tmp > 1
-#          signal(:title_resize)
+          #          signal(:title_resize)
         end
         super
       end
     end
-
+    
     class WSListViewMain < WSContainer
       def draw
         @parent.parent.vsb.total_size = @parent.parent.items.length * @parent.parent.font.size
         @parent.parent.hsb.total_size = @parent.title.titles.inject(0){|total, o| total += o[1]}
-  
+        
         # リスト描画
         total = @parent.title.titles.inject(0){|t, o| t += o[1]}
         @parent.parent.items.each_with_index do |item, i|
@@ -159,21 +159,21 @@ module WS
         super
       end
     end
-
+    
     # リストビュー内のクライアント領域クラス
     class WSListViewClient < WSContainer
       include DoubleClickable
       def initialize(x, y, width, height, titles)
         super(x, y, width, height)
-
+        
         # タイトル作成
         title = WSListViewTitle.new(0, 0, width - 4 - 16, 16, titles)
         add_control(title, :title)
-
+        
         # リストビュー本体
         listview = WSListViewMain.new(0, 0, width - 4 - 16, 16)
         add_control(listview, :listview)
- 
+        
         self.image.bgcolor = COLOR[:background]
         layout(:vbox) do
           add title, true, false
@@ -181,11 +181,11 @@ module WS
         end
       end
     end
-
+    
     attr_reader :items, :cursor, :client_tmp_rt
     attr_accessor :cursor_image
     include Focusable
-
+    
     def initialize(tx, ty, width, height, titles)
       # クライアント領域作成。WSScrollableContainerではsuperにクライアント領域コントロールを渡す必要があるので
       # superより先にこれだけ作る。
@@ -195,7 +195,7 @@ module WS
       @items = [] # リストの中身
       @cursor = 0 # カーソルの位置
       @v_header_size = 16
-
+      
       client.listview.add_handler(:mouse_push) do |obj, tx, ty|
         tmp = ((vsb.pos + ty) / @font.size).to_i
         if tmp < @items.size
@@ -203,25 +203,25 @@ module WS
           signal(:select, @cursor) # 項目がクリックされたら:selectシグナル発行
         end
       end
-
+      
       client.title.add_handler(:title_resize) do
         @client_tmp_rt.each_with_index{|rt, i|rt.resize(client.title.titles[i][1], client.listview.height)}
         resize(@width, @height)
       end
-
+      
       # 文字描画領域
       @client_tmp_rt = titles.map {|t|RenderTarget.new(t[1], client.listview.height)}
-
+      
       # スクロールバーを使うための設定。
       vsb.view_size = client.listview.height       # 画面に見えているデータのサイズ(ピクセル単位)
       vsb.shift_qty = @font.size          # 上下ボタンで動く量(ピクセル単位)
       hsb.view_size = client.width        # 画面に見えているデータのサイズ(ピクセル単位)
       hsb.shift_qty = @font.size          # 上下ボタンで動く量(ピクセル単位)
-
+      
       # マウスホイール処理
       client.listview.add_handler(:mouse_wheel_up){vsb.slide(-vsb.shift_qty * 3)}
       client.listview.add_handler(:mouse_wheel_down){vsb.slide(vsb.shift_qty * 3)}
-
+      
       # キーボードイベント
       add_key_handler(K_UP) do
         old_cursor = @cursor
@@ -276,7 +276,7 @@ module WS
         signal(:select, @cursor) if old_cursor != @cursor
       end
     end
-
+    
     def resize(width, height)
       vsb.total_size = @items.length * @font.size
       hsb.total_size = client.title.titles.inject(0){|t, o| t += o[1]}
@@ -284,7 +284,7 @@ module WS
       vsb.view_size = client.listview.height
       hsb.view_size = client.width
       @client_tmp_rt.each_with_index{|rt, i|rt.resize(client.title.titles[i][1], client.listview.height)}
-
+      
       # カーソル位置の画像を生成する
       if !@cursor_image or @cursor_image.width != hsb.total_size
         @cursor_image.dispose if @cursor_image

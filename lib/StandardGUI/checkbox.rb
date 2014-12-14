@@ -6,7 +6,7 @@ module WS
     # 公開インスタンス
     attr_accessor :fore_color
     attr_reader :caption, :checked
-
+    
     # Mix-In
     include Focusable
     
@@ -19,7 +19,7 @@ module WS
       # 画像を作成する
       set_image
     end
-
+    
     # コントロールの値を参照
     def value
       @checked
@@ -29,7 +29,7 @@ module WS
     def value=(v)
       self.checked = v
     end
-        
+    
     def checked=(v)
       @checked = v
       refresh
@@ -41,7 +41,7 @@ module WS
         @image[false] = image_checkbox_false
         @image[true]  = image_checkbox_true
       end
-      # 画像の張りなおし  
+      # 画像の張りなおし
       self.image.dispose if self.image
       self.image = Image.new(self.width, self.height)
       render_checkbox
@@ -55,27 +55,27 @@ module WS
         ex = 14
         ey = 14
         IMG_CACHE[:checkbox_true] = Image.new(16, 16)
-                             .line(sx, sy, sx, ey, COLOR[:darkshadow])
-                             .line(sx, sy+1 , ex, sy+1 , COLOR[:darkshadow])
-                             .line(sx, sy , ex, sy, COLOR[:darkshadow])
-                             .line(sx+1, sy ,sx+1, ey, COLOR[:darkshadow])
-                             .line(sx+1,ey-1,ex-1,ey-1, COLOR[:shadow])
-                             .line(sx, ey, ex, ey, COLOR[:highlight])
-                             .line(ex-1, sy+1, ex-1, ey-1, COLOR[:base])
-                             .line(ex, sy, ex, ey, COLOR[:highlight])
-                             .box_fill(sx+2, sy+2, ex-2, ey-2, COLOR[:background])
-                             .line(sx+3, ey-5, sx+5, ey-3, COLOR[:marker])
-                             .line(sx+3, ey-6, sx+5, ey-4, COLOR[:marker])
-                             .line(sx+3, ey-7, sx+5, ey-5, COLOR[:marker])
-                             .line(sx+3, ey-8, sx+5, ey-6, COLOR[:marker])
-                             .line(sx+6, ey-4, ex-3, ey-8, COLOR[:marker])
-                             .line(sx+6, ey-5, ex-3, ey-9, COLOR[:marker])
-                             .line(sx+6, ey-6, ex-3, ey-10, COLOR[:marker])
-                             .line(sx+6, ey-7, ex-3, ey-11, COLOR[:marker])
+        .line(sx, sy, sx, ey, COLOR[:darkshadow])
+        .line(sx, sy+1 , ex, sy+1 , COLOR[:darkshadow])
+        .line(sx, sy , ex, sy, COLOR[:darkshadow])
+        .line(sx+1, sy ,sx+1, ey, COLOR[:darkshadow])
+        .line(sx+1,ey-1,ex-1,ey-1, COLOR[:shadow])
+        .line(sx, ey, ex, ey, COLOR[:highlight])
+        .line(ex-1, sy+1, ex-1, ey-1, COLOR[:base])
+        .line(ex, sy, ex, ey, COLOR[:highlight])
+        .box_fill(sx+2, sy+2, ex-2, ey-2, COLOR[:background])
+        .line(sx+3, ey-5, sx+5, ey-3, COLOR[:marker])
+        .line(sx+3, ey-6, sx+5, ey-4, COLOR[:marker])
+        .line(sx+3, ey-7, sx+5, ey-5, COLOR[:marker])
+        .line(sx+3, ey-8, sx+5, ey-6, COLOR[:marker])
+        .line(sx+6, ey-4, ex-3, ey-8, COLOR[:marker])
+        .line(sx+6, ey-5, ex-3, ey-9, COLOR[:marker])
+        .line(sx+6, ey-6, ex-3, ey-10, COLOR[:marker])
+        .line(sx+6, ey-7, ex-3, ey-11, COLOR[:marker])
       end
       IMG_CACHE[:checkbox_true]
     end
-        
+    
     ### チェックボックス画像(false) ###
     def image_checkbox_false
       unless IMG_CACHE[:checkbox_false]
@@ -84,15 +84,15 @@ module WS
         ex = 14
         ey = 14
         IMG_CACHE[:checkbox_false] = Image.new(16, 16)
-                             .line(sx, sy, sx, ey, COLOR[:darkshadow])
-                             .line(sx, sy+1 , ex, sy+1 , COLOR[:darkshadow])
-                             .line(sx, sy , ex, sy, COLOR[:darkshadow])
-                             .line(sx+1, sy ,sx+1, ey, COLOR[:darkshadow])
-                             .line(sx+1,ey-1,ex-1,ey-1, COLOR[:shadow])
-                             .line(sx, ey, ex, ey, COLOR[:highlight])
-                             .line(ex-1, sy+1, ex-1, ey-1, COLOR[:base])
-                             .line(ex, sy, ex, ey, COLOR[:highlight])
-                             .box_fill(sx+2, sy+2, ex-2, ey-2, COLOR[:background])
+        .line(sx, sy, sx, ey, COLOR[:darkshadow])
+        .line(sx, sy+1 , ex, sy+1 , COLOR[:darkshadow])
+        .line(sx, sy , ex, sy, COLOR[:darkshadow])
+        .line(sx+1, sy ,sx+1, ey, COLOR[:darkshadow])
+        .line(sx+1,ey-1,ex-1,ey-1, COLOR[:shadow])
+        .line(sx, ey, ex, ey, COLOR[:highlight])
+        .line(ex-1, sy+1, ex-1, ey-1, COLOR[:base])
+        .line(ex, sy, ex, ey, COLOR[:highlight])
+        .box_fill(sx+2, sy+2, ex-2, ey-2, COLOR[:background])
       end
       IMG_CACHE[:checkbox_false]
     end
@@ -104,7 +104,7 @@ module WS
       signal(:change, @checked)
       super
     end
-
+    
     def on_key_push(key)
       if key == K_SPACE
         self.checked = !@checked
@@ -112,7 +112,7 @@ module WS
       end
       super
     end
-
+    
     ### caption設定 ###
     def caption=(c)
       @caption = c

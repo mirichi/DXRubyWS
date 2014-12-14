@@ -1,8 +1,8 @@
-# coding: utf-8
+﻿# coding: utf-8
 
 module WS
   class WSPanel < WSLightContainer
-
+    
     class WSPanelClient < WSLightContainer
     end
     
@@ -15,7 +15,7 @@ module WS
     
     def create_client
       _add_control(WSPanelClient.new(0, 0, 32, 32), :client)
-      layout(:hbox) do 
+      layout(:hbox) do
         set_margin(32, 8, 8, 8)
         add obj.client, true, true
       end

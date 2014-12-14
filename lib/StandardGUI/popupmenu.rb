@@ -9,11 +9,11 @@ module WS
     def initialize(tx, ty, menuitems)
       @menuitems = menuitems
       @font = Font.new(12)
-
+      
       # メニューアイテムからサイズ算出
       width = menuitems.map{|o| o ? @font.get_width(o.str) : 0}.max
       height = @font.size * menuitems.size
-
+      
       super(tx, ty, width + 10, height + 8)
       self.image.bgcolor = COLOR[:base]
       
@@ -27,7 +27,7 @@ module WS
         end
       end
     end
-
+    
     # WSContainerでは配下オブジェクトの選択はinternalのメソッドで処理されるが、
     # PopupMenuはマウスキャプチャするため配下のオブジェクトが呼ばれないので自前で処理する
     def mouse_event_dispatch(event, tx, ty)
@@ -42,14 +42,14 @@ module WS
           else
             ctl.mouse_event_dispatch(:mouse_move, tx - ctl.x, ty - ctl.y)
           end
-  
+          
           return ctl
         else
           @hit_cursor.x, @hit_cursor.y = tx + self.x, ty + self.y
           if @hit_cursor === self
             return self
           end
-
+          
           if @submenu
             @submenu.mouse_event_dispatch(:mouse_move, self.x + tx - @submenu.x, self.y + ty - @submenu.y)
           else
@@ -73,7 +73,7 @@ module WS
           if @hit_cursor === self
             return self
           end
-  
+          
           # メニューウィンドウ外だった場合はデスクトップにイベントを送ってメニューを消す
           # マウスボタンを離したときは送らない(操作性のため)
           if event != :mouse_release and event != :mouse_r_release and event != :mouse_m_release
@@ -91,7 +91,7 @@ module WS
         end
       end
     end
-
+    
     def render
       # メニュー描画
       @menuitems.each_with_index do |s, i|
@@ -99,18 +99,18 @@ module WS
           tmp = i * @font.size + @font.size * 0.5 + 3
           self.image.draw_line(5, tmp,  @width - 7, tmp,[80,80,80])
           self.image.draw_line(5, tmp + 1,  @width - 7, tmp + 1,[240,240,240])
-        else         
+        else
           s.render
           s.draw
         end
       end
-
+      
       # ボーダーライン
       render_border(true)
-
-    super
+      
+      super
     end
-
+    
     def draw
       if @submenu
         @submenu.render
