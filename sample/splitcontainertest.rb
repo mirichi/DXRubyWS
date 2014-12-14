@@ -11,7 +11,7 @@ module WS
     def initialize
       super(0,0,560,400)
       # 垂直配置コンテナ
-      scv = WSSplitContainer.new(0,0,32,32, :v)
+      scv = WSSplitContainer.new(nil,nil,nil,nil, :v)
       scv.separator_size = 8
       scv.space = 4
       scv.add_client(WSButton.new(0,0,72,72, "ボタンA"), :c_panel_d)
@@ -19,11 +19,11 @@ module WS
       scv.c_panel_d.min_height = 72
       scv.c_panel_e.min_height = 72
       # 水平配置コンテナ
-      sch = WSSplitContainer.new(0,0,32,32, :h)
+      sch = WSSplitContainer.new
       sch.separator_size = 8
       sch.space = 4
-      sch.add_client(WSLightContainer.new(0,0,72,24), :c_panel_a)
-      sch.add_client(WSLightContainer.new(0,0,72,24), :c_panel_b)
+      sch.add_client(WSLightContainer.new, :c_panel_a)
+      sch.add_client(WSListBox.new, :c_panel_b)
       sch.add_client(WSLightContainer.new(0,0,72,24), :c_panel_c)
       sch.add_client(scv)
       sch.c_panel_a.min_width = 72
@@ -116,7 +116,7 @@ module WS
     attr_reader   :separators
     attr_accessor :space
     
-	  def initialize(x, y, width, height, type=:h)
+	  def initialize(x=nil, y=nil, width=nil, height=nil, type=:h)
  	  	super(x, y, width, height)
  	  	@type = type
  	  	@clients = []
@@ -142,6 +142,8 @@ module WS
   			add_control(separator)
   			@separators << separator
   		end
+      # クライアントサイズがnilの場合サイズ矯正
+      obj.resize(obj.width || 16, obj.height || 16) if obj.width.nil? || obj.height.nil?
       # クライアントの追加
   		add_control(obj, name)
   		@clients << obj

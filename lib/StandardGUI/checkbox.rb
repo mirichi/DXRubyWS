@@ -11,7 +11,7 @@ module WS
     include Focusable
     
     def initialize(tx, ty, width, caption = "")
-      super(tx, ty, width, @@default_font.size)
+      super(tx, ty, width, 22)
       @image = {}
       @checked = false
       self.caption = caption
@@ -44,7 +44,7 @@ module WS
       # 画像の張りなおし  
       self.image.dispose if self.image
       self.image = Image.new(self.width, self.height)
-      refresh
+      render_checkbox
     end
     
     ### チェックボックス画像(true) ###
@@ -116,7 +116,7 @@ module WS
     ### caption設定 ###
     def caption=(c)
       @caption = c
-      self.resize(@font.get_width(c) + 20, @font.size)
+      self.resize(@font.get_width(c) + 20, 22)
     end
     
     def resize(width, height)
@@ -125,10 +125,10 @@ module WS
     end
     
     ### 描画 ###
-    def refresh
+    def render_checkbox
       # コントロールの状態を参照して画像を変更
       self.image.clear
-      self.image.draw(0, 0, @image[@checked])
+      self.image.draw(0, self.height / 2 - 7, @image[@checked])
       # キャプションを描画
       if @caption.length > 0
         width = @font.get_width(@caption)
@@ -139,7 +139,7 @@ module WS
     end
     
     def render
-      refresh if refresh?
+      render_checkbox if refresh?
       super
     end
     
