@@ -293,6 +293,15 @@ module WS
     def initialize(*args)
       super
       @focusable = true
+
+      # Tabでフォーカス移動(キーハンドラ)
+      add_key_handler(K_TAB) do
+        if @window_focus
+          tmp = self.get_focusable_control_ary
+          tmp.reverse! unless Input.shift?
+          tmp[tmp.index(@window_focus) - 1].activate
+        end
+      end
     end
 
     # 配下のコントロールにフォーカスを設定する

@@ -28,20 +28,12 @@ module WS
       #  add client, true, true
       #end
       
-      # Tabでフォーカス移動(キーハンドラ)
-      add_key_handler(K_TAB) do
-        if @window_focus
-          tmp = self.get_focusable_control_ary
-          tmp.reverse! unless Input.shift?
-            tmp[tmp.index(@window_focus) - 1].activate
-          end
-        end
-      end
-      
-      # ボーダー幅のデフォルト値
-      def default_border_width
-        return 3
-      end
-      
     end
+    
+    # ボーダー幅のデフォルト値
+    def default_border_width
+      return 3
+    end
+    
   end
+end
