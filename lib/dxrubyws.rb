@@ -240,4 +240,12 @@ class << Window
     WS.desktop.height = v
     WS.desktop.collision = [0, 0, WS.desktop.width, v]
   end
+  
+  alias :old_resize :resize
+  def resize(w,h)
+    self.old_resize(w,h)
+    WS.desktop.width = w
+    WS.desktop.height = h
+    WS.desktop.collision = [0,0,w,h]
+  end
 end
