@@ -51,15 +51,15 @@ module WS
         super(tx, ty, width, height)
         
         # タイトルバーのクロースボタン
-        close_button = WSWindowCloseButton.new(nil, nil, height-2, height-2, "")
-        close_button.fore_color = COLOR[:font]
-        add_control(close_button)
-        close_button.add_handler(:click) {signal(:close)}
+        add_control(WSWindowCloseButton.new(nil, nil, height-2, height-2, ""), :c_btn_close)
+        c_btn_close.fore_color = COLOR[:font]
+        c_btn_close.add_handler(:click) {signal(:close)}
         
         # ウィンドウタイトル
         label = WSLabel.new(nil, nil, nil, height, title)
         label.fore_color = COLOR[:windowtitle_font]
-        label.font = Font.new(14, nil, :weight=>true)
+          p 
+        label.font = Font.new(14, "ＭＳ ゴシック", :weight=>true)
         add_control(label)
         
         add_handler(:doubleclick) do
@@ -71,8 +71,13 @@ module WS
           self.margin_top = self.margin_right = 1
           self.margin_left = 2
           add label
-          add close_button
+          add obj.c_btn_close
         end
+      end
+      
+      def close_button=(v)
+        self.c_btn_close.visible = v
+        self.c_btn_close.enabled = v
       end
       
       def render
