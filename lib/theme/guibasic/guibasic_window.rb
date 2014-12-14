@@ -1,8 +1,8 @@
 # coding: utf-8
 
 module WS
-	module WindowFrameBasic
-	  ### フレーム画像の作成 ###
+  module WindowFrameBasic
+    ### フレーム画像の作成 ###
     @@frameimg = {:activated => {}, :deactivated => {}}
     
     # 画像の読み込み
@@ -30,12 +30,12 @@ module WS
     frame_tmpimg.dispose
     frame_render.dispose
     frame_img.dispose
-	end
+  end
 	
   class WSWindow
   	
-  	# MixIn
-  	include WindowFrameBasic
+    # MixIn
+    include WindowFrameBasic
   	
     ### ■ウィンドウ内容を描画するクライアント領域の定義■ ###
     class WSWindowClient < WSContainer
@@ -156,10 +156,10 @@ module WS
   # ダイアログボックスのスーパークラス
   class WSDialogBase
 
-  	# MixIn
-  	include WindowFrameBasic
+    # MixIn
+    include WindowFrameBasic
 	  
-	  # オートレイアウト
+    # オートレイアウト
     def init_layout
       layout(:vbox) do
         self.margin_top = 2
@@ -169,7 +169,7 @@ module WS
       end
     end
 	  
-	  # ボーダー幅のデフォルト値
+    # ボーダー幅のデフォルト値
     def default_border_width
       return 8
     end
@@ -179,7 +179,7 @@ module WS
       return 22
     end
 	  
-  	def draw
+    def draw
       sx = self.x
       ex = self.x + self.width
       sy = self.y
@@ -195,7 +195,7 @@ module WS
       self.target.draw_scale(sx+fcw, ey-fch, frameimg[:windowframe_low],self.width - fcw * 2,1,0,0)
       self.target.draw_scale(sx, sy+fah, frameimg[:windowframe_left],1,rate,0,0)
       self.target.draw_scale(ex-fbw, sy+fah, frameimg[:windowframe_right],1,rate,0,0)
-  		super      
+      super      
     end
   end
 end
