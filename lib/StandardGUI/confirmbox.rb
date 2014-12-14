@@ -5,9 +5,9 @@ require_relative './common'
 
 module WS
   # システムモーダルなメッセージボックス
-  class WSMessageBox < WSContainer
+  class WSConfirmBox < WSContainer
     # ウィンドウのタイトルバー用クラス
-    class WSMessageBoxTitle < WSContainer
+    class WSConfirmBoxTitle < WSContainer
       def initialize(title="")
         @font = @@default_font
         super(nil, nil, nil, @font.size)
@@ -28,7 +28,7 @@ module WS
       end
     end
     
-    attr_reader :border_width, :window_focus, :message # ウィンドウ上のフォーカスを持つコントロール
+    attr_reader :border_width, :window_focus, :message, :result # ウィンドウ上のフォーカスを持つコントロール
     include WindowFocus
     include Focusable
     
@@ -38,30 +38,36 @@ module WS
       
       message_width = @font.get_width(message) + @border_width * 2 + 20 #20はmessageの左右に開けるスペース
       message_height = @font.size
-      ok_width = @font.get_width("OK") + @border_width * 2 + 124
-      ok_height = @font.size + 24
+      btn_width = @font.get_width("YES") + @font.get_width("NO") + @border_width * 2 + 50
+      btn_height = @font.size + 24
       caption_width = @font.get_width(caption) + @border_width * 2 + 4
       caption_height = @font.size
       
-      sx = [message_width, ok_width, caption_width].max
-      sy = message_height + ok_height + caption_height + 30 + @border_width
+      sx = [message_width, btn_width, caption_width].max
+      sy = message_height + btn_height + caption_height + 30 + @border_width
       tx = (WS.desktop.width - sx) / 2
       ty = (WS.desktop.height - sy) / 2
       
       super(tx, ty, sx, sy)
       self.image.bgcolor = COLOR[:base]
       @message = message
+      @result = nil
       
-      window_title = WSMessageBoxTitle.new(caption)
+      window_title = WSConfirmBoxTitle.new(caption)
       add_control(window_title, :window_title)
       
       message_label = WSLabel.new(nil, nil, nil, nil, @message)
       add_control(message_label, :message_label)
       
-      btn = WSButton.new(nil,nil,nil,nil,"OK")
-      add_control(btn, :btn)
-      btn.add_handler(:click){self.close}
-      btn.add_handler(:click_cancel){WS.capture(self, true)} # キャプチャが外れるのでしなおし
+      btn_yes = WSButton.new(nil,nil,nil,nil,"YES")
+      add_control(btn_yes, :btn_yes)
+      btn_yes.add_handler(:click){@result = true;self.signal(:yes);self.close}
+      btn_yes.add_handler(:click_cancel){WS.capture(self, true)} # キャプチャが外れるのでしなおし
+      
+      btn_no = WSButton.new(nil,nil,nil,nil,"NO")
+      add_control(btn_no, :btn_no)
+      btn_no.add_handler(:click){@result = false;self.signal(:no);self.close}
+      btn_no.add_handler(:click_cancel){WS.capture(self, true)} # キャプチャが外れるのでしなおし
       
       # オートレイアウトでコントロールの位置を決める
       # Layout#objで元のコンテナを参照できる
@@ -72,9 +78,11 @@ module WS
           self.margin_top = self.margin_bottom = self.space = 10
           self.margin_left = self.margin_right = 10
           add message_label
-          layout(:vbox) do
-            self.margin_left = self.margin_right = 40
-            add btn
+          layout(:hbox) do
+            self.margin_left = self.margin_right = 5
+            self.space = 20
+            add btn_yes
+            add btn_no
           end
         end
       end

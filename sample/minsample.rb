@@ -215,7 +215,7 @@ class TestWindow1 < WS::WSWindow
   attr_accessor :button1, :label1, :textbox1, :textbox2, :image1
   def initialize(*param)
     super
-    @button1 = WS::WSButton.new(10, 10, 150, 20, "Show MessageBox")
+    @button1 = WS::WSButton.new(10, 10, 150, 20, "Show ConfirmBox")
     @label1 = WS::WSLabel.new(10, 50, 100, 20, "label")
     @textbox1 = WS::WSTextBox.new(70, 45, 200, 20)
     #    @textbox2 = WS::WSTextBox.new(70, 80, 200, 20)
@@ -272,7 +272,18 @@ class TestWindow1
   end
   
   def button1_click(tx, ty)
-    WS.desktop.add_control(WS::WSMessageBox.new("MessageBoxTest", "メッセージボックステスト"))
+    cfm = WS::WSConfirmBox.new("WSConfirmBox Test", "YesかNoか？")
+    cfm.add_handler(:no){self.confirm_no}
+    cfm.add_handler(:yes){self.confirm_yes}
+    WS.desktop.add_control(cfm)
+  end
+  
+  def confirm_yes
+    WS.desktop.add_control(WS::WSMessageBox.new("WSMessageBox Test", "やはり賛成か！"))
+  end
+  
+  def confirm_no
+    WS.desktop.add_control(WS::WSMessageBox.new("WSMessageBox Test", "やはり反対か！"))
   end
 end
 
