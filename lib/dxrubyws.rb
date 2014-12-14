@@ -16,9 +16,6 @@ module WS
       @hit_cursor = Sprite.new
       @hit_cursor.collision = [0,0]
       @font = @@default_font
-      @mouse_l_flag = false
-      @mouse_m_flag = false
-      @mouse_r_flag = false
       @capture_object = nil
       @system_focus = nil
       @over_object = nil
