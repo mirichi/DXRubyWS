@@ -3,10 +3,10 @@
 module WS
   
   class WSDialogBase < WSLightContainer
-
+    
     # Mix-In
     include WindowFocus
-        
+    
     attr_accessor :border_width # ウィンドウボーダーの幅
     attr_reader :window_focus # ウィンドウ上のフォーカスを持つコントロール
     
