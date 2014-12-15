@@ -204,7 +204,8 @@ module WS
     @@desktop.capture_object == obj
   end
 
-  @@default_z = 10000
+  # 廃止予定
+  @@default_z = 0
   def self.default_z;@@default_z;end
   def self.default_z=(v);@@default_z=v;end
   
