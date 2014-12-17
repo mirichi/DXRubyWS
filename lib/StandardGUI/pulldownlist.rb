@@ -15,8 +15,8 @@ module WS
         @content = content #表示するリスト
         @font = form.font
         super(tx, ty, width, content.size * @font.size + 4)
-        @image = Image.new(@width, @height, COLOR[:background]).draw_border(true)
-        @active_image = Image.new(@width - 6, @font.size, COLOR[:select])
+        @image = Image.new(@width, @height, COLOR[:background]).draw_border(true) if @width && @height
+        @active_image = Image.new(@width - 6, @font.size, COLOR[:select]) if @width
         @old_cont = @content #リストが変更されたかの確認用
         @form = form #データの出力先
         @selected = default #選択されているもの(index)
@@ -26,7 +26,7 @@ module WS
       #update,draw時に更新
       def update_image(changed = false)
         if @content != @old_cont || changed
-          @image.dispose
+          @image.dispose if @image
           @old_cont = @content
           @selected = 0 if @selected >= @content.size
           self.height = @content.size * @font.size + 4
@@ -89,10 +89,14 @@ module WS
     end
     
     ### ■プルダウンリストの設定■ ###
-    def initialize(tx, ty, width, height, content = [])
+    def initialize(tx=nil, ty=nil, width=nil, height=nil, content = [])
       super(tx, ty, width, height)
       lx, ly = self.get_global_vertex
-      @list = WSPullDownPopup.new(lx, ly + height, width, content, self)
+      if height
+        @list = WSPullDownPopup.new(lx, ly + height, width, content, self)
+      else
+        @list = WSPullDownPopup.new(nil, nil, width, content, self)
+      end
       @image = {}
       refresh
       
@@ -134,7 +138,7 @@ module WS
     def resize(width, height)
       refresh
       lx, ly = self.get_global_vertex
-      @list.x, @list.y = lx, ly + @height
+      @list.x, @list.y = lx, ly + @height if @height
       @list.resize(width, height)
       super
     end
@@ -142,7 +146,7 @@ module WS
     def move(tx,ty)
       super
       lx, ly = self.get_global_vertex
-      @list.x, @list.y = lx, ly + @height
+      @list.x, @list.y = lx, ly + @height if @height
     end
     
     def on_mouse_push(tx, ty)
