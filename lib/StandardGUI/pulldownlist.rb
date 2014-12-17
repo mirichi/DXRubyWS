@@ -49,8 +49,12 @@ module WS
         self.x,self.y = lx,ly + @form.height
         super
         @content.each_with_index do |str,i|
-          self.target.draw(self.x + 3, self.y + @font.size * i + 3, @active_image, self.z) if @selected == i
-          self.target.drawFont(self.x + 2, self.y + @font.size * i + 2, str.to_s.within(@font, @width - 4), @font,{:color => COLOR[:font],:z => self.z})
+          if @selected == i
+            self.target.draw(self.x + 3, self.y + @font.size * i + 3, @active_image, self.z)
+            self.target.drawFont(self.x + 3, self.y + @font.size * i + 3, str.to_s.within(@font, @width - 4), @font,{:color => COLOR[:font_reverse],:z => self.z})
+          else
+            self.target.drawFont(self.x + 3, self.y + @font.size * i + 3, str.to_s.within(@font, @width - 4), @font,{:color => COLOR[:font],:z => self.z})
+          end
         end
       end
       
