@@ -173,7 +173,7 @@ WSContainer#set_focus(obj) -> obj
  objにフォーカスをセットします。自身がフォーカスを制御するコンテナじゃない場合は親オブジェクトのset_focusを呼び出します。
 
 プロパティ類
-attr_accessor :childlen
+attr_accessor :children
  配下のオブジェクトが格納されている配列です。格納順に描画しますが、マウスの判定は逆順になります。
 
 

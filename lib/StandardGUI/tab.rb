@@ -26,7 +26,7 @@ module WS
     # 衝突判定可能状態の設定
     def collision_enable=(value)
       super
-      @childlen.each do |c| c.collision_enable = value end
+      @children.each do |c| c.collision_enable = value end
     end
     
   end

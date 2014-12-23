@@ -316,7 +316,7 @@ module WS
     # ウィンドウを閉じたら次の優先ウィンドウにフォーカスを移す
     def close
       self.parent.remove_control(self)
-      tmp = self.parent.childlen.last
+      tmp = self.parent.children.last
       if tmp
         tmp.activate
       else

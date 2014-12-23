@@ -10,7 +10,7 @@ module WS
     attr_accessor :capture_object, :system_focus, :capture_notify, :capture_target, :capture_target_notify
 
     def initialize
-      @childlen = []
+      @children = []
       @signal_handler = {}
       @key_handler = {}
       @hit_cursor = Sprite.new
@@ -129,12 +129,12 @@ module WS
     # システムフォーカスをセットする。
     def set_focus(obj)
       return obj if @system_focus == obj
-      return nil if obj != nil and @childlen.index(obj) == nil
+      return nil if obj != nil and @children.index(obj) == nil
   
       @system_focus.on_leave if @system_focus
       @system_focus = obj
       obj.on_enter if obj
-      @childlen.push(@childlen.delete(obj)) if obj
+      @children.push(@children.delete(obj)) if obj
       obj
     end
 

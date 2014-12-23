@@ -333,11 +333,11 @@ module WS
   # ウィンドウやリストボックスなど、自身の内部にコントロールを配置するものはWSContainerを使う。
   # マウスイベントやdraw/updateの伝播をしてくれる。
   class WSContainerBase < WSControl
-    attr_accessor :childlen
+    attr_accessor :children
     
     def initialize(tx=nil, ty=nil, width=nil, height=nil)
       super
-      @childlen = []
+      @children = []
       @layout = nil
     end
     
@@ -347,7 +347,7 @@ module WS
     def _add_control(obj, name=nil)
       obj.parent = self
       
-      @childlen << obj
+      @children << obj
       if name
         tmp = class << self;self;end
         tmp.class_eval do
@@ -367,7 +367,7 @@ module WS
     # コントロールの削除
     # _remove_controlは書き換えないようにする
     def _remove_control(obj, name=nil)
-      @childlen.delete(obj)
+      @children.delete(obj)
       if name
         tmp = class << self;self;end
         tmp.class_eval do
@@ -385,14 +385,14 @@ module WS
     
     # Sprite#update時に配下のコントロールにもupdateを投げる
     def update
-      Sprite.update(@childlen)
+      Sprite.update(@children)
       super
     end
     
     # 引数の座標に存在する配下のコントロールを返す。無ければnil
     def find_hit_object(tx, ty)
       @hit_cursor.x, @hit_cursor.y = tx, ty
-      @hit_cursor.check(@childlen.reverse)[0]
+      @hit_cursor.check(@children.reverse)[0]
     end
     
     def mouse_event_dispatch(event, tx, ty)
@@ -421,7 +421,7 @@ module WS
     # フォーカスを受け取れるコントロールを配列にして返す
     def get_focusable_control_ary
       ary = []
-      @childlen.each do |o|
+      @children.each do |o|
         if o.focusable and o.visible and o.enabled?
           ary.push(o)
         else
@@ -448,7 +448,7 @@ module WS
   
   class WSLightContainer < WSContainerBase
     def target=(v)
-      @childlen.each do |s|
+      @children.each do |s|
         s.target = v
       end
       super
@@ -462,7 +462,7 @@ module WS
     end
     
     def render
-      @childlen.each do |s|
+      @children.each do |s|
         s.render if s.visible
       end
     end
@@ -471,7 +471,7 @@ module WS
       self.target.ox -= self.x
       self.target.oy -= self.y
       
-      @childlen.each do |s|
+      @children.each do |s|
         if s.visible
           s.draw
         end
@@ -513,7 +513,7 @@ module WS
   # 配下のオブジェクトのtargetはそれが設定される。
   # したがって、配下のオブジェクトの座標は親になるWSContainerの左上隅が0,0となる。
   class WSContainer < WSContainerBase
-    attr_accessor :childlen
+    attr_accessor :children
     
     def initialize(tx=nil, ty=nil, width=nil, height=nil)
       super
@@ -535,7 +535,7 @@ module WS
     # renderをsuperするタイミングによって描画順が変わる。先にsuperすると自分の描画が上になるるし、
     # 後でsuperすると配下のオブジェクトによって上書きされる。
     def render
-      @childlen.each do |s|
+      @children.each do |s|
         if s.visible
           s.render
           s.draw
