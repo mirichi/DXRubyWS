@@ -40,9 +40,9 @@ module WS
     include Focusable
     attr_reader :text
     
-    def initialize(tx, ty, sx, sy)
-      super(tx, ty, sx, sy)
-      self.image = Image.new(sx, sy, COLOR[:background]).draw_border(false)
+    def initialize(tx=nil, ty=nil, sx=nil, sy=nil)
+      super
+      self.image = Image.new(sx, sy, COLOR[:background]).draw_border(false) if sx && sy
       @text = ""
       @cursor_count = 0 # カーソル点滅用カウント
       @cursor_pos = 0   # カーソル位置
