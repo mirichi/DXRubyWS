@@ -47,6 +47,12 @@ module WS
       include DoubleClickable # 最大化用
       include Draggable # ウィンドウのドラッグ用
       
+      @@title_font = Font.new(14, "ＭＳ ゴシック", :weight=>true)
+      
+      def self.title_font
+        @@title_font
+      end
+      
       def initialize(tx, ty, width, height, title="")
         super(tx, ty, width, height)
         
@@ -58,7 +64,7 @@ module WS
         # ウィンドウタイトル
         label = WSLabel.new(nil, nil, nil, height, title)
         label.fore_color = COLOR[:windowtitle_font]
-        label.font = Font.new(14, "ＭＳ ゴシック", :weight=>true)
+        label.font = @@title_font
         add_control(label)
         
         add_handler(:doubleclick) do
