@@ -16,11 +16,11 @@ module WS
     end
     
     def self.open(tx=nil, ty=nil, sx=nil, sy=nil, filter, title, directory: nil)
-      WSOpenFilename.new(tx, ty, sx, sx, filter, title, directory: directory)
+      WSOpenFilename.new(tx, ty, sx, sy, filter, title, directory: directory)
     end
     
     def self.save(tx=nil, ty=nil, sx=nil, sy=nil, filter, title, directory: nil)
-      WSSaveFilename.new(tx, ty, sx, sx, filter, title, directory: directory)
+      WSSaveFilename.new(tx, ty, sx, sy, filter, title, directory: directory)
     end
     
     class WSFileFilter
@@ -281,7 +281,7 @@ module WS
     
     class WSOpenFilename < WSFileDialogBase
       def initialize(tx=nil, ty=nil, sx=nil, sy=nil, filter, title, directory: nil)
-        super(tx, ty, sx, sx, filter, title, directory: directory)
+        super(tx, ty, sx, sy, filter, title, directory: directory)
         
         if list = @filter.list
           add_control(WSLightContainer.new(nil,nil,nil,@font.size * 2 + 16), :under_container)
@@ -347,7 +347,7 @@ module WS
     
     class WSSaveFilename < WSFileDialogBase
       def initialize(tx=nil, ty=nil, sx=nil, sy=nil, filter, title, directory: nil)
-        super(tx, ty, sx, sx, filter, title, directory: directory)
+        super(tx, ty, sx, sy, filter, title, directory: directory)
         
         if list = @filter.list
           add_control(WSLightContainer.new(nil,nil,nil,@font.size * 2 + 16), :under_container)
@@ -360,7 +360,7 @@ module WS
           
           under_container.add_control(WSLightContainer.new, :button_container)
           under_container.button_container.add_control(WSPullDownList.new(nil,nil,nil,@font.size + 6, list), :filter_list).add_handler(:change){|list| @filter.set_index(list.index)}
-          under_container.button_container.add_control(WSButton.new(nil,nil,nil,@font.size + 6,'開く'), :submit).add_handler(:click){
+          under_container.button_container.add_control(WSButton.new(nil,nil,nil,@font.size + 6,'保存'), :submit).add_handler(:click){
             item = main_area.client.search_basename(str = under_container.textbox_container.textbox.text)
             if item
               item.on_doubleclick(0,0)
