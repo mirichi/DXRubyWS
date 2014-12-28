@@ -106,15 +106,15 @@ module WS
       # 画像の作成
       def render
         if refresh?
-          width = @font.get_width(@caption)
+          self.width = @font.get_width(@caption)
           case state
           when :active
             self.image.fill(COLOR[:select])
-            self.image.draw_font_ex(0, @height / 2 - @font.size / 2,
+            self.image.draw_font_ex(0, (@height - @font.size) / 2,
                                     @caption, @font, {:color=>COLOR[:font_reverse], :aa=>false})
           else
             self.image.clear
-            self.image.draw_font_ex(0, @height / 2 - @font.size / 2,
+            self.image.draw_font_ex(0, (@height - @font.size) / 2,
                                     @caption, @font, {:color=>@fore_color, :aa=>false})
           end
           
@@ -240,7 +240,10 @@ module WS
           main_area.client.next_of(@result).activate
         end
         
-        WS.capture(self, true)
+        @old_capture_object = WS.desktop.capture_target || WS.desktop.capture_object
+        @old_capture_notify = WS.desktop.capture_notify
+        @old_capture_lock = WS.desktop.capture_target ? true : false
+        WS.capture(self, true, true)
       end
       
       def update
@@ -257,12 +260,13 @@ module WS
       
       def exit_dialog
         @result = @result.absolute_path
-        signal(:submit, @result)
         close
+        signal(:submit, @result)
       end
       
       def close
-        WS.capture(nil)
+        WS.release_capture
+        WS.capture(@old_capture_object, @old_capture_notify, @old_capture_lock) if @old_capture_object
         super
       end
       
@@ -368,8 +372,8 @@ module WS
               Dir.chdir(@directory) do
                 str = File.expand_path(str)
               end
-              signal(:submit, str)
               close
+              signal(:submit, str)
             end
           }
           under_container.button_container.layout(:vbox) do
@@ -402,8 +406,8 @@ module WS
               Dir.chdir(@directory) do
                 str = File.expand_path(str)
               end
-              signal(:submit, str)
               close
+              signal(:submit, str)
             end
           }
           under_container.button_container.layout(:vbox) do

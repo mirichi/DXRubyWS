@@ -48,6 +48,9 @@ module WS
       end
       
       # マウスキャプチャする
+      @old_capture_object = WS.desktop.capture_target || WS.desktop.capture_object
+      @old_capture_notify = WS.desktop.capture_notify
+      @old_capture_lock = WS.desktop.capture_target ? true : false
       WS.capture(self, true, true)
       
       # ボタンにフォーカスを当てる
@@ -57,6 +60,7 @@ module WS
     # ウィンドウを閉じたら次の優先ウィンドウにフォーカスを移す
     def close
       WS.release_capture
+      WS.capture(@old_capture_object, @old_capture_notify, @old_capture_lock) if @old_capture_object
       super
     end
   end
