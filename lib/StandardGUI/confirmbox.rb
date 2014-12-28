@@ -42,6 +42,13 @@ module WS
       btn_no.add_handler(:click){@result = false;self.close;self.signal(:no)}
       btn_no.add_handler(:click_cancel){WS.capture(self, true)} # キャプチャが外れるのでしなおし
       
+      self.add_key_handler(K_Y){
+        btn_yes.on_click(0,0)
+      }
+      self.add_key_handler(K_N){
+        btn_no.on_click(0,0)
+      }
+      
       # オートレイアウトでコントロールの位置を決める
       # Layout#objで元のコンテナを参照できる
       client.layout(:vbox) do

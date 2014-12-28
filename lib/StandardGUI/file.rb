@@ -272,7 +272,7 @@ module WS
       
       def set_directory(path)
         return @directory = @directory || WS::WSFile.current_directory unless path
-        return @directory = path if Dir.exist?(path)
+        return @directory = File.expand_path(path) if Dir.exist?(path)
         @directory = @directory || WS::WSFile.current_directory
       end
       
