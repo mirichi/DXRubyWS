@@ -111,6 +111,9 @@ module WS
       @tabs.each_value do |tab| tab.release_tab end
       obj.select_tab
       panel_container.activate_panel(obj.panel)
+      # 描画優先順位の変更
+      @children.delete(obj)
+      @children << obj
     end
     
     # タブの整理
@@ -152,14 +155,12 @@ module WS
       def select_tab
         @selection = true
         @panel.show if @panel
-        self.z = 1
       end
       
       # タブを選択解除する
       def release_tab
         @selection = false
         @panel.hide if @panel
-        self.z = 0
       end
       
       # タブが選択されているか？
