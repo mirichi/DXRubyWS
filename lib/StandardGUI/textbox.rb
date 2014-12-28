@@ -67,7 +67,7 @@ module WS
         end
         
         adjust_left
-        signal(:changed, @text) if before != @text
+        signal(:change, @text) if before != @text
       end
       
       add_key_handler(K_DELETE) do
