@@ -46,24 +46,18 @@ module WS
     
     # コントロールの作成
     def create_controls
-      panel_container = WSTabPanelContainer.new(0, tab_height - 1, width, panel_height + 1)
-      add_control(panel_container, :panel_container)
+      add_control(WSTabPanelContainer.new(0, 0, width, panel_height), :panel_container)
     end
     
     # タブと標準パネルの作成
     def create_tab_set(name, caption = "", pw = nil, ph = nil)
-      tw = pw || @width
-      th = ph || panel_height
       # パネルの作成
-      panel = WSTabPanel.new(0, panel_y, tw, th)
+      panel = WSTabPanel.new(0, 0, pw || @width, ph || panel_height)
       create_tab(panel, name, caption)
     end
     
     # タブの作成
     def create_tab(panel, name, caption = "")
-      # パネル位置とサイズの修正
-      panel.y = 0#panel_y
-      #panel.resize(@width, panel_height)
       # パネルの登録
       panel_container.add_panel(panel, name)
       @panels[name] = panel
@@ -71,7 +65,7 @@ module WS
       tab      = WSTabButton.new(0, 0, @width / 4, tab_height, caption)
       tab.font = @font
       tab.set_panel(panel)
-      self.add_control(tab)
+      add_control(tab)
       @tabs[name] = tab
       # ハンドラの作成
       tab.add_handler(:click, method(:change_tab))
@@ -90,14 +84,9 @@ module WS
       @tab_height
     end
     
-    # パネルのY座標
-    def panel_y
-      tab_height - 1
-    end
-    
     # パネルの高さ
     def panel_height
-      @height - panel_y + 1
+      @height - @tab_height
     end
     
     ### タブの処理 ###
@@ -118,10 +107,17 @@ module WS
     
     # タブの整理
     def arrange_tabs
-      tx = 0
-      @tabs.each_value do |tab|
-        tab.x = tx
-        tx += tab.width - 4
+      tabs = @tabs
+      layout(:vbox) do
+        layout(:hbox) do
+          self.resizable_height = false
+          self.height = obj.tab_height
+          tabs.each_value do |tab|
+            add tab, false, false
+          end
+          layout
+        end
+        add obj.panel_container
       end
     end
     
@@ -139,13 +135,10 @@ module WS
       def initialize(sx, sy, width, height, caption="")
         tw = [@@default_font.get_width(caption) + 16, width].min
         super(sx, sy, tw, height)
-        @px = sx
-        @py = sy
-        @max_width = width
+        self.center_x = 1
         @caption = caption
         @fore_color = COLOR[:font]
         @image = {}
-        @selection = false
         release_tab
         set_image
       end
@@ -176,17 +169,17 @@ module WS
       ### 描画
       # タブ画像の作成
       def set_image
-        w = @width
-        h = @height
+        w = @width+3
+        h = @height+1
         # 通常時の画像を作成
         @image[false] = Image.new(w, h)
-        .box_fill( 3, 3, w-4, h-2, COLOR[:base])
-        .line( 4, 2, w-5, 2, COLOR[:light])
-        .line( 3, 3, 3, 3, COLOR[:light])
-        .line( 2, 4, 2, h-2, COLOR[:light])
-        .line( w-4, 3, w-4, 3, COLOR[:darkshadow])
-        .line( w-3, 4, w-3, h-2, COLOR[:darkshadow])
-        .line( w-4, 4, w-4, h-2, COLOR[:shadow])
+        .box_fill( 2, 3, w-3, h-2, COLOR[:base])
+        .line( 3, 2, w-4, 2, COLOR[:light])
+        .line( 2, 3, 2, 3, COLOR[:light])
+        .line( 1, 4, 1, h-2, COLOR[:light])
+        .line( w-3, 3, w-3, 3, COLOR[:darkshadow])
+        .line( w-2, 4, w-2, h-2, COLOR[:darkshadow])
+        .line( w-3, 4, w-3, h-2, COLOR[:shadow])
         
         # 押下時の画像を作成
         @image[true]  = Image.new(w, h)
@@ -236,14 +229,8 @@ module WS
         
         # 画像の作成
         def render
-          
-          if @panel
-            @panel.x = -@parent.hsb.pos
-            @panel.y = -@parent.vsb.pos
-          end
-          
+          @panel.x,@panel.y = -@parent.hsb.pos,-@parent.vsb.pos if @panel
           super
-          
         end
         
       end
@@ -254,10 +241,10 @@ module WS
         super(sx, sy, width, height, client)
         
         # スクロールバーを使うための設定。
-        hsb.total_size = 1440
+        hsb.total_size = client.width
         hsb.view_size = client.width
         hsb.shift_qty = 24
-        vsb.total_size = 960
+        vsb.total_size = client.height
         vsb.view_size = client.height
         vsb.shift_qty = 24
         
