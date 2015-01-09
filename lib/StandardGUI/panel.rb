@@ -16,7 +16,7 @@ module WS
     def create_client
       _add_control(WSPanelClient.new(0, 0, 32, 32), :client)
       layout(:hbox) do
-        set_margin(32, 8, 8, 8)
+        set_margin(24, 8, 8, 8)
         add obj.client, true, true
       end
     end

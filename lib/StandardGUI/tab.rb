@@ -40,7 +40,6 @@ module WS
       super(sx, sy, width, height)
       @tab_height = tab_height
       @tabs   = {}
-      @panels = {}
       create_controls
     end
     
@@ -60,23 +59,21 @@ module WS
     def create_tab(panel, name, caption = "")
       # パネルの登録
       panel_container.add_panel(panel, name)
-      @panels[name] = panel
       # タブの作成
       tab      = WSTabButton.new(0, 0, @width / 4, tab_height, caption)
-      tab.font = @font
       tab.set_panel(panel)
       add_control(tab)
       @tabs[name] = tab
       # ハンドラの作成
       tab.add_handler(:click, method(:change_tab))
       # タブの再配置
-      arrange_tabs
+      init_layout
       panel
     end
     
     # パネルの参照
     def panel(name)
-      @panels[name]
+      @tabs[name].panel
     end
     
     # タブの高さ
@@ -101,12 +98,11 @@ module WS
       obj.select_tab
       panel_container.activate_panel(obj.panel)
       # 描画優先順位の変更
-      @children.delete(obj)
-      @children << obj
+      @children.push(@children.delete(obj))
     end
     
     # タブの整理
-    def arrange_tabs
+    def init_layout
       tabs = @tabs
       layout(:vbox) do
         layout(:hbox) do
@@ -117,7 +113,7 @@ module WS
           end
           layout
         end
-        add obj.panel_container
+        add obj.panel_container, true, true
       end
     end
     
@@ -135,7 +131,6 @@ module WS
       def initialize(sx, sy, width, height, caption="")
         tw = [@@default_font.get_width(caption) + 16, width].min
         super(sx, sy, tw, height)
-        self.center_x = 1
         @caption = caption
         @fore_color = COLOR[:font]
         @image = {}

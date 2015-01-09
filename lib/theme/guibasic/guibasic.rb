@@ -62,7 +62,7 @@ module WS
   
   
   ### ■ボタン■ ###
-  class WSButtonBase < WSControl
+  class WSButtonBase
     
     include ButtonGradation
     
@@ -71,16 +71,14 @@ module WS
     def set_image
       # 画像を再作成する前にdisposeする
       @image.each_value{|image| image.dispose if image.disposed?}
-      
       @@shader_image.resize(width, height)
-      
       # 通常時の画像を作成
       @image[:usual] = @@shader_image.draw_shader(0,0,@@shader_image, @@shader_button).to_image
       set_border(@image[:usual])
       if @caption.length > 0
         tw = @font.get_width(@caption)
-        @image[:usual].draw_font_ex(@width / 2 - tw / 2 ,
-                                    @height / 2 - @font.size / 2 ,
+        @image[:usual].draw_font_ex(@width / 2 - tw / 2,
+                                    @height / 2 - @font.size / 2,
                                     @caption, @font, {:color => @fore_color, :aa => false})
       end
       # アクティブ時の画像を作成

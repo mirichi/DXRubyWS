@@ -273,7 +273,7 @@ module WS
     # :disable          使用不可状態
     # :active           フォーカスを得ている
     def state
-      if !@enabled
+      if !enabled?
         :disable
       elsif @active
         :active
