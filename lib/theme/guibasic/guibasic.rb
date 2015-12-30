@@ -29,6 +29,7 @@ module WS
     # 画像の作成
     def render
       self.shader = set_shader
+      self.alpha  = self.enabled? ? 255 : 224 
       super
     end
     

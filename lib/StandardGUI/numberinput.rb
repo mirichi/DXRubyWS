@@ -45,7 +45,7 @@ module WS
   class WSNumberInput < WSContainer
     
     ### 公開インスタンス ###
-    attr_accessor :min, :max, :small, :big
+    attr_accessor :min, :max, :small, :big, :dicimal
     attr_reader :value
     
     ### 定数 ###
@@ -56,7 +56,8 @@ module WS
       super(tx, ty, [width, 48].max, [height, 20].max)
       @render_target = self.image
       @refresh = true
-      @value  = 0
+      @dicimal = 0
+      @value = 0
       @min   = 0
       @max   = 99999
       @small = 1
@@ -105,14 +106,14 @@ module WS
     
     # 加算ボタン小の押下処理
     def click_add_button_s(obj, tx, ty)
-      @value = [@value + @small * (self.c_add_s.repeat_count / RATE), @max].min
+      @value = [@value + @small * (self.c_add_s.repeat_count / RATE), @max].min.round(@dicimal)
       set_text
       signal(:change, @value)
     end
     
     # 減算ボタン小の押下処理
     def click_sub_button_s(obj, tx, ty)
-      @value = [@value - @small * (self.c_sub_s.repeat_count / RATE), @min].max
+      @value = [@value - @small * (self.c_sub_s.repeat_count / RATE), @min].max.round(@dicimal)
       set_text
       signal(:change, @value)
     end
@@ -149,9 +150,10 @@ module WS
     
     # テキストに数字以外のものが入っていないかをチェックし、データに反映する
     def check_text
+      
       num_text = self.c_numtext.text
-      num = self.c_numtext.text.to_i
-      if num_text != "0" && num == 0 || num_text !=  num.to_s
+      num = self.c_numtext.text.to_f
+      if num_text =~ /[^0-9.]/
         self.c_numtext.text = @value.to_s
       else
         @value = num.clamp(@min, @max)
@@ -266,14 +268,14 @@ module WS
     
     # 加算ボタン大の押下処理
     def click_add_button_b(obj, tx, ty)
-      @value = [@value + @big * (self.c_add_l.repeat_count / RATE), @max].min
+      @value = [@value + @big * (self.c_add_l.repeat_count / RATE), @max].min.round(@dicimal)
       set_text
       signal(:change, @value)
     end
     
     # 減算ボタン大の押下処理
     def click_sub_button_b(obj, tx, ty)
-      @value = [@value - @big * (self.c_sub_l.repeat_count / RATE), @min].max
+      @value = [@value - @big * (self.c_sub_l.repeat_count / RATE), @min].max.round(@dicimal)
       set_text
       signal(:change, @value)
     end
